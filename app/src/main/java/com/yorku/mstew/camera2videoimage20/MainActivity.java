@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onOpened(CameraDevice camera) {
             mCameraDevice = camera;
-            Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
 
             if(mIsRecording){
                 try {
@@ -298,8 +298,6 @@ public class MainActivity extends AppCompatActivity {
     //onCreate was here since the start
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mMediaRecorder = new MediaRecorder();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createVideoFolder();
@@ -318,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
                     mMediaRecorder.reset();
                     startPreview();
                 } else {
-                    mIsRecording=true;
                     checkWriteStoragePermission();
 
                 }
@@ -476,14 +473,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupMediaRecorder() throws IOException {
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mMediaRecorder.setOutputFile(mVideoFileName);
-        mMediaRecorder.setVideoEncodingBitRate(1000000);
-        mMediaRecorder.setVideoFrameRate(30);
+        mMediaRecorder.setVideoEncodingBitRate(8000000);
+        mMediaRecorder.setVideoFrameRate(60);
         mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
