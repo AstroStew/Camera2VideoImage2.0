@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         public void onOpened(CameraDevice camera) {
             mCameraDevice = camera;
             Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
-            
+
             if(mIsRecording){
                 try {
                     createVideoFileName();
@@ -154,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
     };
     //checked
     //Getting Camera Id
+    //comment
     private String mCameraId;
     private int mTotalRotation;
 
