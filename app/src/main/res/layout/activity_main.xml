@@ -44,6 +44,17 @@
         android:layout_marginBottom="27dp"
         android:onClick="videoclick" />
 
+    <Chronometer
+        android:id="@+id/chronometer"
+        android:visibility="invisible"
+        android:textColor="#ff0000"
+        android:textSize="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/VideoButton"
+        android:layout_alignLeft="@+id/VideoButton"
+        android:layout_alignStart="@+id/VideoButton"
+        android:layout_marginBottom="31dp" />
 
 
 </RelativeLayout>

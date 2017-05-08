@@ -3,6 +3,7 @@ package com.yorku.mstew.camera2videoimage20;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -10,12 +11,16 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +32,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -125,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             mCameraDevice = camera;
             //Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
 
-            if(mIsRecording){
+            if (mIsRecording) {
                 try {
                     createVideoFileName();
                 } catch (IOException e) {
@@ -134,7 +140,10 @@ public class MainActivity extends AppCompatActivity {
 
                 startRecord();
                 mMediaRecorder.start();
-            }else{
+                mChronometer.setBase(SystemClock.elapsedRealtime());
+                mChronometer.setVisibility(View.VISIBLE);
+                mChronometer.start();
+            } else {
                 startPreview();
             }
         }
@@ -158,6 +167,39 @@ public class MainActivity extends AppCompatActivity {
     //doesn't work
     private String mCameraId;
     private int mTotalRotation;
+    private CameraCaptureSession mPreviewCaptureSession;
+    private CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new
+            CameraCaptureSession.CaptureCallback() {
+
+                private void process(CaptureResult captureResult){
+                    switch (mCaptureState){
+                        case STATE_PREVIEW:
+                            //Do nothing
+                            break;
+                        case STATE_WAIT_LOCK:
+                            mCaptureState=STATE_PREVIEW;
+                            Integer afState=captureResult.get(CaptureResult.CONTROL_AF_STATE);
+                            if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
+                                Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                    }
+
+                }
+
+                @Override
+                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result)
+
+
+
+
+                //comment not sure about that curve thing below
+                {
+                    super.onCaptureCompleted(session, request, result);
+                    process(result);
+                }
+            };
+
 
     private void setupCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -180,8 +222,13 @@ public class MainActivity extends AppCompatActivity {
                     rotatedHeight = width;
 
                 }
+
                 mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
                 mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
+                mImageSize=chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
+                mImageReader=ImageReader.newInstance(mImageSize.getWidth(),mImageSize.getHeight(),ImageFormat.JPEG,1);
+
+                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
                 mCameraId = cameraId;
                 return;
             }
@@ -302,14 +349,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         createVideoFolder();
         mMediaRecorder=new MediaRecorder();
+        mChronometer=(Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
-
+        mStillImageButton=(ImageButton)findViewById(R.id.CameraButton);
+        mStillImageButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                lockFocus();
+            }
+        });
         mRecordImageButton = (ImageButton) findViewById(R.id.VideoButton);
 
         mRecordImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mIsRecording) {
+                    mChronometer.stop();
+                    mChronometer.setVisibility(View.INVISIBLE);
                     mIsRecording = false;
                     mRecordImageButton.setImageResource(R.mipmap.vidpiconline);
                     mMediaRecorder.stop();
@@ -361,12 +417,13 @@ public class MainActivity extends AppCompatActivity {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
 
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface),
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface,mImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
+                            mPreviewCaptureSession=session;
                             try {
-                                session.setRepeatingRequest(mCaptureRequestBuilder.build(),
+                                mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),
                                         null, mBackgroundHandler);
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
@@ -443,6 +500,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 startRecord();
                 mMediaRecorder.start();
+                mChronometer.setBase(SystemClock.elapsedRealtime());
+                mChronometer.setVisibility(View.VISIBLE);
+                mChronometer.start();
             } else {
                 Toast.makeText(this, "Permission to write is not granted", Toast.LENGTH_SHORT).show();
                 if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -463,6 +523,9 @@ public class MainActivity extends AppCompatActivity {
             }
             startRecord();
             mMediaRecorder.start();
+            mChronometer.setBase(SystemClock.elapsedRealtime());
+            mChronometer.setVisibility(View.VISIBLE);
+            mChronometer.start();
 
         }
 
@@ -520,6 +583,40 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    //Adding a Chronometer timer for recording
+private Chronometer mChronometer;
+//now lets set up for still camera capture
+
+
+private Size mImageSize;
+
+    private ImageReader mImageReader;
+    private final ImageReader.OnImageAvailableListener mOnImageAvailableListener =
+            new ImageReader.OnImageAvailableListener(){
+                @Override
+                public void onImageAvailable(ImageReader reader){
+
+                }
+            };
+
+
+    private static final int STATE_PREVIEW=0;
+    private static final int STATE_WAIT_LOCK=1;
+    private int mCaptureState = STATE_PREVIEW;
+    private void lockFocus(){
+        mCaptureState=STATE_WAIT_LOCK;
+
+        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CaptureRequest.CONTROL_AF_TRIGGER_START);
+        try {
+            mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+    private ImageButton mStillImageButton;
+
 }
 
 
