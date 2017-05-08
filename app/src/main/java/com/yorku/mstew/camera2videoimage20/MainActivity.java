@@ -154,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
     };
     //checked
     //Getting Camera Id
+
+    //doesn't work
     private String mCameraId;
     private int mTotalRotation;
 
