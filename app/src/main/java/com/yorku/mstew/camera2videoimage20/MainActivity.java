@@ -348,7 +348,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createVideoFolder();
-        mMediaRecorder=new MediaRecorder();
+        createImageFolder();
+        //mMediaRecorder=new MediaRecorder();
+        //this is new
         mChronometer=(Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
         mStillImageButton=(ImageButton)findViewById(R.id.CameraButton);
@@ -616,8 +618,38 @@ private Size mImageSize;
 
     }
     private ImageButton mStillImageButton;
+    //image capture
+    //part 17 capturing a still image in a preview mode
+    private File mImageFolder;
+    private String mImageFileName;
+
+
+    private void createImageFolder() {
+        File imageFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        mImageFolder = new File(imageFile , "Camera2_Video_Image");
+        //check to see if the folder is already created
+        if (!mImageFolder.exists()) {
+            mImageFolder.mkdirs();
+
+        }
+
+    }
+
+//now we have to call the videoFolder onCreate
+
+    private File createImageFileName() throws IOException {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        //there are two types of SimpleDateFormat and Date()
+        String prepend = "IMAGE_" + timestamp + "_";
+        File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
+        mImageFileName = imageFile.getAbsolutePath();
+        return imageFile;
+
+    }
+
 
 }
+
 
 
 
