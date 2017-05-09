@@ -1,6 +1,7 @@
 package com.yorku.mstew.camera2videoimage20;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.DngCreator;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
@@ -201,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
                 {
                     super.onCaptureCompleted(session, request, result);
+                    mCaptureResult=result;
                     process(result);
                 }
             };
@@ -651,7 +654,7 @@ private Size mImageSize;
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-                    mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
+                    mBackgroundHandler.post(new ImageSaver(mActivity, reader.acquireLatestImage(),mUiHandler,mCaptureResult,mCameraCharacteristics));
 
                 }
             };
@@ -660,12 +663,13 @@ private Size mImageSize;
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-                    mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
+                    mBackgroundHandler.post(new ImageSaver(mActivity, reader.acquireLatestImage(),mUiHandler,mCaptureResult,mCameraCharacteristics));
 
                 }
             };
-
-
+    private static Handler mUiHandler;
+    private static Uri mRequestingAppUri;
+    private Activity mActivity;
     private static final int STATE_PREVIEW=0;
     private static final int STATE_WAIT_LOCK=1;
     private int mCaptureState = STATE_PREVIEW;
@@ -724,7 +728,7 @@ private Size mImageSize;
         //there are two types of SimpleDateFormat and Date()
         String prepend = "RAW_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".dng", mRawGalleryFolder);
-        mImageFileName = imageFile.getAbsolutePath();
+        mRawImageFileName = imageFile.getAbsolutePath();
         return imageFile;
 
     }
@@ -739,6 +743,7 @@ private void startStillCaptureRequest(){
           CameraDevice.TEMPLATE_STILL_CAPTURE);
         }
         mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+        mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
         mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,mTotalRotation);
 
         CameraCaptureSession.CaptureCallback stillCaptureCallback=new
@@ -750,6 +755,7 @@ private void startStillCaptureRequest(){
 
                         try {
                             createImageFileName();
+                            createRawImageFileName();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -773,44 +779,89 @@ private void startStillCaptureRequest(){
     private class ImageSaver implements Runnable {
 
         private final Image mImage;
+        private final Activity mActivity;
+        private final Handler mHandler;
+        private final CaptureResult mCaptureResult;
+        private final CameraCharacteristics mCameraCharacteristics;
 
 
-        public ImageSaver(Image image){
+
+
+        public ImageSaver(Activity activity, Image image,Handler handler, CaptureResult captureResult,
+                          CameraCharacteristics cameraCharacteristics){
             mImage=image;
+
+            mActivity=activity;
+            mHandler=handler;
+            mCaptureResult=captureResult;
+            mCameraCharacteristics=cameraCharacteristics;
 
         }
 
+
+
         @Override
         public void run() {
-            ByteBuffer byteBuffer= mImage.getPlanes()[0].getBuffer();
-            byte[] bytes=new byte[byteBuffer.remaining()];
-            byteBuffer.get(bytes);
+            int format=mImage.getFormat();
+            switch(format){
+                case ImageFormat.JPEG:
+                    ByteBuffer byteBuffer= mImage.getPlanes()[0].getBuffer();
+                    byte[] bytes=new byte[byteBuffer.remaining()];
+                    byteBuffer.get(bytes);
 
-            FileOutputStream fileOutputStream=null;
-            try {
-                fileOutputStream=new FileOutputStream(mImageFileName);
-                fileOutputStream.write(bytes);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            finally {
-                mImage.close();
-
-                //notifying the media store
-                Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mImageFileName)));
-                sendBroadcast(mediaStoreUpdateIntent);
-
-                if(fileOutputStream != null){
+                    FileOutputStream fileOutputStream=null;
                     try {
-                        fileOutputStream.close();
+                        fileOutputStream=new FileOutputStream(mImageFileName);
+                        fileOutputStream.write(bytes);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
+                    finally {
+                        mImage.close();
+
+                        //notifying the media store
+                        Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mImageFileName)));
+                        sendBroadcast(mediaStoreUpdateIntent);
+
+                        if(fileOutputStream != null){
+                            try {
+                                fileOutputStream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    break;
+                case ImageFormat.RAW_SENSOR:
+                    DngCreator dngCreator=new DngCreator(mCameraCharacteristics,mCaptureResult);
+                    FileOutputStream rawFileOutputStream=null;
+                    try {
+                        rawFileOutputStream=new FileOutputStream(mRawImageFile);
+                        dngCreator.writeImage(rawFileOutputStream,mImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    finally{
+                        mImage.close();
+                        if(rawFileOutputStream != null){
+                            try {
+                                rawFileOutputStream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+
+
+                    break;
+
             }
+
 
 
         }
@@ -876,11 +927,14 @@ private boolean mIsTimelapse = false;
     }
 //Create an Activity member for the raw folder
     private File mRawGalleryFolder;
+    private String mRawImageFileName;
 
 //Create a file for the captured raw image
     private static File mRawImageFile;
 
 private CameraCharacteristics mCameraCharacteristics;
+//RAW Image Capture part2
+private CaptureResult mCaptureResult;
 
 
 }
