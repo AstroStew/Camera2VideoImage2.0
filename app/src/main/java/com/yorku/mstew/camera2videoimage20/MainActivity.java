@@ -14,6 +14,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -37,7 +38,10 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                             Integer afState=captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
+                            startStillCaptureRequest();
                             }
                             break;
                     }
@@ -597,7 +602,8 @@ private Size mImageSize;
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-
+                    mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
+                    
                 }
             };
 
@@ -647,7 +653,77 @@ private Size mImageSize;
 
     }
 
+private void startStillCaptureRequest(){
+    try {
+        mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
+          CameraDevice.TEMPLATE_STILL_CAPTURE);
+        mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+        mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,mTotalRotation);
 
+        CameraCaptureSession.CaptureCallback stillCaptureCallback=new
+                CameraCaptureSession.CaptureCallback(){
+                    @Override
+                    public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
+                        super.onCaptureStarted(session, request, timestamp, frameNumber);
+
+
+                        try {
+                            createImageFileName();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),stillCaptureCallback, null);
+
+
+    } catch (CameraAccessException e) {
+        e.printStackTrace();
+    }
+
+
+
+    }
+
+    private class ImageSaver implements Runnable {
+
+        private final Image mImage;
+
+
+        public ImageSaver(Image image){
+            mImage=image;
+
+        }
+
+        @Override
+        public void run() {
+            ByteBuffer byteBuffer= mImage.getPlanes()[0].getBuffer();
+            byte[] bytes=new byte[byteBuffer.remaining()];
+            byteBuffer.get(bytes);
+
+            FileOutputStream fileOutputStream=null;
+            try {
+                fileOutputStream=new FileOutputStream(mImageFileName);
+                fileOutputStream.write(bytes);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally {
+                mImage.close();
+                if(fileOutputStream != null){
+                    try {
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+
+        }
+    }
 }
 
 
