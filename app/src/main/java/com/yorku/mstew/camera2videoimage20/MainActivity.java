@@ -211,11 +211,25 @@ public class MainActivity extends AppCompatActivity {
         try {
             for (String cameraId : cameraManager.getCameraIdList()) {
                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+                if(!contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
+                        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)){
+                    continue;
+                }
                 if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT) {
                     continue;
                 }
                 StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                Size largestImageSize=Collections.max(
+                        Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),new CompareSizeByArea()
+                );
+                Size largestRawImageSize=Collections.max(
+                        Arrays.asList(map.getOutputSizes(ImageFormat.RAW_SENSOR)),new CompareSizeByArea()
+                );
+                mImageReader=ImageReader.newInstance(largestImageSize.getWidth(),largestImageSize.getHeight(),ImageFormat.RAW_SENSOR,1);
+                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
 
+                mRawImageReader=ImageReader.newInstance(largestRawImageSize.getWidth(),largestRawImageSize.getHeight(),ImageFormat.JPEG,1);
+                mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener,mBackgroundHandler);
 
                 int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
                 mTotalRotation = sensorDeviceRotation(cameraCharacteristics, deviceOrientation);
@@ -233,8 +247,10 @@ public class MainActivity extends AppCompatActivity {
                 mImageSize=chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
                 mImageReader=ImageReader.newInstance(mImageSize.getWidth(),mImageSize.getHeight(),ImageFormat.JPEG,1);
 
+
                 mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
                 mCameraId = cameraId;
+                mCameraCharacteristics=cameraCharacteristics;
                 return;
             }
         } catch (CameraAccessException e) {
@@ -450,7 +466,9 @@ public class MainActivity extends AppCompatActivity {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
 
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface,mImageReader.getSurface()),
+
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface,mImageReader.getSurface(),
+                        mRawImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
@@ -637,6 +655,15 @@ private Size mImageSize;
 
                 }
             };
+    private ImageReader mRawImageReader;
+    private final ImageReader.OnImageAvailableListener mOnRawImageAvailableListener =
+            new ImageReader.OnImageAvailableListener(){
+                @Override
+                public void onImageAvailable(ImageReader reader){
+                    mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
+
+                }
+            };
 
 
     private static final int STATE_PREVIEW=0;
@@ -668,27 +695,39 @@ private Size mImageSize;
 
     private void createImageFolder() {
         File imageFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        mImageFolder = new File(imageFile , "Camera2_Video_Image");
+        mImageFolder = new File(imageFile , "Camera2_Video_Image_JPEG");
+        mRawGalleryFolder=new File(imageFile,"Camera2_Video_Image_RAW" );
         //check to see if the folder is already created
         if (!mImageFolder.exists()) {
             mImageFolder.mkdirs();
 
+        }
+        if (!mRawGalleryFolder.exists()){
+            mRawGalleryFolder.mkdirs();
         }
 
     }
 
 //now we have to call the videoFolder onCreate
 
-    private File createImageFileName() throws IOException {
+     File createImageFileName() throws IOException {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //there are two types of SimpleDateFormat and Date()
-        String prepend = "IMAGE_" + timestamp + "_";
+        String prepend = "JPEG_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".jpg", mImageFolder);
         mImageFileName = imageFile.getAbsolutePath();
         return imageFile;
 
     }
+    File createRawImageFileName() throws IOException {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        //there are two types of SimpleDateFormat and Date()
+        String prepend = "RAW_" + timestamp + "_";
+        File imageFile = File.createTempFile(prepend, ".dng", mRawGalleryFolder);
+        mImageFileName = imageFile.getAbsolutePath();
+        return imageFile;
 
+    }
 private void startStillCaptureRequest(){
     try {
         if(mIsRecording){
@@ -821,7 +860,27 @@ private boolean mIsTimelapse = false;
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
-//Updating MediaStore Database
+//Updating MediaStore Database done
+//Raw image Capture Part 1
+    private static Boolean contains(int[] modes, int mode) {
+        if(modes == null){
+            return false;
+
+        }
+        for(int i:modes){
+            if(i== mode ){
+                return  true;
+            }
+        }
+        return false;
+    }
+//Create an Activity member for the raw folder
+    private File mRawGalleryFolder;
+
+//Create a file for the captured raw image
+    private static File mRawImageFile;
+
+private CameraCharacteristics mCameraCharacteristics;
 
 
 }
