@@ -14,6 +14,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -252,7 +253,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "Video app needs access to camera", Toast.LENGTH_SHORT).show();
                     }
 
-                    requestPermissions(new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION_RESULT);
+                    requestPermissions(new String[]{android.Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
+                    }, REQUEST_CAMERA_PERMISSION_RESULT);
                 }
             } else {
                 cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
@@ -367,20 +369,35 @@ public class MainActivity extends AppCompatActivity {
         mRecordImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mIsRecording) {
+                if (mIsRecording || mIsTimelapse) {
                     mChronometer.stop();
                     mChronometer.setVisibility(View.INVISIBLE);
                     mIsRecording = false;
+                    mIsTimelapse=false;
                     mRecordImageButton.setImageResource(R.mipmap.vidpiconline);
                     mMediaRecorder.stop();
                     mMediaRecorder.reset();
                     startPreview();
                 } else {
+                    mIsRecording = true;
+
+                    //new
+                    mRecordImageButton.setImageResource(R.mipmap.vidpicbusy);
                     checkWriteStoragePermission();
 
                 }
             }
 
+        });
+        mRecordImageButton.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v){
+                mIsTimelapse=true;
+                mRecordImageButton.setImageResource(R.mipmap.btn_timelapse);
+                checkWriteStoragePermission();
+                return true;
+
+            }
         });
     }
 
@@ -392,6 +409,11 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(getApplicationContext(), "App will not run without camera services", Toast.LENGTH_SHORT).show();
             }
+
+                if (grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(), "App will not run without audio services", Toast.LENGTH_SHORT).show();
+
+                }
         }
         if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -495,8 +517,8 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Toast.makeText(this, "Recording Video", Toast.LENGTH_SHORT).show();
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                mIsRecording = true;
-                mRecordImageButton.setImageResource(R.mipmap.vidpicbusy);
+
+
                 try {
                     createVideoFileName();
                 } catch (IOException e) {
@@ -508,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                 mChronometer.setVisibility(View.VISIBLE);
                 mChronometer.start();
             } else {
-                Toast.makeText(this, "Permission to write is not granted", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Permission to write is not granted", Toast.LENGTH_SHORT).show();
                 if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Toast.makeText(this, "app needs to be able to save videos", Toast.LENGTH_SHORT).show();
 
@@ -517,8 +539,6 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT);
             }
         } else {
-            mIsRecording = true;
-            mRecordImageButton.setImageResource(R.mipmap.vidpicbusy);
 
             try {
                 createVideoFileName();
@@ -540,14 +560,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupMediaRecorder() throws IOException {
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mMediaRecorder.setOutputFile(mVideoFileName);
         mMediaRecorder.setVideoEncodingBitRate(8000000);
-        mMediaRecorder.setVideoFrameRate(60);
+        mMediaRecorder.setVideoFrameRate(30);
         mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
@@ -556,7 +576,11 @@ public class MainActivity extends AppCompatActivity {
     //Capturing and Saving Videos
     private void startRecord() {
         try {
-            setupMediaRecorder();
+            if(mIsRecording){
+                setupMediaRecorder();
+            }else if(mIsTimelapse){
+                setupTimelapse();
+            }
             SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
             surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
             Surface previewSurface = new Surface(surfaceTexture);
@@ -768,9 +792,22 @@ private CameraCaptureSession.CaptureCallback mRecordCaptureCallback = new
                     process(result);
                 }
             };
+            //Recording Audio pt 19
 
 
 
+//Part 20 time-lapse video
+    //long press on record button
+private boolean mIsTimelapse = false;
+    private void setupTimelapse() throws IOException {
+        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_TIME_LAPSE_HIGH));
+        mMediaRecorder.setOutputFile(mVideoFileName);
+        //Frequency of how fast
+        mMediaRecorder.setCaptureRate(2);
+        mMediaRecorder.setOrientationHint(mTotalRotation);
+        mMediaRecorder.prepare();
+    }
 
 
 }
