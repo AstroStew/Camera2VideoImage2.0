@@ -196,9 +196,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result)
 
 
-
-
-                //comment not sure about that curve thing below
                 {
                     super.onCaptureCompleted(session, request, result);
                     process(result);
@@ -354,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         createVideoFolder();
         createImageFolder();
-        //mMediaRecorder=new MediaRecorder();
+        mMediaRecorder=new MediaRecorder();
         //this is new
         mChronometer=(Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
@@ -496,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
     //Now we have to make this marshmellow compatable
     private void checkWriteStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Toast.makeText(this, "M version", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Recording Video", Toast.LENGTH_SHORT).show();
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 mIsRecording = true;
                 mRecordImageButton.setImageResource(R.mipmap.vidpicbusy);
@@ -568,14 +565,17 @@ public class MainActivity extends AppCompatActivity {
             mCaptureRequestBuilder.addTarget(previewSurface);
             mCaptureRequestBuilder.addTarget(recordSurface);
 
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recordSurface),
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recordSurface,mImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
 
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
+
+                            mRecordCaptureSession=session;
+
                             try {
-                                session.setRepeatingRequest(mCaptureRequestBuilder.build(), null, null);
+                                mRecordCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(), null, null);
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
                             }
@@ -603,7 +603,7 @@ private Size mImageSize;
                 @Override
                 public void onImageAvailable(ImageReader reader){
                     mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
-                    
+
                 }
             };
 
@@ -616,7 +616,12 @@ private Size mImageSize;
 
         mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CaptureRequest.CONTROL_AF_TRIGGER_START);
         try {
-            mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,mBackgroundHandler);
+            if(mIsRecording)
+            {
+                mRecordCaptureSession.capture(mCaptureRequestBuilder.build(),mRecordCaptureCallback,mBackgroundHandler);
+
+            }else{
+            mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,mBackgroundHandler);}
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -655,8 +660,14 @@ private Size mImageSize;
 
 private void startStillCaptureRequest(){
     try {
+        if(mIsRecording){
+            mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
+                    CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
+
+        }else{
         mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
           CameraDevice.TEMPLATE_STILL_CAPTURE);
+        }
         mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
         mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,mTotalRotation);
 
@@ -674,16 +685,20 @@ private void startStillCaptureRequest(){
                         }
                     }
                 };
-                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),stillCaptureCallback, null);
 
+                if(mIsRecording) {
+                    mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
+                }else{
+                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
+
+
+                }
 
     } catch (CameraAccessException e) {
         e.printStackTrace();
     }
 
-
-
-    }
+}
 
     private class ImageSaver implements Runnable {
 
@@ -724,6 +739,40 @@ private void startStillCaptureRequest(){
 
         }
     }
+//Part 18. Capturing a photo while recording
+private CameraCaptureSession mRecordCaptureSession;
+private CameraCaptureSession.CaptureCallback mRecordCaptureCallback = new
+            CameraCaptureSession.CaptureCallback() {
+
+                private void process(CaptureResult captureResult){
+                    switch (mCaptureState){
+                        case STATE_PREVIEW:
+                            //Do nothing
+                            break;
+                        case STATE_WAIT_LOCK:
+                            mCaptureState=STATE_PREVIEW;
+                            Integer afState=captureResult.get(CaptureResult.CONTROL_AF_STATE);
+                            if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
+                                Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
+                                startStillCaptureRequest();
+                            }
+                            break;
+                    }
+
+                }
+                @Override
+                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result)
+
+                {
+                    super.onCaptureCompleted(session, request, result);
+                    process(result);
+                }
+            };
+
+
+
+
+
 }
 
 
