@@ -2,6 +2,7 @@ package com.yorku.mstew.camera2videoimage20;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -18,6 +19,7 @@ import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -377,6 +379,11 @@ public class MainActivity extends AppCompatActivity {
                     mRecordImageButton.setImageResource(R.mipmap.vidpiconline);
                     mMediaRecorder.stop();
                     mMediaRecorder.reset();
+                    Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mVideoFileName)));
+                    sendBroadcast(mediaStoreUpdateIntent);
+
+
                     startPreview();
                 } else {
                     mIsRecording = true;
@@ -751,6 +758,12 @@ private void startStillCaptureRequest(){
             }
             finally {
                 mImage.close();
+
+                //notifying the media store
+                Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mImageFileName)));
+                sendBroadcast(mediaStoreUpdateIntent);
+
                 if(fileOutputStream != null){
                     try {
                         fileOutputStream.close();
@@ -808,6 +821,7 @@ private boolean mIsTimelapse = false;
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
+//Updating MediaStore Database
 
 
 }
