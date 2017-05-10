@@ -222,17 +222,17 @@ public class MainActivity extends AppCompatActivity {
                     continue;
                 }
                 StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                Size largestImageSize=Collections.max(
+                /*Size largestImageSize=Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),new CompareSizeByArea()
                 );
                 Size largestRawImageSize=Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.RAW_SENSOR)),new CompareSizeByArea()
                 );
-                mImageReader=ImageReader.newInstance(largestImageSize.getWidth(),largestImageSize.getHeight(),ImageFormat.RAW_SENSOR,1);
+                mImageReader=ImageReader.newInstance(largestImageSize.getWidth(),largestImageSize.getHeight(),ImageFormat.JPEG,1);
                 mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
-
-                mRawImageReader=ImageReader.newInstance(largestRawImageSize.getWidth(),largestRawImageSize.getHeight(),ImageFormat.JPEG,1);
+                mRawImageReader=ImageReader.newInstance(largestRawImageSize.getWidth(),largestRawImageSize.getHeight(),ImageFormat.RAW_SENSOR,1);
                 mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener,mBackgroundHandler);
+                */
 
                 int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
                 mTotalRotation = sensorDeviceRotation(cameraCharacteristics, deviceOrientation);
@@ -246,12 +246,17 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
+
                 mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
+
+
                 mImageSize=chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
                 mImageReader=ImageReader.newInstance(mImageSize.getWidth(),mImageSize.getHeight(),ImageFormat.JPEG,1);
-
-
                 mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
+                mRawImageSize=chooseOptimalSize(map.getOutputSizes(ImageFormat.RAW_SENSOR),rotatedWidth, rotatedHeight);
+                mRawImageReader=ImageReader.newInstance(mRawImageSize.getWidth(),mRawImageSize.getHeight(),ImageFormat.RAW_SENSOR,1);
+                mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener,mBackgroundHandler);
+
                 mCameraId = cameraId;
                 mCameraCharacteristics=cameraCharacteristics;
                 return;
@@ -648,13 +653,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private Size mImageSize;
+    private Size mRawImageSize;
 
     private ImageReader mImageReader;
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener =
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-                    mBackgroundHandler.post(new ImageSaver(mActivity, reader.acquireLatestImage(),mUiHandler,mCaptureResult,mCameraCharacteristics));
+                    mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult,mCameraCharacteristics));
 
                 }
             };
@@ -663,13 +669,12 @@ public class MainActivity extends AppCompatActivity {
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-                    mBackgroundHandler.post(new ImageSaver(mActivity, reader.acquireLatestImage(),mUiHandler,mCaptureResult,mCameraCharacteristics));
+                    mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult,mCameraCharacteristics));
 
                 }
             };
-    private static Handler mUiHandler;
-    private static Uri mRequestingAppUri;
-    private Activity mActivity;
+
+
     private static final int STATE_PREVIEW=0;
     private static final int STATE_WAIT_LOCK=1;
     private int mCaptureState = STATE_PREVIEW;
@@ -779,20 +784,20 @@ public class MainActivity extends AppCompatActivity {
     private class ImageSaver implements Runnable {
 
         private final Image mImage;
-        private final Activity mActivity;
-        private final Handler mHandler;
+        //private final Activity mActivity;
+        //private final Handler mHandler;
         private final CaptureResult mCaptureResult;
         private final CameraCharacteristics mCameraCharacteristics;
 
 
 
 
-        public ImageSaver(Activity activity, Image image,Handler handler, CaptureResult captureResult,
+        public ImageSaver(/*Activity activity,*/ Image image,/*Handler handler,*/ CaptureResult captureResult,
                           CameraCharacteristics cameraCharacteristics){
             mImage=image;
 
-            mActivity=activity;
-            mHandler=handler;
+            //mActivity=activity;
+            //mHandler=handler;
             mCaptureResult=captureResult;
             mCameraCharacteristics=cameraCharacteristics;
 
@@ -893,6 +898,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     super.onCaptureCompleted(session, request, result);
                     process(result);
+                    //unlockFocus();
                 }
             };
     //Recording Audio pt 19
@@ -939,8 +945,3 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
-
-
-
-
-
