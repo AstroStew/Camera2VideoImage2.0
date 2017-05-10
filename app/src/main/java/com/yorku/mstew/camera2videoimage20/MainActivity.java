@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                             Integer afState=captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
-                            startStillCaptureRequest();
+                                startStillCaptureRequest();
                             }
                             break;
                     }
@@ -436,10 +436,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "App will not run without camera services", Toast.LENGTH_SHORT).show();
             }
 
-                if (grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getApplicationContext(), "App will not run without audio services", Toast.LENGTH_SHORT).show();
+            if (grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getApplicationContext(), "App will not run without audio services", Toast.LENGTH_SHORT).show();
 
-                }
+            }
         }
         if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_RESULT) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -471,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface,mImageReader.getSurface(),
-                        mRawImageReader.getSurface()),
+                    mRawImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
@@ -643,11 +643,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     //Adding a Chronometer timer for recording
-private Chronometer mChronometer;
+    private Chronometer mChronometer;
 //now lets set up for still camera capture
 
 
-private Size mImageSize;
+    private Size mImageSize;
 
     private ImageReader mImageReader;
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener =
@@ -683,7 +683,7 @@ private Size mImageSize;
                 mRecordCaptureSession.capture(mCaptureRequestBuilder.build(),mRecordCaptureCallback,mBackgroundHandler);
 
             }else{
-            mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,mBackgroundHandler);}
+                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,mBackgroundHandler);}
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -714,7 +714,7 @@ private Size mImageSize;
 
 //now we have to call the videoFolder onCreate
 
-     File createImageFileName() throws IOException {
+    File createImageFileName() throws IOException {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //there are two types of SimpleDateFormat and Date()
         String prepend = "JPEG_" + timestamp + "_";
@@ -732,49 +732,49 @@ private Size mImageSize;
         return imageFile;
 
     }
-private void startStillCaptureRequest(){
-    try {
-        if(mIsRecording){
-            mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
-                    CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
+    private void startStillCaptureRequest(){
+        try {
+            if(mIsRecording){
+                mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
+                        CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
 
-        }else{
-        mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
-          CameraDevice.TEMPLATE_STILL_CAPTURE);
-        }
-        mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
-        mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
-        mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,mTotalRotation);
+            }else{
+                mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
+                        CameraDevice.TEMPLATE_STILL_CAPTURE);
+            }
+            mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+            mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
+            mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,mTotalRotation);
 
-        CameraCaptureSession.CaptureCallback stillCaptureCallback=new
-                CameraCaptureSession.CaptureCallback(){
-                    @Override
-                    public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
-                        super.onCaptureStarted(session, request, timestamp, frameNumber);
+            CameraCaptureSession.CaptureCallback stillCaptureCallback=new
+                    CameraCaptureSession.CaptureCallback(){
+                        @Override
+                        public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
+                            super.onCaptureStarted(session, request, timestamp, frameNumber);
 
 
-                        try {
-                            createImageFileName();
-                            createRawImageFileName();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            try {
+                                createImageFileName();
+                                createRawImageFileName();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                };
+                    };
 
-                if(mIsRecording) {
-                    mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
-                }else{
-                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
+            if(mIsRecording) {
+                mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
+            }else{
+                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
 
 
-                }
+            }
 
-    } catch (CameraAccessException e) {
-        e.printStackTrace();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+
     }
-
-}
 
     private class ImageSaver implements Runnable {
 
@@ -811,7 +811,7 @@ private void startStillCaptureRequest(){
 
                     FileOutputStream fileOutputStream=null;
                     try {
-                        fileOutputStream=new FileOutputStream(mImageFileName);
+                        fileOutputStream=new FileOutputStream(mImageFile);
                         fileOutputStream.write(bytes);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -866,9 +866,9 @@ private void startStillCaptureRequest(){
 
         }
     }
-//Part 18. Capturing a photo while recording
-private CameraCaptureSession mRecordCaptureSession;
-private CameraCaptureSession.CaptureCallback mRecordCaptureCallback = new
+    //Part 18. Capturing a photo while recording
+    private CameraCaptureSession mRecordCaptureSession;
+    private CameraCaptureSession.CaptureCallback mRecordCaptureCallback = new
             CameraCaptureSession.CaptureCallback() {
 
                 private void process(CaptureResult captureResult){
@@ -895,13 +895,13 @@ private CameraCaptureSession.CaptureCallback mRecordCaptureCallback = new
                     process(result);
                 }
             };
-            //Recording Audio pt 19
+    //Recording Audio pt 19
 
 
 
-//Part 20 time-lapse video
+    //Part 20 time-lapse video
     //long press on record button
-private boolean mIsTimelapse = false;
+    private boolean mIsTimelapse = false;
     private void setupTimelapse() throws IOException {
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_TIME_LAPSE_HIGH));
@@ -911,7 +911,7 @@ private boolean mIsTimelapse = false;
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
-//Updating MediaStore Database done
+    //Updating MediaStore Database done
 //Raw image Capture Part 1
     private static Boolean contains(int[] modes, int mode) {
         if(modes == null){
@@ -925,20 +925,20 @@ private boolean mIsTimelapse = false;
         }
         return false;
     }
-//Create an Activity member for the raw folder
+    //Create an Activity member for the raw folder
     private File mRawGalleryFolder;
     private String mRawImageFileName;
 
-//Create a file for the captured raw image
+    //Create a file for the captured raw image
     private static File mRawImageFile;
+    private static File mImageFile;
 
-private CameraCharacteristics mCameraCharacteristics;
-//RAW Image Capture part2
-private CaptureResult mCaptureResult;
+    private CameraCharacteristics mCameraCharacteristics;
+    //RAW Image Capture part2
+    private CaptureResult mCaptureResult;
 
 
 }
-
 
 
 
