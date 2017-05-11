@@ -41,6 +41,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.yorku.mstew.camera2videoimage.R;
@@ -381,7 +382,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     }
 
     //onCreate was here since the start
+    Spinner mDropDownButton;
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera2_video_image);
@@ -395,6 +398,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mChronometer=(Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
         mStillImageButton=(ImageButton)findViewById(R.id.CameraButton);
+        mDropDownButton=(Spinner)findViewById(R.id.spinner);
         mStillImageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){

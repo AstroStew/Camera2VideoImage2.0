@@ -2,4 +2,13 @@
     <string name="app_name">Camera2 Video Image</string>
     <string name="Video_Button">Video Button</string>
     <string name="Camera_Button">Camera Button</string>
+
+
+    <string-array name="Options_Names">
+        <item>ClickHereForMoreOptions</item>
+        <item>ISOCHANGE</item>
+        <item>APERATURECHANGE</item>
+        <item>FOCUS</item>
+    </string-array>
+
 </resources>
