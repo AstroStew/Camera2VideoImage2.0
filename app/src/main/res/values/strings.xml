@@ -4,11 +4,6 @@
     <string name="Camera_Button">Camera Button</string>
 
 
-    <string-array name="Options_Names">
-        <item>ClickHereForMoreOptions</item>
-        <item>ISOCHANGE</item>
-        <item>APERATURECHANGE</item>
-        <item>FOCUS</item>
-    </string-array>
+
 
 </resources>

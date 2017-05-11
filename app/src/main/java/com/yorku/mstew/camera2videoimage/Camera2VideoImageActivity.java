@@ -34,13 +34,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.util.Size;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -386,11 +391,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
   //String isostring=new String("ISOCHANGE");
 
     //onCreate was here since the start
-    Spinner mDropDownButton;
-    @Override
 
+    Button mSettingsbutton;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_camera2_video_image);
 
         //Folders for Images and Videos
@@ -402,42 +409,34 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mChronometer=(Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
         mStillImageButton=(ImageButton)findViewById(R.id.CameraButton);
-        mDropDownButton=(Spinner)findViewById(R.id.spinner);
-        mDropDownButton.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSettingsbutton= (Button) findViewById(R.id.button);
+        mSettingsbutton.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                /*String SelectedOptionString=parent.getSelectedItem().toString();
-                //Toast.makeText(getApplicationContext(), SelectedOptionString , Toast.LENGTH_SHORT).show();
-                if(SelectedOptionString.equals(isostring)){
-                    Toast.makeText(getApplicationContext(), "it works" , Toast.LENGTH_SHORT).show();
-                }*/
-                //We can also use parent.getItemAtPosition(position);
-                parent.getItemAtPosition(position);
-                switch (position){
-                    case 0:
-                        break;
-                    case 1:
-                        Toast.makeText(getApplicationContext(), "IsoChange Selected", Toast.LENGTH_SHORT).show();
-                        break;
-                        //Were now going to call a method that launches and pop-up menu for ISO
-                        
-                    case 2:
-                        Toast.makeText(getApplicationContext(), "Aperaturechange Selected", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 3:
-                        Toast.makeText(getApplicationContext(), "Focus Selected", Toast.LENGTH_SHORT).show();
-                        break;
-                }
+            public void onClick(View view) {
+                //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+                final PopupMenu popupMenu=new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+                    @Override
+                        public boolean onMenuItemClick(MenuItem item){
+                        int position=item.getItemId();
+                        switch (position) {
+                            case R.id.ChangeISO:
+                                Toast.makeText(getApplicationContext(), "okay1" , Toast.LENGTH_SHORT).show();
+                                break;
 
 
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+                            case 2:
+                                break;
+                        }
+                    return true;
+                    }
+                });
+            popupMenu.show();
             }
         });
+
         mStillImageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -1013,6 +1012,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     private boolean mIsWritingImage=false;
     private boolean mIsWritingRawImage=false;
+//Now Were going to create a pop-up menu
 
 
 }
