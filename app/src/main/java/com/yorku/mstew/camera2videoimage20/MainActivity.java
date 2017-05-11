@@ -669,7 +669,15 @@ public class MainActivity extends AppCompatActivity {
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-                    mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult,mCameraCharacteristics));
+                    if(!mIsWritingImage){
+                        mIsWritingImage=true;
+                        Image image=reader.acquireLatestImage();
+                        if(image != null){
+                            mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult,mCameraCharacteristics));
+
+
+                        }
+                    }
 
                 }
             };
@@ -794,22 +802,13 @@ public class MainActivity extends AppCompatActivity {
     private class ImageSaver implements Runnable {
 
         private final Image mImage;
-        //private final Activity mActivity;
-        //private final Handler mHandler;
         private final CaptureResult mCaptureResult;
         private final CameraCharacteristics mCameraCharacteristics;
 
-
-
-
-        public ImageSaver(/*Activity activity,*/ Image image,/*Handler handler,*/ CaptureResult captureResult,
-                          CameraCharacteristics cameraCharacteristics){
-            mImage=image;
-
-            //mActivity=activity;
-            //mHandler=handler;
-            mCaptureResult=captureResult;
-            mCameraCharacteristics=cameraCharacteristics;
+        private ImageSaver(Image mImage, CaptureResult mCaptureResult, CameraCharacteristics mCameraCharacteristics) {
+            this.mImage = mImage;
+            this.mCaptureResult = mCaptureResult;
+            this.mCameraCharacteristics = mCameraCharacteristics;
 
         }
 
@@ -826,7 +825,7 @@ public class MainActivity extends AppCompatActivity {
 
                     FileOutputStream fileOutputStream=null;
                     try {
-                        fileOutputStream=new FileOutputStream(mImageFile);
+                        fileOutputStream=new FileOutputStream(mImageFileName);
                         fileOutputStream.write(bytes);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -837,9 +836,10 @@ public class MainActivity extends AppCompatActivity {
                         mImage.close();
 
                         //notifying the media store
-                        Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        /*Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                         mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mImageFileName)));
                         sendBroadcast(mediaStoreUpdateIntent);
+                        */
 
                         if(fileOutputStream != null){
                             try {
@@ -847,7 +847,7 @@ public class MainActivity extends AppCompatActivity {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        }
+                        }mIsWritingImage=false;
                     }
 
                     break;
@@ -954,6 +954,8 @@ public class MainActivity extends AppCompatActivity {
     private CameraCharacteristics mCameraCharacteristics;
     //RAW Image Capture part2
     private CaptureResult mCaptureResult;
+
+    private boolean mIsWritingImage=false;
 
 
 }
