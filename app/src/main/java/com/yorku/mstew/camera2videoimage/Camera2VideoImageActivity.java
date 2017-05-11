@@ -27,6 +27,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -39,6 +40,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -381,6 +383,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     }
 
+  //String isostring=new String("ISOCHANGE");
+
     //onCreate was here since the start
     Spinner mDropDownButton;
     @Override
@@ -399,6 +403,41 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mTextureView = (TextureView) findViewById(R.id.textureView);
         mStillImageButton=(ImageButton)findViewById(R.id.CameraButton);
         mDropDownButton=(Spinner)findViewById(R.id.spinner);
+        mDropDownButton.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                /*String SelectedOptionString=parent.getSelectedItem().toString();
+                //Toast.makeText(getApplicationContext(), SelectedOptionString , Toast.LENGTH_SHORT).show();
+                if(SelectedOptionString.equals(isostring)){
+                    Toast.makeText(getApplicationContext(), "it works" , Toast.LENGTH_SHORT).show();
+                }*/
+                //We can also use parent.getItemAtPosition(position);
+                parent.getItemAtPosition(position);
+                switch (position){
+                    case 0:
+                        break;
+                    case 1:
+                        Toast.makeText(getApplicationContext(), "IsoChange Selected", Toast.LENGTH_SHORT).show();
+                        break;
+                        //Were now going to call a method that launches and pop-up menu for ISO
+                        
+                    case 2:
+                        Toast.makeText(getApplicationContext(), "Aperaturechange Selected", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 3:
+                        Toast.makeText(getApplicationContext(), "Focus Selected", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         mStillImageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
