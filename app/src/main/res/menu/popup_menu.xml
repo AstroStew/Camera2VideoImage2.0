@@ -3,9 +3,51 @@
 
     <item
     android:id="@+id/ChangeISO"
-    android:title="ChangeISO"/>
-    <item
-        android:id="@+id/Changestuff"
-        android:title="Two"/>
+    android:title="ChangeISO">
+        <menu>
+            <item
+        android:id="@+id/ISO100"
+        android:title="ISO100" />
+            <item
+        android:id="@+id/ISO200"
+        android:title="ISO200" />
+            <item
+        android:id="@+id/ISO400"
+        android:title="ISO400" />
+            <item
+        android:id="@+id/ISO800"
+        android:title="ISO800" />
+            <item
+        android:id="@+id/ISO1600"
+        android:title="ISO1600" />
+
+        </menu>
+
+
+            <item
+                android:id="@+id/uselesscode"
+                android:title="UselessCode" />
+                />
+            <item
+                android:id="@+id/ChangeShutterSpeed"
+                android:title="ChangeShutterSpeed"
+                />
+
+            <item
+        android:id="@+id/ChangeWhiteBalance"
+        android:title="ChangeWhiteBalance" />
+
+
+    </item>
+
+
+
+
+
+
+
+
+
+
 
 </menu>

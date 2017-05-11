@@ -69,7 +69,7 @@ import java.util.List;
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
 
 
     //firstly we want to make the window sticky. We acheive this by making system flags
@@ -86,7 +86,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }//checked
+        }// /*checked
     }
 
     //This is our attribute section.Note:this list will increase as we progress through the tutorial. We will create all members in this section:
@@ -127,13 +127,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     };
 
-    //checked
+    // /*checked
     @Override
     protected void onResume() {
         super.onResume();
         startBackgroundThread();
         if (mTextureView.isAvailable()) {
-            //Toast.makeText(this, "we done", Toast.LENGTH_LONG).show();
             setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
             connectCamera();
         } else {
@@ -147,7 +146,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private CameraDevice.StateCallback mCameraDeviceStateCallback = new CameraDevice.StateCallback() {
 
         @Override
-        public void onOpened(CameraDevice camera) {
+        public void onOpened(@NonNull CameraDevice camera) {
             mCameraDevice = camera;
             //Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
 
@@ -160,9 +159,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                 startRecord();
                 mMediaRecorder.start();
-                mChronometer.setBase(SystemClock.elapsedRealtime());
-                mChronometer.setVisibility(View.VISIBLE);
-                mChronometer.start();
+
+                try {
+                    mChronometer.setBase(SystemClock.elapsedRealtime());
+                    mChronometer.setVisibility(View.VISIBLE);
+                    mChronometer.start();
+                    //new
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             } else {
                 startPreview();
             }
@@ -423,11 +428,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         int position=item.getItemId();
                         switch (position) {
                             case R.id.ChangeISO:
-                                Toast.makeText(getApplicationContext(), "okay1" , Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "ChangeISO" , Toast.LENGTH_SHORT).show();
+
+
+                            case R.id.ChangeShutterSpeed:
+                                Toast.makeText(getApplicationContext(), "ChangeShutterSpeed" , Toast.LENGTH_SHORT).show();
                                 break;
 
-
-                            case 2:
+                            case R.id.ChangeWhiteBalance:
+                                Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     return true;
