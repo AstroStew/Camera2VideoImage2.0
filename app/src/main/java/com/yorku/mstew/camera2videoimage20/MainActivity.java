@@ -686,8 +686,14 @@ public class MainActivity extends AppCompatActivity {
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-                    mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult,mCameraCharacteristics));
+                    if(!mIsWritingImage) {
+                        Image image = reader.acquireLatestImage();
+                        if(image != null) {
+                            mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult, mCameraCharacteristics));
 
+
+                        }
+                    }
                 }
             };
 
@@ -722,7 +728,7 @@ public class MainActivity extends AppCompatActivity {
     private void createImageFolder() {
         File imageFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         mImageFolder = new File(imageFile , "Camera2_Video_Image_JPEG");
-        mRawGalleryFolder=new File(imageFile,"Camera2_Video_Image_RAW" );
+        mRawGalleryFolder=mImageFolder;
         //check to see if the folder is already created
         if (!mImageFolder.exists()) {
             mImageFolder.mkdirs();
@@ -736,7 +742,7 @@ public class MainActivity extends AppCompatActivity {
 
 //now we have to call the videoFolder onCreate
 
-    File createImageFileName() throws IOException {
+    private File createImageFileName() throws IOException {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //there are two types of SimpleDateFormat and Date()
         String prepend = "JPEG_" + timestamp + "_";
@@ -745,12 +751,12 @@ public class MainActivity extends AppCompatActivity {
         return imageFile;
 
     }
-    File createRawImageFileName() throws IOException {
+    private File createRawImageFileName() throws IOException {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //there are two types of SimpleDateFormat and Date()
         String prepend = "RAW_" + timestamp + "_";
         File imageFile = File.createTempFile(prepend, ".dng", mRawGalleryFolder);
-        mRawImageFileName = imageFile.getAbsolutePath();
+        mRawFileName = imageFile.getAbsolutePath();
         return imageFile;
 
     }
@@ -855,7 +861,7 @@ public class MainActivity extends AppCompatActivity {
                     DngCreator dngCreator=new DngCreator(mCameraCharacteristics,mCaptureResult);
                     FileOutputStream rawFileOutputStream=null;
                     try {
-                        rawFileOutputStream=new FileOutputStream(mRawImageFile);
+                        rawFileOutputStream=new FileOutputStream(mRawFileName);
                         dngCreator.writeImage(rawFileOutputStream,mImage);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -945,7 +951,7 @@ public class MainActivity extends AppCompatActivity {
     }
     //Create an Activity member for the raw folder
     private File mRawGalleryFolder;
-    private String mRawImageFileName;
+    private String mRawFileName;
 
     //Create a file for the captured raw image
     private static File mRawImageFile;
