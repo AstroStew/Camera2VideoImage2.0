@@ -557,17 +557,19 @@ public class MainActivity extends AppCompatActivity {
     //Now we have to make this marshmellow compatable
     private void checkWriteStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Toast.makeText(this, "Recording Video", Toast.LENGTH_SHORT).show();
+
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
 
                 try {
                     createVideoFileName();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                startRecord();
+
                 mMediaRecorder.start();
+                Toast.makeText(this, "Recording Video", Toast.LENGTH_SHORT).show();
                 mChronometer.setBase(SystemClock.elapsedRealtime());
                 mChronometer.setVisibility(View.VISIBLE);
                 mChronometer.start();
@@ -673,7 +675,7 @@ public class MainActivity extends AppCompatActivity {
                         mIsWritingImage=true;
                         Image image=reader.acquireLatestImage();
                         if(image != null){
-                            mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult,mCameraCharacteristics));
+                            mBackgroundHandler.post(new ImageSaver(image,mCaptureResult,mCameraCharacteristics));
 
 
                         }
@@ -686,10 +688,10 @@ public class MainActivity extends AppCompatActivity {
             new ImageReader.OnImageAvailableListener(){
                 @Override
                 public void onImageAvailable(ImageReader reader){
-                    if(!mIsWritingImage) {
+                    if(!mIsWritingRawImage) {
                         Image image = reader.acquireLatestImage();
                         if(image != null) {
-                            mBackgroundHandler.post(new ImageSaver(/*mActivity,*/ reader.acquireLatestImage(),/*mUiHandler,*/mCaptureResult, mCameraCharacteristics));
+                            mBackgroundHandler.post(new ImageSaver(image,mCaptureResult, mCameraCharacteristics));
 
 
                         }
@@ -833,6 +835,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         fileOutputStream=new FileOutputStream(mImageFileName);
                         fileOutputStream.write(bytes);
+                        Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -862,9 +865,11 @@ public class MainActivity extends AppCompatActivity {
                     FileOutputStream rawFileOutputStream=null;
                     try {
                         rawFileOutputStream=new FileOutputStream(mRawFileName);
-                        dngCreator.writeImage(rawFileOutputStream,mImage);
+                        Toast.makeText(getApplicationContext(), "RAW saved", Toast.LENGTH_SHORT).show();dngCreator.writeImage(rawFileOutputStream,mImage);
+
                     } catch (IOException e) {
                         e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Error in saving RAW", Toast.LENGTH_SHORT).show();
                     }
                     finally{
                         mImage.close();
@@ -877,8 +882,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-
-
+                    //wokrs
+                    mIsWritingRawImage=false;
                     break;
 
             }
@@ -962,6 +967,7 @@ public class MainActivity extends AppCompatActivity {
     private CaptureResult mCaptureResult;
 
     private boolean mIsWritingImage=false;
+    private boolean mIsWritingRawImage=false;
 
 
 }
