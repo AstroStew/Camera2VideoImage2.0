@@ -191,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
                             if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
                                 startStillCaptureRequest();
+
+
                             }
                             break;
                     }
@@ -377,8 +379,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Folders for Images and Videos
         createVideoFolder();
         createImageFolder();
+
         mMediaRecorder=new MediaRecorder();
         //this is new
         mChronometer=(Chronometer) findViewById(R.id.chronometer);
@@ -759,8 +764,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                             try {
-                                createImageFileName();
-                                createRawImageFileName();
+                                createImageFileName(); //forImage
+                                createRawImageFileName(); //for RawImage
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -769,6 +774,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(mIsRecording) {
                 mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
+
             }else{
                 mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
 
@@ -886,8 +892,9 @@ public class MainActivity extends AppCompatActivity {
                             Integer afState=captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
-                                startStillCaptureRequest();
+
                             }
+                            startStillCaptureRequest();
                             break;
                     }
 
@@ -897,6 +904,7 @@ public class MainActivity extends AppCompatActivity {
 
                 {
                     super.onCaptureCompleted(session, request, result);
+                    mCaptureResult=result;
                     process(result);
                     //unlockFocus();
                 }
