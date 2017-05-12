@@ -66,5 +66,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp" />
 
+    <Switch
+        android:id="@+id/RawSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:backgroundTint="#ffffff"
+        android:text="Raw Image Capture"
+        android:layout_above="@+id/CameraButton"
+        android:layout_alignLeft="@+id/CameraButton"
+        android:layout_alignStart="@+id/CameraButton"
+        android:layout_marginBottom="12dp" />
+
 
 </RelativeLayout>

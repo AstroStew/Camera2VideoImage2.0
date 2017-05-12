@@ -47,8 +47,10 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.yorku.mstew.camera2videoimage.R;
@@ -68,8 +70,6 @@ import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
-
-
 
 
     //firstly we want to make the window sticky. We acheive this by making system flags
@@ -165,7 +165,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mChronometer.setVisibility(View.VISIBLE);
                     mChronometer.start();
                     //new
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
@@ -196,15 +196,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new
             CameraCaptureSession.CaptureCallback() {
 
-                private void process(CaptureResult captureResult){
-                    switch (mCaptureState){
+                private void process(CaptureResult captureResult) {
+                    switch (mCaptureState) {
                         case STATE_PREVIEW:
                             //Do nothing
                             break;
                         case STATE_WAIT_LOCK:
-                            mCaptureState=STATE_PREVIEW;
-                            Integer afState=captureResult.get(CaptureResult.CONTROL_AF_STATE);
-                            if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
+                            mCaptureState = STATE_PREVIEW;
+                            Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
+                            if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
                                 startStillCaptureRequest();
 
@@ -221,7 +221,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                 {
                     super.onCaptureCompleted(session, request, result);
-                    mCaptureResult=result;
+                    mCaptureResult = result;
                     process(result);
                 }
             };
@@ -232,8 +232,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         try {
             for (String cameraId : cameraManager.getCameraIdList()) {
                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-                if(!contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
-                        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)){
+                if (!contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
+                        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
                     continue;
                 }
                 if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT) {
@@ -268,15 +268,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
 
 
-                mImageSize=chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
-                mImageReader=ImageReader.newInstance(mImageSize.getWidth(),mImageSize.getHeight(),ImageFormat.JPEG,1);
-                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
-                mRawImageSize=chooseOptimalSize(map.getOutputSizes(ImageFormat.RAW_SENSOR),rotatedWidth, rotatedHeight);
-                mRawImageReader=ImageReader.newInstance(mRawImageSize.getWidth(),mRawImageSize.getHeight(),ImageFormat.RAW_SENSOR,1);
-                mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener,mBackgroundHandler);
+                mImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
+                mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), ImageFormat.JPEG, 1);
+                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+                mRawImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.RAW_SENSOR), rotatedWidth, rotatedHeight);
+                mRawImageReader = ImageReader.newInstance(mRawImageSize.getWidth(), mRawImageSize.getHeight(), ImageFormat.RAW_SENSOR, 1);
+                mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener, mBackgroundHandler);
 
                 mCameraId = cameraId;
-                mCameraCharacteristics=cameraCharacteristics;
+                mCameraCharacteristics = cameraCharacteristics;
                 return;
             }
         } catch (CameraAccessException e) {
@@ -298,14 +298,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if(shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)){
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                         Toast.makeText(this, "App requires access to camera", Toast.LENGTH_SHORT).show();
                     }
-                    requestPermissions(new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
+                    requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
                             REQUEST_CAMERA_PERMISSION_RESULT);
                 }
                 //return;
-            }else {
+            } else {
                 cameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mBackgroundHandler);
             }
         } catch (CameraAccessException e) {
@@ -393,7 +393,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     }
 
-  //String isostring=new String("ISOCHANGE");
+    //String isostring=new String("ISOCHANGE");
 
     //onCreate was here since the start
 
@@ -409,46 +409,47 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         createVideoFolder();
         createImageFolder();
 
-        mMediaRecorder=new MediaRecorder();
+        mMediaRecorder = new MediaRecorder();
         //this is new
-        mChronometer=(Chronometer) findViewById(R.id.chronometer);
+        mChronometer = (Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
-        mStillImageButton=(ImageButton)findViewById(R.id.CameraButton);
-        mSettingsbutton= (Button) findViewById(R.id.button);
-        mSettingsbutton.setOnClickListener(new View.OnClickListener(){
+        mStillImageButton = (ImageButton) findViewById(R.id.CameraButton);
+        mSettingsbutton = (Button) findViewById(R.id.button);
+        mRawSwitch = (Switch) findViewById(R.id.RawSwitch);
+        mSettingsbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
-                final PopupMenu popupMenu=new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
+                final PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
 
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
-                        public boolean onMenuItemClick(MenuItem item){
-                        int position=item.getItemId();
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int position = item.getItemId();
                         switch (position) {
                             case R.id.ChangeISO:
-                                Toast.makeText(getApplicationContext(), "ChangeISO" , Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "ChangeISO", Toast.LENGTH_SHORT).show();
 
 
                             case R.id.ChangeShutterSpeed:
-                                Toast.makeText(getApplicationContext(), "ChangeShutterSpeed" , Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
                                 break;
 
                             case R.id.ChangeWhiteBalance:
                                 Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
                                 break;
                         }
-                    return true;
+                        return true;
                     }
                 });
-            popupMenu.show();
+                popupMenu.show();
             }
         });
 
-        mStillImageButton.setOnClickListener(new View.OnClickListener(){
+        mStillImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 lockFocus();
             }
         });
@@ -461,11 +462,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mChronometer.stop();
                     mChronometer.setVisibility(View.INVISIBLE);
                     mIsRecording = false;
-                    mIsTimelapse=false;
+                    mIsTimelapse = false;
                     mRecordImageButton.setImageResource(R.mipmap.vidpiconline);
                     mMediaRecorder.stop();
                     mMediaRecorder.reset();
-                    Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    Intent mediaStoreUpdateIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                     mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mVideoFileName)));
                     sendBroadcast(mediaStoreUpdateIntent);
 
@@ -482,16 +483,18 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             }
 
         });
-        mRecordImageButton.setOnLongClickListener(new View.OnLongClickListener(){
+        mRecordImageButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View v){
-                mIsTimelapse=true;
+            public boolean onLongClick(View v) {
+                mIsTimelapse = true;
                 mRecordImageButton.setImageResource(R.mipmap.btn_timelapse);
                 checkWriteStoragePermission();
                 return true;
 
             }
         });
+
+
     }
 
     //pt9
@@ -537,12 +540,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             mCaptureRequestBuilder.addTarget(previewSurface);
 
 
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface,mImageReader.getSurface(),
-                    mRawImageReader.getSurface()),
+
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface(),
+                    //Min-Jae put his if statement here
+
+                        mRawImageReader.getSurface()
+
+                    ),
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
-                            mPreviewCaptureSession=session;
+                            mPreviewCaptureSession = session;
                             try {
                                 mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),
                                         null, mBackgroundHandler);
@@ -673,9 +681,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     //Capturing and Saving Videos
     private void startRecord() {
         try {
-            if(mIsRecording){
+            if (mIsRecording) {
                 setupMediaRecorder();
-            }else if(mIsTimelapse){
+            } else if (mIsTimelapse) {
                 setupTimelapse();
             }
             SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
@@ -686,14 +694,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             mCaptureRequestBuilder.addTarget(previewSurface);
             mCaptureRequestBuilder.addTarget(recordSurface);
 
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recordSurface,mImageReader.getSurface()),
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, recordSurface, mImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
 
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
 
-                            mRecordCaptureSession=session;
+                            mRecordCaptureSession = session;
 
                             try {
                                 mRecordCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(), null, null);
@@ -711,6 +719,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
     //Adding a Chronometer timer for recording
     private Chronometer mChronometer;
 //now lets set up for still camera capture
@@ -721,14 +730,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     private ImageReader mImageReader;
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener =
-            new ImageReader.OnImageAvailableListener(){
+            new ImageReader.OnImageAvailableListener() {
                 @Override
-                public void onImageAvailable(ImageReader reader){
-                    if(!mIsWritingImage){
-                        mIsWritingImage=true;
-                        Image image=reader.acquireLatestImage();
-                        if(image != null){
-                            mBackgroundHandler.post(new ImageSaver(image,mCaptureResult,mCameraCharacteristics));
+                public void onImageAvailable(ImageReader reader) {
+                    if (!mIsWritingImage) {
+                        mIsWritingImage = true;
+                        Image image = reader.acquireLatestImage();
+                        if (image != null) {
+                            mBackgroundHandler.post(new ImageSaver(image, mCaptureResult, mCameraCharacteristics));
 
 
                         }
@@ -738,13 +747,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             };
     private ImageReader mRawImageReader;
     private final ImageReader.OnImageAvailableListener mOnRawImageAvailableListener =
-            new ImageReader.OnImageAvailableListener(){
+            new ImageReader.OnImageAvailableListener() {
                 @Override
-                public void onImageAvailable(ImageReader reader){
-                    if(!mIsWritingRawImage) {
+                public void onImageAvailable(ImageReader reader) {
+                    if (!mIsWritingRawImage) {
                         Image image = reader.acquireLatestImage();
-                        if(image != null) {
-                            mBackgroundHandler.post(new ImageSaver(image,mCaptureResult, mCameraCharacteristics));
+                        if (image != null) {
+                            mBackgroundHandler.post(new ImageSaver(image, mCaptureResult, mCameraCharacteristics));
 
 
                         }
@@ -753,26 +762,28 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             };
 
 
-    private static final int STATE_PREVIEW=0;
-    private static final int STATE_WAIT_LOCK=1;
+    private static final int STATE_PREVIEW = 0;
+    private static final int STATE_WAIT_LOCK = 1;
     private int mCaptureState = STATE_PREVIEW;
-    private void lockFocus(){
-        mCaptureState=STATE_WAIT_LOCK;
 
-        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CaptureRequest.CONTROL_AF_TRIGGER_START);
+    private void lockFocus() {
+        mCaptureState = STATE_WAIT_LOCK;
+
+        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
         try {
-            if(mIsRecording)
-            {
-                mRecordCaptureSession.capture(mCaptureRequestBuilder.build(),mRecordCaptureCallback,mBackgroundHandler);
+            if (mIsRecording) {
+                mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), mRecordCaptureCallback, mBackgroundHandler);
 
-            }else{
-                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,mBackgroundHandler);}
+            } else {
+                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback, mBackgroundHandler);
+            }
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
 
 
     }
+
     private ImageButton mStillImageButton;
     //image capture
     //part 17 capturing a still image in a preview mode
@@ -782,14 +793,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     private void createImageFolder() {
         File imageFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        mImageFolder = new File(imageFile , "Camera2_Video_Image_JPEG");
-        mRawGalleryFolder=mImageFolder;
+        mImageFolder = new File(imageFile, "Camera2_Video_Image");
+        mRawGalleryFolder = mImageFolder;
         //check to see if the folder is already created
         if (!mImageFolder.exists()) {
             mImageFolder.mkdirs();
 
         }
-        if (!mRawGalleryFolder.exists()){
+        if (!mRawGalleryFolder.exists()) {
             mRawGalleryFolder.mkdirs();
         }
 
@@ -806,6 +817,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         return imageFile;
 
     }
+
     private File createRawImageFileName() throws IOException {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //there are two types of SimpleDateFormat and Date()
@@ -815,22 +827,31 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         return imageFile;
 
     }
-    private void startStillCaptureRequest(){
+
+    private void startStillCaptureRequest() {
         try {
-            if(mIsRecording){
-                mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
+            if (mIsRecording||mIsTimelapse) {
+                mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
                         CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
 
-            }else{
-                mCaptureRequestBuilder=mCameraDevice.createCaptureRequest(
+            } else if(!mIsRecording||!mIsTimelapse) {
+                mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
                         CameraDevice.TEMPLATE_STILL_CAPTURE);
             }
-            mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
-            mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
-            mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,mTotalRotation);
 
-            CameraCaptureSession.CaptureCallback stillCaptureCallback=new
-                    CameraCaptureSession.CaptureCallback(){
+
+            if(mRawSwitch.isChecked()) {
+                mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
+                mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+            }
+            else{
+                mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+            }
+
+            mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mTotalRotation);
+
+            CameraCaptureSession.CaptureCallback stillCaptureCallback = new
+                    CameraCaptureSession.CaptureCallback() {
                         @Override
                         public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
                             super.onCaptureStarted(session, request, timestamp, frameNumber);
@@ -838,17 +859,21 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             try {
                                 createImageFileName(); //forImage
-                                createRawImageFileName(); //for RawImage
+                                if(mRawSwitch.isChecked()) {
+                                    createRawImageFileName(); //for RawImage
+                                }
+
+
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                     };
 
-            if(mIsRecording) {
+            if (mIsRecording||mIsTimelapse) {
                 mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
 
-            }else{
+            } else {
                 mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
 
 
@@ -874,27 +899,25 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
 
 
-
         @Override
         public void run() {
-            int format=mImage.getFormat();
-            switch(format){
+            int format = mImage.getFormat();
+            switch (format) {
                 case ImageFormat.JPEG:
-                    ByteBuffer byteBuffer= mImage.getPlanes()[0].getBuffer();
-                    byte[] bytes=new byte[byteBuffer.remaining()];
+                    ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
+                    byte[] bytes = new byte[byteBuffer.remaining()];
                     byteBuffer.get(bytes);
 
-                    FileOutputStream fileOutputStream=null;
+                    FileOutputStream fileOutputStream = null;
                     try {
-                        fileOutputStream=new FileOutputStream(mImageFileName);
+                        fileOutputStream = new FileOutputStream(mImageFileName);
                         fileOutputStream.write(bytes);
                         Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-                    finally {
+                    } finally {
                         mImage.close();
 
                         //notifying the media store
@@ -903,30 +926,31 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         sendBroadcast(mediaStoreUpdateIntent);
                         */
 
-                        if(fileOutputStream != null){
+                        if (fileOutputStream != null) {
                             try {
                                 fileOutputStream.close();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        }mIsWritingImage=false;
+                        }
+                        mIsWritingImage = false;
                     }
 
                     break;
                 case ImageFormat.RAW_SENSOR:
-                    DngCreator dngCreator=new DngCreator(mCameraCharacteristics,mCaptureResult);
-                    FileOutputStream rawFileOutputStream=null;
+                    DngCreator dngCreator = new DngCreator(mCameraCharacteristics, mCaptureResult);
+                    FileOutputStream rawFileOutputStream = null;
                     try {
-                        rawFileOutputStream=new FileOutputStream(mRawFileName);
-                        Toast.makeText(getApplicationContext(), "RAW saved", Toast.LENGTH_SHORT).show();dngCreator.writeImage(rawFileOutputStream,mImage);
+                        rawFileOutputStream = new FileOutputStream(mRawFileName);
+                        Toast.makeText(getApplicationContext(), "RAW saved", Toast.LENGTH_SHORT).show();
+                        dngCreator.writeImage(rawFileOutputStream, mImage);
 
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "Error in saving RAW", Toast.LENGTH_SHORT).show();
-                    }
-                    finally{
+                    } finally {
                         mImage.close();
-                        if(rawFileOutputStream != null){
+                        if (rawFileOutputStream != null) {
                             try {
                                 rawFileOutputStream.close();
                             } catch (IOException e) {
@@ -936,29 +960,29 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     }
 
                     //works now
-                    mIsWritingRawImage=false;
+                    mIsWritingRawImage = false;
                     break;
 
             }
 
 
-
         }
     }
+
     //Part 18. Capturing a photo while recording
     private CameraCaptureSession mRecordCaptureSession;
     private CameraCaptureSession.CaptureCallback mRecordCaptureCallback = new
             CameraCaptureSession.CaptureCallback() {
 
-                private void process(CaptureResult captureResult){
-                    switch (mCaptureState){
+                private void process(CaptureResult captureResult) {
+                    switch (mCaptureState) {
                         case STATE_PREVIEW:
                             //Do nothing
                             break;
                         case STATE_WAIT_LOCK:
-                            mCaptureState=STATE_PREVIEW;
-                            Integer afState=captureResult.get(CaptureResult.CONTROL_AF_STATE);
-                            if(afState==CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED||afState==CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
+                            mCaptureState = STATE_PREVIEW;
+                            Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
+                            if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
 
                             }
@@ -967,12 +991,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     }
 
                 }
+
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result)
 
                 {
                     super.onCaptureCompleted(session, request, result);
-                    mCaptureResult=result;
+                    mCaptureResult = result;
                     process(result);
                     //unlockFocus();
                 }
@@ -980,10 +1005,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     //Recording Audio pt 19
 
 
-
     //Part 20 time-lapse video
     //long press on record button
     private boolean mIsTimelapse = false;
+
     private void setupTimelapse() throws IOException {
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_TIME_LAPSE_HIGH));
@@ -993,20 +1018,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
+
     //Updating MediaStore Database done
 //Raw image Capture Part 1
     private static Boolean contains(int[] modes, int mode) {
-        if(modes == null){
+        if (modes == null) {
             return false;
 
         }
-        for(int i:modes){
-            if(i== mode ){
-                return  true;
+        for (int i : modes) {
+            if (i == mode) {
+                return true;
             }
         }
         return false;
     }
+
     //Create an Activity member for the raw folder
     private File mRawGalleryFolder;
     private String mRawFileName;
@@ -1019,9 +1046,16 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     //RAW Image Capture part2
     private CaptureResult mCaptureResult;
 
-    private boolean mIsWritingImage=false;
-    private boolean mIsWritingRawImage=false;
+    private boolean mIsWritingImage = false;
+    private boolean mIsWritingRawImage = false;
 //Now Were going to create a pop-up menu
+
+    //
+    //Raw Image Switch
+    private boolean mRawSwitchOnOff;
+    private Switch mRawSwitch;
+
 
 
 }
+
