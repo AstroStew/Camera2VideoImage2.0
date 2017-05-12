@@ -3,23 +3,29 @@
 
     <item
     android:id="@+id/ChangeISO"
-    android:title="ChangeISO">
+    android:title="ChangeISO"
+        >
         <menu>
             <item
         android:id="@+id/ISO100"
-        android:title="ISO100" />
+        android:title="ISO100"
+                android:icon="@mipmap/isopic100"/>
             <item
         android:id="@+id/ISO200"
-        android:title="ISO200" />
+        android:title="ISO200"
+                android:icon="@mipmap/isopic200"/>
             <item
         android:id="@+id/ISO400"
-        android:title="ISO400" />
+        android:title="ISO400"
+                android:icon="@mipmap/isopic400"/>
             <item
         android:id="@+id/ISO800"
-        android:title="ISO800" />
+        android:title="ISO800"
+                android:icon="@mipmap/isopic800"/>
             <item
         android:id="@+id/ISO1600"
-        android:title="ISO1600" />
+        android:title="ISO1600"
+                android:icon="@mipmap/isopic1600"/>
 
         </menu>
 

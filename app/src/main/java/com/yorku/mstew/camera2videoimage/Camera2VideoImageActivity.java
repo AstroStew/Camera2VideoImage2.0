@@ -433,15 +433,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 final PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-
+                //final PopupMenu popupMenu2=new PopupMenu(Camera2VideoImageActivity.this,m)
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         int position = item.getItemId();
                         switch (position) {
                             case R.id.ChangeISO:
-                                Toast.makeText(getApplicationContext(), "ChangeISO", Toast.LENGTH_SHORT).show();
-
+                                //popupMenu2();
                                 break;
                             case R.id.ChangeShutterSpeed:
                                 Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
@@ -1080,8 +1079,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     //
     //Raw Image Switch
-    private boolean mRawSwitchOnOff;
     private Switch mRawSwitch;
+    //ISO CHANGE
+
+
+
+
+
+
+
+
+
 }
 
 
