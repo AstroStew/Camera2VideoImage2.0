@@ -86,7 +86,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }// /*checked
+        }
     }
 
     //This is our attribute section.Note:this list will increase as we progress through the tutorial. We will create all members in this section:
@@ -127,7 +127,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     };
 
-    // /*checked
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -140,7 +140,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     }
 
-    //checked
+
 //Creating the camera device
     private CameraDevice mCameraDevice;
     private CameraDevice.StateCallback mCameraDeviceStateCallback = new CameraDevice.StateCallback() {
@@ -186,7 +186,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
 
     };
-    //checked
+    //
     //Getting Camera Id
 
     //doesn't work
@@ -416,6 +416,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mStillImageButton = (ImageButton) findViewById(R.id.CameraButton);
         mSettingsbutton = (Button) findViewById(R.id.button);
         mRawSwitch = (Switch) findViewById(R.id.RawSwitch);
+        mRawSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Toast.makeText(getApplicationContext(), "RAW Capture turned ON", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "RAW Capture turned OFF", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         mSettingsbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -677,7 +688,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
-    //checked
+    //
 
     //Capturing and Saving Videos
     private void startRecord() {
@@ -982,7 +993,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
         }
     }
-    ///Checked
+
 
     //Part 18. Capturing a photo while recording
     private CameraCaptureSession mRecordCaptureSession;
@@ -1017,7 +1028,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                 }
             };
-            //checked
+
     //Recording Audio pt 19
 
 
