@@ -431,7 +431,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.ChangeISO:
                                 Toast.makeText(getApplicationContext(), "ChangeISO", Toast.LENGTH_SHORT).show();
 
-
+                                break;
                             case R.id.ChangeShutterSpeed:
                                 Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
                                 break;
@@ -439,6 +439,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.ChangeWhiteBalance:
                                 Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
                                 break;
+                            default:
+                                return false;
                         }
                         return true;
                     }
@@ -473,7 +475,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                     startPreview();
                 } else {
-                    mIsRecording = true;
+                    //mIsRecording = true;
 
                     //new
                     mRecordImageButton.setImageResource(R.mipmap.vidpicbusy);
@@ -540,11 +542,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             mCaptureRequestBuilder.addTarget(previewSurface);
 
 
-
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface(),
                     //Min-Jae put his if statement here
 
-                        mRawImageReader.getSurface()
+                    mRawImageReader.getSurface()
 
                     ),
                     new CameraCaptureSession.StateCallback() {
@@ -792,9 +793,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
     private void createImageFolder() {
+        File imageRawFile=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File imageFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         mImageFolder = new File(imageFile, "Camera2_Video_Image");
-        mRawGalleryFolder = mImageFolder;
+        mRawGalleryFolder = new File(imageRawFile,"Camera2_Video_Image_RAW");
         //check to see if the folder is already created
         if (!mImageFolder.exists()) {
             mImageFolder.mkdirs();
@@ -822,29 +824,30 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //there are two types of SimpleDateFormat and Date()
         String prepend = "RAW_" + timestamp + "_";
-        File imageFile = File.createTempFile(prepend, ".dng", mRawGalleryFolder);
-        mRawFileName = imageFile.getAbsolutePath();
-        return imageFile;
+        File imageRawFile = File.createTempFile(prepend, ".dng", mRawGalleryFolder);
+        mRawFileName = imageRawFile.getAbsolutePath();
+        return imageRawFile;
 
     }
 
     private void startStillCaptureRequest() {
+        mIsWritingImage = false;
+        mIsWritingRawImage = false;
         try {
-            if (mIsRecording||mIsTimelapse) {
+            if (mIsRecording || mIsTimelapse) {
                 mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
                         CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
 
-            } else if(!mIsRecording||!mIsTimelapse) {
+            } else {
                 mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
                         CameraDevice.TEMPLATE_STILL_CAPTURE);
             }
 
 
-            if(mRawSwitch.isChecked()) {
+            if (mRawSwitch.isChecked()) {
                 mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
                 mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
-            }
-            else{
+            } else {
                 mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
             }
 
@@ -859,7 +862,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             try {
                                 createImageFileName(); //forImage
-                                if(mRawSwitch.isChecked()) {
+                                if (mRawSwitch.isChecked()) {
                                     createRawImageFileName(); //for RawImage
                                 }
 
@@ -870,7 +873,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         }
                     };
 
-            if (mIsRecording||mIsTimelapse) {
+            if (mIsRecording || mIsTimelapse) {
                 mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), stillCaptureCallback, null);
 
             } else {
@@ -902,8 +905,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         @Override
         public void run() {
             int format = mImage.getFormat();
-            switch (format) {
+            switch(format) {
                 case ImageFormat.JPEG:
+
+
                     ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
                     byte[] bytes = new byte[byteBuffer.remaining()];
                     byteBuffer.get(bytes);
@@ -911,22 +916,21 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     FileOutputStream fileOutputStream = null;
                     try {
                         fileOutputStream = new FileOutputStream(mImageFileName);
-                        fileOutputStream.write(bytes);
-                        Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
+                        try {
+                            fileOutputStream.write(bytes);
+                            Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
                         mImage.close();
-
-                        //notifying the media store
-                        /*Intent mediaStoreUpdateIntent=new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        // media store update - images
+                        /*Intent mediaStoreUpdateIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                         mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mImageFileName)));
-                        sendBroadcast(mediaStoreUpdateIntent);
-                        */
-
-                        if (fileOutputStream != null) {
+                        sendBroadcast(mediaStoreUpdateIntent);*/
+                        if(fileOutputStream != null){
                             try {
                                 fileOutputStream.close();
                             } catch (IOException e) {
@@ -935,39 +939,50 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         }
                         mIsWritingImage = false;
                     }
-
+                    mIsWritingImage=true;
                     break;
                 case ImageFormat.RAW_SENSOR:
+                    //case ImageFormat.RAW10:
+                    //case ImageFormat.RAW12:
+                    //case ImageFormat.RAW_PRIVATE:
+                    // 1
+                    /*try {
+                        createRawImageFileName();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }*/
                     DngCreator dngCreator = new DngCreator(mCameraCharacteristics, mCaptureResult);
                     FileOutputStream rawFileOutputStream = null;
                     try {
                         rawFileOutputStream = new FileOutputStream(mRawFileName);
-                        Toast.makeText(getApplicationContext(), "RAW saved", Toast.LENGTH_SHORT).show();
                         dngCreator.writeImage(rawFileOutputStream, mImage);
+                        Toast.makeText(getApplicationContext(), "RAW saved", Toast.LENGTH_SHORT).show();
 
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "Error in saving RAW", Toast.LENGTH_SHORT).show();
                     } finally {
                         mImage.close();
-                        if (rawFileOutputStream != null) {
+                        // media store update - images
+                        /*Intent mediaStoreUpdateIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        mediaStoreUpdateIntent.setData(Uri.fromFile(new File(mRawFileName)));
+                        sendBroadcast(mediaStoreUpdateIntent);*/
+                        if(rawFileOutputStream != null){
                             try {
                                 rawFileOutputStream.close();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
+                        mIsWritingRawImage = false;
                     }
-
-                    //works now
-                    mIsWritingRawImage = false;
+                    mIsWritingRawImage = true;
                     break;
-
             }
-
 
         }
     }
+    ///Checked
 
     //Part 18. Capturing a photo while recording
     private CameraCaptureSession mRecordCaptureSession;
@@ -987,21 +1002,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             }
                             startStillCaptureRequest();
+
                             break;
                     }
 
                 }
 
                 @Override
-                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result)
-
-                {
+                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    mCaptureResult = result;
                     process(result);
-                    //unlockFocus();
+                    mCaptureResult = result;
+
+
                 }
             };
+            //checked
     //Recording Audio pt 19
 
 
@@ -1034,6 +1050,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         return false;
     }
 
+
     //Create an Activity member for the raw folder
     private File mRawGalleryFolder;
     private String mRawFileName;
@@ -1054,8 +1071,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     //Raw Image Switch
     private boolean mRawSwitchOnOff;
     private Switch mRawSwitch;
-
-
-
 }
+
+
+
 
