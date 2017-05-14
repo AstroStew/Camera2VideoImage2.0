@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -22,6 +23,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -399,6 +401,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     Button mSettingsbutton;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -433,14 +436,27 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 final PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-                //final PopupMenu popupMenu2=new PopupMenu(Camera2VideoImageActivity.this,m)
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         int position = item.getItemId();
                         switch (position) {
                             case R.id.ChangeISO:
-                                //popupMenu2();
+                                break;
+                            case R.id.ISO100:
+
+                                Toast.makeText(getApplicationContext(), "100", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.ISO200:
+                                break;
+                            case R.id.ISO400:
+                                Toast.makeText(getApplicationContext(), "400", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.ISO800:
+                                Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.ISO1600:
+                                Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ChangeShutterSpeed:
                                 Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
@@ -508,6 +524,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
     }
+
+
+
+
 
     //pt9
     @Override
@@ -863,6 +883,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mTotalRotation);
 
+            //Testing Exposure Time
+            //units nanoseconds
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+            mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long)1600000000 );
+            
+            mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE,1 );
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
                     CameraCaptureSession.CaptureCallback() {
                         @Override

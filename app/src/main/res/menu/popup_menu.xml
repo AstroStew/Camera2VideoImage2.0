@@ -3,6 +3,7 @@
 
     <item
     android:id="@+id/ChangeISO"
+    android:orderInCategory="100"
     android:title="ChangeISO"
         >
         <menu>
