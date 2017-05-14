@@ -34,9 +34,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+import android.text.AlteredCharSequence;
 import android.util.Size;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -465,6 +467,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.ChangeWhiteBalance:
                                 Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
                                 break;
+                            case R.id.getCameraInfo:
+                                AlertDialog.Builder builder=new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                builder.setTitle("Camera Information");
+                                builder.setMessage("Shutter Speed Information(in ns):"+mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE));
+                                builder.setPositiveButton("OK",null);
+                                AlertDialog alertDialog=builder.create();
+                                alertDialog.show();
+
+                                break;
                             default:
                                 return false;
                         }
@@ -887,7 +898,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             //units nanoseconds
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
             mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long)1600000000 );
-            
+
             mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE,1 );
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
                     CameraCaptureSession.CaptureCallback() {

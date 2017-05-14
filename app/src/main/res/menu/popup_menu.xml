@@ -41,8 +41,11 @@
                 />
 
             <item
-        android:id="@+id/ChangeWhiteBalance"
-        android:title="ChangeWhiteBalance" />
+                android:id="@+id/ChangeWhiteBalance"
+                android:title="ChangeWhiteBalance" />
+            <item
+                android:id="@+id/getCameraInfo"
+                android:title="GetCameraInfo" />
 
 
     </item>
