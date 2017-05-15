@@ -1,13 +1,11 @@
 package com.yorku.mstew.camera2videoimage;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -23,13 +21,11 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -38,26 +34,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
-import android.text.AlteredCharSequence;
+import android.util.Range;
 import android.util.Size;
-import android.util.SparseArray;
 import android.util.SparseIntArray;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.Spinner;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
-
-import com.yorku.mstew.camera2videoimage.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,6 +62,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import static java.lang.StrictMath.toIntExact;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
@@ -402,7 +395,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     //onCreate was here since the start
 
     Button mSettingsbutton;
-
+    int ISOvalue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -442,26 +435,51 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         int position = item.getItemId();
+                        Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+                        long ShutterSpeed1 = (ShutterSpeed.getLower());
+                        long ShutterSpeed2 = (ShutterSpeed.getUpper());
+                        double ShutterSpeed1Double= (double)ShutterSpeed1/1000000000;
+                        double ShutterSpeed2Double= (double)ShutterSpeed2/1000000000;
+
+                        //trying to convert to fractions
+                        double x=1/ShutterSpeed1Double;
+                        double y=1/ShutterSpeed2Double;
+                        String ShutterSpeed1String= ("1"+"/"+x);
+                        String ShutterSpeed2String=("1/"+y);
+
+
+
+
                         switch (position) {
                             case R.id.ChangeISO:
+
                                 break;
                             case R.id.ISO100:
 
                                 Toast.makeText(getApplicationContext(), "100", Toast.LENGTH_SHORT).show();
+                                ISOvalue=100;
                                 break;
                             case R.id.ISO200:
-                                break;
+                                ISOvalue=200;
+                            break;
                             case R.id.ISO400:
+                                ISOvalue=400;
                                 Toast.makeText(getApplicationContext(), "400", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ISO800:
+                                ISOvalue=800;
                                 Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ISO1600:
+                                ISOvalue=1600;
                                 Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ChangeShutterSpeed:
+                                mSeekbar = (SeekBar) findViewById(R.id.seekBar);
+                                mSeekbar.setVisibility(View.VISIBLE);
+                                //mSeekbar.setOnSeekBarChangeListener();
                                 Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
+
                                 break;
 
                             case R.id.ChangeWhiteBalance:
@@ -470,7 +488,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.getCameraInfo:
                                 AlertDialog.Builder builder=new AlertDialog.Builder(Camera2VideoImageActivity.this);
                                 builder.setTitle("Camera Information");
-                                builder.setMessage("Shutter Speed Information(in ns):"+mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE));
+                                builder.setMessage("Shutter Speed Information(in s):"+ ShutterSpeed1String + "-" +ShutterSpeed2String + "\n"+ "ISO Range:" + mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
+                                +"\n"+ "White Level:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_WHITE_LEVEL)+"\n" + "Sensor Physical Size: "+ mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                                +"\n" + "Sensor Max Analog Sensitivity:"+ mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
+                                +"\n" + "Standard reference illuminant:"+ mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1)
+
+                                );
+
                                 builder.setPositiveButton("OK",null);
                                 AlertDialog alertDialog=builder.create();
                                 alertDialog.show();
@@ -766,7 +790,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private Chronometer mChronometer;
 //now lets set up for still camera capture
 
-
+    private SeekBar mSeekbar;
     private Size mImageSize;
     private Size mRawImageSize;
 

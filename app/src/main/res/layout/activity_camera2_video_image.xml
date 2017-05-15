@@ -70,13 +70,27 @@
         android:id="@+id/RawSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:backgroundTint="#ffffff"
-        android:text="Raw Image Capture"
         android:layout_above="@+id/CameraButton"
         android:layout_alignLeft="@+id/CameraButton"
         android:layout_alignStart="@+id/CameraButton"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:background="#ffffff"
+        android:backgroundTint="#ffffff"
+        android:text="Raw Image Capture"
+        android:theme="@style/Base.TextAppearance.AppCompat.Widget.Button" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/chronometer"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:theme="@style/Base.TextAppearance.AppCompat.Inverse"
+        android:visibility="invisible"
+        tools:layout_width="wrap_content" />
 
 
 </RelativeLayout>
