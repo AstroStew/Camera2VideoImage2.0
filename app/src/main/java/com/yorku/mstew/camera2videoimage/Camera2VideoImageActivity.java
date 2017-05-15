@@ -410,7 +410,8 @@ int xx;
     Button mAutobutton;
     public boolean mIsAuto2=false;
     int AutoNumber=1;
-
+    boolean menuonline=false;
+    ImageButton mCloseALLbutton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -450,151 +451,179 @@ int xx;
                     return true;
 
                 }
-               });
+               }); */
 
-                */
+
         mAutobutton= (Button) findViewById(R.id.Auto);
+        mAutobutton.setText("AUTO ON");
         mAutobutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(AutoNumber==0){
                     AutoNumber=1;
-                    Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
+                    mAutobutton.setText("AUTO ON");
                     startPreview();
 
                 }
                 else if(AutoNumber==1){
                     AutoNumber=0;
                     Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
+                    mAutobutton.setText("AUTO OFF");
                     startPreview();
 
                 }
             }
         });
+
         mSettingsbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
+
+           @Override
             public void onClick(View view) {
-                //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
-                final PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
-                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        int position = item.getItemId();
-                        Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
-                        long ShutterSpeed1 = (ShutterSpeed.getLower());
-                        long ShutterSpeed2 = (ShutterSpeed.getUpper());
-                        double ShutterSpeed1Double= (double)ShutterSpeed1/1000000000;
-                        double ShutterSpeed2Double= (double)ShutterSpeed2/1000000000;
-
-                        //trying to convert to fractions
-                        double x=1/ShutterSpeed1Double;
-                        double y=1/ShutterSpeed2Double;
-                        String ShutterSpeed1String= ("1"+"/"+x);
-                        String ShutterSpeed2String=("1/"+y);
+                   menuonline = true;
 
 
+                   //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+                   final PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
+                   popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                   popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                       @Override
+                       public boolean onMenuItemClick(MenuItem item) {
+                           int position = item.getItemId();
+                           Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+                           long ShutterSpeed1 = (ShutterSpeed.getLower());
+                           long ShutterSpeed2 = (ShutterSpeed.getUpper());
+                           double ShutterSpeed1Double = (double) ShutterSpeed1 / 1000000000;
+                           double ShutterSpeed2Double = (double) ShutterSpeed2 / 1000000000;
+
+                           //trying to convert to fractions
+                           double x = 1 / ShutterSpeed1Double;
+                           double y = 1 / ShutterSpeed2Double;
+                           String ShutterSpeed1String = ("1" + "/" + x);
+                           String ShutterSpeed2String = ("1/" + y);
 
 
-                        switch (position) {
-                            case R.id.ChangeISO:
+                           switch (position) {
+                               case R.id.ChangeISO:
 
 
-                                break;
-                            case R.id.ISO100:
+                                   break;
+                               case R.id.ISO100:
 
-                                Toast.makeText(getApplicationContext(), "100", Toast.LENGTH_SHORT).show();
-                                ISOvalue=100;
-                                startPreview();
-                                break;
-                            case R.id.ISO200:
-                                ISOvalue=200;
-                                startPreview();
-                                break;
-                            case R.id.ISO400:
-                                ISOvalue=400;
-                                startPreview();
-                                Toast.makeText(getApplicationContext(), "400", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.ISO800:
-                                ISOvalue=800;
-                                startPreview();
-                                Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.ISO1600:
-                                ISOvalue=1600;
-                                startPreview();
-                                Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.ChangeShutterSpeed:
-                                mSeekbar = (SeekBar) findViewById(R.id.seekBar);
-                                mSeekbar.setVisibility(View.VISIBLE);
-                                mSeekbar.setMax((int)ShutterSpeed2-(int)ShutterSpeed1);
-                                //mSeekbar.setProgress(100000);
-                                mMinimumShutterSpeed=(EditText) findViewById(R.id.MinimumShutterSpeed);
-                                mMinimumShutterSpeed.setVisibility(View.VISIBLE);
-                                mMinimumShutterSpeed.setText(ShutterSpeed1String);
-                                mMaximumShutterSpeed=(EditText) findViewById(R.id.MaximumShutterSpeed);
-                                mMaximumShutterSpeed.setVisibility(View.VISIBLE);
-                                mMaximumShutterSpeed.setText(ShutterSpeed2String);
-                                mTextSeekBar= (EditText) findViewById(R.id.editText);
-                                mTextSeekBar.setVisibility(View.VISIBLE);
-                                mTextSeekBar.setText("Shutter Speed:"+mSeekbar.getProgress()+"/"+mSeekbar.getMax());
+                                   Toast.makeText(getApplicationContext(), "100", Toast.LENGTH_SHORT).show();
+                                   ISOvalue = 100;
+                                   startPreview();
+                                   break;
+                               case R.id.ISO200:
+                                   ISOvalue = 200;
+                                   startPreview();
+                                   break;
+                               case R.id.ISO400:
+                                   ISOvalue = 400;
+                                   startPreview();
+                                   Toast.makeText(getApplicationContext(), "400", Toast.LENGTH_SHORT).show();
+                                   break;
+                               case R.id.ISO800:
+                                   ISOvalue = 800;
+                                   startPreview();
+                                   Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
+                                   break;
+                               case R.id.ISO1600:
+                                   ISOvalue = 1600;
+                                   startPreview();
+                                   Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
+                                   break;
+                               case R.id.ChangeShutterSpeed:
+                                   mSeekbar = (SeekBar) findViewById(R.id.seekBar);
+                                   mSeekbar.setVisibility(View.VISIBLE);
+                                   mSeekbar.setMax((int) ShutterSpeed2 - (int) ShutterSpeed1);
+                                   //mSeekbar.setProgress(100000);
+                                   mMinimumShutterSpeed = (EditText) findViewById(R.id.MinimumShutterSpeed);
+                                   mMinimumShutterSpeed.setVisibility(View.VISIBLE);
+                                   mMinimumShutterSpeed.setText(ShutterSpeed1String);
+                                   mMaximumShutterSpeed = (EditText) findViewById(R.id.MaximumShutterSpeed);
+                                   mMaximumShutterSpeed.setVisibility(View.VISIBLE);
+                                   mMaximumShutterSpeed.setText(ShutterSpeed2String);
+                                   mTextSeekBar = (EditText) findViewById(R.id.editText);
+                                   mTextSeekBar.setVisibility(View.VISIBLE);
+                                   mTextSeekBar.setText("Shutter Speed:" + mSeekbar.getProgress() + "/" + mSeekbar.getMax());
+                                   mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
+                                   mCloseALLbutton.setVisibility(View.VISIBLE);
+                                   mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
+                                                                          @Override
+                                                                          public void onClick(View v) {mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
+                                                                              mTextSeekBar.setVisibility(View.INVISIBLE);
+                                                                              mSeekbar.setVisibility(View.INVISIBLE);
+                                                                              mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
+                                                                              mCloseALLbutton.setVisibility(View.INVISIBLE);
 
-                                mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-                                                                        @Override
-                                                                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                                                            progress=progressValue;
-
-                                                                        }
-
-                                                                        @Override
-                                                                        public void onStartTrackingTouch(SeekBar seekBar) {
-                                                                            //Toast.makeText(getApplicationContext(), "Start", Toast.LENGTH_SHORT).show();
-
-                                                                        }
-
-                                                                        @Override
-                                                                        public void onStopTrackingTouch(SeekBar seekBar) {
-                                                                            mTextSeekBar.setText("Shutter Speed:"+ mSeekbar.getProgress()+ "/"+mSeekbar.getMax());
-                                                                            Toast.makeText(getApplicationContext(), "Setting Shutter Speed", Toast.LENGTH_SHORT).show();
-                                                                             xx = mSeekbar.getProgress();
-                                                                            startPreview();
-                                                                        }
-                                                                    });
-                                        Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
+                                                                              //boolean menuonline=false;
 
 
-                                break;
+                                                                          }
+                                                                      });
 
-                            case R.id.ChangeWhiteBalance:
-                                Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.getCameraInfo:
-                                AlertDialog.Builder builder=new AlertDialog.Builder(Camera2VideoImageActivity.this);
-                                builder.setTitle("Camera Information");
-                                builder.setMessage("Shutter Speed Information(in s):"+ ShutterSpeed1String + "-" +ShutterSpeed2String + "\n"+ "ISO Range:" + mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
-                                +"\n"+ "White Level:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_WHITE_LEVEL)+"\n" + "Sensor Physical Size: "+ mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
-                                +"\n" + "Sensor Max Analog Sensitivity:"+ mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
-                                +"\n" + "Standard reference illuminant:"+ mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1)
 
-                                );
 
-                                builder.setPositiveButton("OK",null);
-                                AlertDialog alertDialog=builder.create();
-                                alertDialog.show();
 
-                                break;
-                            default:
-                                return false;
-                        }
-                        return true;
-                    }
-                });
-                popupMenu.show();
-            }
+                                   mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                                       @Override
+                                       public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                           progress = progressValue;
+
+                                       }
+
+                                       @Override
+                                       public void onStartTrackingTouch(SeekBar seekBar) {
+                                           //Toast.makeText(getApplicationContext(), "Start", Toast.LENGTH_SHORT).show();
+
+                                       }
+
+                                       @Override
+                                       public void onStopTrackingTouch(SeekBar seekBar) {
+                                           mTextSeekBar.setText("Shutter Speed:" + mSeekbar.getProgress() + "/" + mSeekbar.getMax());
+                                           Toast.makeText(getApplicationContext(), "Setting Shutter Speed", Toast.LENGTH_SHORT).show();
+                                           xx = mSeekbar.getProgress();
+                                           startPreview();
+                                       }
+                                   });
+                                   Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
+
+
+                                   break;
+
+                               case R.id.ChangeWhiteBalance:
+                                   Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
+                                   break;
+                               case R.id.getCameraInfo:
+                                   AlertDialog.Builder builder = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                   builder.setTitle("Camera Information");
+                                   builder.setMessage("Shutter Speed Information(in s):" + ShutterSpeed1String + "-" + ShutterSpeed2String + "\n" + "ISO Range:" + mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
+                                           + "\n" + "White Level:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_WHITE_LEVEL) + "\n" + "Sensor Physical Size: " + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                                           + "\n" + "Sensor Max Analog Sensitivity:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
+                                           + "\n" + "Standard reference illuminant:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1)
+
+                                   );
+
+                                   builder.setPositiveButton("OK", null);
+                                   AlertDialog alertDialog = builder.create();
+                                   alertDialog.show();
+
+                                   break;
+                               default:
+                                   return false;
+                           }
+                           return true;
+                       }
+
+                   });
+                   popupMenu.show();
+
+           }
+
         });
+
 
         mStillImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
