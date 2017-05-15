@@ -472,9 +472,12 @@ int xx;
                     mAutobutton.setText("AUTO OFF");
                     startPreview();
 
+
                 }
             }
+
         });
+
 
         mSettingsbutton.setOnClickListener(new View.OnClickListener() {
 
@@ -731,15 +734,16 @@ int xx;
             mCaptureRequestBuilder.addTarget(previewSurface);
             if (AutoNumber==1){
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
-                //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,);
-                Toast.makeText(getApplicationContext(), "Auto 1", Toast.LENGTH_SHORT).show();
             }
             else if(AutoNumber==0){
-            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF);
-                Toast.makeText(getApplicationContext(), "No Auto", Toast.LENGTH_SHORT).show();
+            //manual settings
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
             mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) xx );
             mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
 
+            }
+            else if(AutoNumber==2){
+                Toast.makeText(getApplicationContext(), "5193301137", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -874,7 +878,7 @@ int xx;
         mMediaRecorder.setOutputFile(mVideoFileName);
         mMediaRecorder.setVideoEncodingBitRate(8000000);
         mMediaRecorder.setVideoFrameRate(30);
-        mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
+       // mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mMediaRecorder.setOrientationHint(mTotalRotation);
