@@ -373,7 +373,7 @@ int xx;
     private static class CompareSizeByArea implements Comparator<Size> {
         @Override
         public int compare(Size lhs, Size rhs) {
-            return Long.signum((long) lhs.getWidth() * lhs.getHeight() /
+            return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
                     (long) rhs.getWidth() * rhs.getHeight());
 
         }
@@ -530,7 +530,7 @@ int xx;
                                 mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                 mSeekbar.setVisibility(View.VISIBLE);
                                 mSeekbar.setMax((int)ShutterSpeed2-(int)ShutterSpeed1);
-                                mSeekbar.setProgress(50000);
+                                //mSeekbar.setProgress(100000);
                                 mMinimumShutterSpeed=(EditText) findViewById(R.id.MinimumShutterSpeed);
                                 mMinimumShutterSpeed.setVisibility(View.VISIBLE);
                                 mMinimumShutterSpeed.setText(ShutterSpeed1String);
@@ -551,14 +551,14 @@ int xx;
 
                                                                         @Override
                                                                         public void onStartTrackingTouch(SeekBar seekBar) {
-                                                                            Toast.makeText(getApplicationContext(), "Start", Toast.LENGTH_SHORT).show();
+                                                                            //Toast.makeText(getApplicationContext(), "Start", Toast.LENGTH_SHORT).show();
 
                                                                         }
 
                                                                         @Override
                                                                         public void onStopTrackingTouch(SeekBar seekBar) {
                                                                             mTextSeekBar.setText("Shutter Speed:"+ mSeekbar.getProgress()+ "/"+mSeekbar.getMax());
-                                                                            Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(getApplicationContext(), "Setting Shutter Speed", Toast.LENGTH_SHORT).show();
                                                                              xx = mSeekbar.getProgress();
                                                                             startPreview();
                                                                         }
@@ -709,6 +709,7 @@ int xx;
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF);
                 Toast.makeText(getApplicationContext(), "No Auto", Toast.LENGTH_SHORT).show();
             mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) xx );
+            mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
 
             }
 
