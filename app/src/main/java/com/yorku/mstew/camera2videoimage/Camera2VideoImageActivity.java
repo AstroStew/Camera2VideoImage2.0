@@ -126,7 +126,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     };
 
-
+int xx;
     @Override
     protected void onResume() {
         super.onResume();
@@ -203,13 +203,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         case STATE_WAIT_LOCK:
                             mCaptureState = STATE_PREVIEW;
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
-                            if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                            if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
 
-                                startStillCaptureRequest();
+
 
 
                             }
+                            if ( afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
+                                Toast.makeText(getApplicationContext(), "Autofocus no locked!", Toast.LENGTH_SHORT).show();
+                            }
+                            startStillCaptureRequest();
                             break;
                     }
 
@@ -393,7 +397,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     }
 
-    //String isostring=new String("ISOCHANGE");
+
 
     //onCreate was here since the start
 
@@ -412,24 +416,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_camera2_video_image);
-        /*mAutobutton= (Button) findViewById(R.id.Auto);
-        mAutobutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            /*public void onClick(View v) {
-                if(AutoNumber==0){
-                    AutoNumber=1;
-                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
-                    startPreview();
 
-                }
-                else if(AutoNumber==1){
-                    AutoNumber=0;
-                    Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
-                    startPreview();
-                }
-            }
-        });
-        */
+
 
 
         //Folders for Images and Videos
@@ -437,7 +425,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         createImageFolder();
 
         mMediaRecorder = new MediaRecorder();
-         mIsAuto2=false;
+         //mIsAuto2=false;
         //this is new
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
@@ -465,6 +453,24 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                });
 
                 */
+        mAutobutton= (Button) findViewById(R.id.Auto);
+        mAutobutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(AutoNumber==0){
+                    AutoNumber=1;
+                    Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
+                    startPreview();
+
+                }
+                else if(AutoNumber==1){
+                    AutoNumber=0;
+                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
+                    startPreview();
+
+                }
+            }
+        });
         mSettingsbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -493,31 +499,38 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         switch (position) {
                             case R.id.ChangeISO:
 
+
                                 break;
                             case R.id.ISO100:
 
                                 Toast.makeText(getApplicationContext(), "100", Toast.LENGTH_SHORT).show();
-                                //ISOvalue=100;
+                                ISOvalue=100;
+                                startPreview();
                                 break;
                             case R.id.ISO200:
-                                //ISOvalue=200;
-                            break;
+                                ISOvalue=200;
+                                startPreview();
+                                break;
                             case R.id.ISO400:
-                                //ISOvalue=400;
+                                ISOvalue=400;
+                                startPreview();
                                 Toast.makeText(getApplicationContext(), "400", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ISO800:
-                                //ISOvalue=800;
+                                ISOvalue=800;
+                                startPreview();
                                 Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ISO1600:
-                                //ISOvalue=1600;
+                                ISOvalue=1600;
+                                startPreview();
                                 Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ChangeShutterSpeed:
                                 mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                 mSeekbar.setVisibility(View.VISIBLE);
                                 mSeekbar.setMax((int)ShutterSpeed2-(int)ShutterSpeed1);
+                                mSeekbar.setProgress(50000);
                                 mMinimumShutterSpeed=(EditText) findViewById(R.id.MinimumShutterSpeed);
                                 mMinimumShutterSpeed.setVisibility(View.VISIBLE);
                                 mMinimumShutterSpeed.setText(ShutterSpeed1String);
@@ -546,6 +559,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                                                         public void onStopTrackingTouch(SeekBar seekBar) {
                                                                             mTextSeekBar.setText("Shutter Speed:"+ mSeekbar.getProgress()+ "/"+mSeekbar.getMax());
                                                                             Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_SHORT).show();
+                                                                             xx = mSeekbar.getProgress();
+                                                                            startPreview();
                                                                         }
                                                                     });
                                         Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
@@ -681,20 +696,29 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
         try {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
-            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, AutoNumber);
+            if (AutoNumber==1){
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+                //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,);
+                Toast.makeText(getApplicationContext(), "Auto 1", Toast.LENGTH_SHORT).show();
+            }
+            else if(AutoNumber==0){
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                Toast.makeText(getApplicationContext(), "No Auto", Toast.LENGTH_SHORT).show();
+            mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) xx );
+
+            }
 
 
 
 
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface(),
-                    //Min-Jae put his if statement here
 
-                    mRawImageReader.getSurface()
 
-                    ),
+
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface(), mRawImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
@@ -1004,11 +1028,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             //Testing Exposure Time
             //units nanoseconds
-            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, (int) AutoNumber);
 
-            //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long)1600000000 );
-
-            //mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE,1 );
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
                     CameraCaptureSession.CaptureCallback() {
                         @Override
