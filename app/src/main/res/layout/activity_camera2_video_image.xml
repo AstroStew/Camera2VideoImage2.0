@@ -107,5 +107,51 @@
         android:textColor="#000000"
         android:visibility="invisible" />
 
+    <EditText
+        android:id="@+id/MinimumShutterSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editText"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#ffffff"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="none"
+        android:text="placeholder"
+        android:textColor="#000000"
+        android:visibility="invisible"
+
+        android:layout_toLeftOf="@+id/editText"
+        android:layout_toStartOf="@+id/editText" />
+
+    <EditText
+        android:id="@+id/MaximumShutterSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="none"
+        android:text="placeholder"
+        android:textColor="#000000"
+        android:background="#ffffff"
+        android:enabled="false"
+        android:visibility="invisible"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignLeft="@+id/chronometer"
+        android:layout_alignStart="@+id/chronometer"
+        android:layout_alignBottom="@+id/MinimumShutterSpeed"
+        android:layout_alignTop="@+id/editText" />
+
+    <Button
+        android:id="@+id/Auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/RawSwitch"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Auto" />
+
 
 </RelativeLayout>

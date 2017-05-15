@@ -104,6 +104,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             setupCamera(width, height);
+
             connectCamera();
 
             // Toast.makeText(getApplicationContext(), "Texture is available", Toast.LENGTH_SHORT).show();
@@ -204,6 +205,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
+
                                 startStillCaptureRequest();
 
 
@@ -399,18 +401,43 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int ISOvalue;
     int progressValue;
     EditText mTextSeekBar;
+    EditText mMinimumShutterSpeed;
+    EditText mMaximumShutterSpeed;
+    Button mAutobutton;
+    public boolean mIsAuto2=false;
+    int AutoNumber=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_camera2_video_image);
+        /*mAutobutton= (Button) findViewById(R.id.Auto);
+        mAutobutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            /*public void onClick(View v) {
+                if(AutoNumber==0){
+                    AutoNumber=1;
+                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
+                    startPreview();
+
+                }
+                else if(AutoNumber==1){
+                    AutoNumber=0;
+                    Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
+                    startPreview();
+                }
+            }
+        });
+        */
+
 
         //Folders for Images and Videos
         createVideoFolder();
         createImageFolder();
 
         mMediaRecorder = new MediaRecorder();
+         mIsAuto2=false;
         //this is new
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
         mTextureView = (TextureView) findViewById(R.id.textureView);
@@ -428,6 +455,16 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }
             }
         });
+        /*mAutobutton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mIsAuto2=true;
+                    return true;
+
+                }
+               });
+
+                */
         mSettingsbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -480,7 +517,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.ChangeShutterSpeed:
                                 mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                 mSeekbar.setVisibility(View.VISIBLE);
-                                mSeekbar.setMax((int)ShutterSpeed2);
+                                mSeekbar.setMax((int)ShutterSpeed2-(int)ShutterSpeed1);
+                                mMinimumShutterSpeed=(EditText) findViewById(R.id.MinimumShutterSpeed);
+                                mMinimumShutterSpeed.setVisibility(View.VISIBLE);
+                                mMinimumShutterSpeed.setText(ShutterSpeed1String);
+                                mMaximumShutterSpeed=(EditText) findViewById(R.id.MaximumShutterSpeed);
+                                mMaximumShutterSpeed.setVisibility(View.VISIBLE);
+                                mMaximumShutterSpeed.setText(ShutterSpeed2String);
                                 mTextSeekBar= (EditText) findViewById(R.id.editText);
                                 mTextSeekBar.setVisibility(View.VISIBLE);
                                 mTextSeekBar.setText("Shutter Speed:"+mSeekbar.getProgress()+"/"+mSeekbar.getMax());
@@ -490,7 +533,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                                                         @Override
                                                                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                                                             progress=progressValue;
-                                                                            //Toast.makeText(getApplicationContext(), "Progress:"+progress, Toast.LENGTH_SHORT).show();
+
                                                                         }
 
                                                                         @Override
@@ -630,9 +673,20 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
         surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         Surface previewSurface = new Surface(surfaceTexture);
+
+
+
+
+
+
+
+
         try {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, AutoNumber);
+
+
 
 
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface(),
@@ -646,8 +700,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         public void onConfigured(CameraCaptureSession session) {
                             mPreviewCaptureSession = session;
                             try {
+
                                 mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),
                                         null, mBackgroundHandler);
+
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
                             }
@@ -948,10 +1004,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             //Testing Exposure Time
             //units nanoseconds
-            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-            mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long)1600000000 );
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, (int) AutoNumber);
 
-            mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE,1 );
+            //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long)1600000000 );
+
+            //mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE,1 );
             CameraCaptureSession.CaptureCallback stillCaptureCallback = new
                     CameraCaptureSession.CaptureCallback() {
                         @Override
