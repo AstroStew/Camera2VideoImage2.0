@@ -45,6 +45,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -396,6 +397,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     Button mSettingsbutton;
     int ISOvalue;
+    int progressValue;
+    EditText mTextSeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -457,28 +460,53 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.ISO100:
 
                                 Toast.makeText(getApplicationContext(), "100", Toast.LENGTH_SHORT).show();
-                                ISOvalue=100;
+                                //ISOvalue=100;
                                 break;
                             case R.id.ISO200:
-                                ISOvalue=200;
+                                //ISOvalue=200;
                             break;
                             case R.id.ISO400:
-                                ISOvalue=400;
+                                //ISOvalue=400;
                                 Toast.makeText(getApplicationContext(), "400", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ISO800:
-                                ISOvalue=800;
+                                //ISOvalue=800;
                                 Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ISO1600:
-                                ISOvalue=1600;
+                                //ISOvalue=1600;
                                 Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.ChangeShutterSpeed:
                                 mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                 mSeekbar.setVisibility(View.VISIBLE);
-                                //mSeekbar.setOnSeekBarChangeListener();
-                                Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
+                                mSeekbar.setMax((int)ShutterSpeed2);
+                                mTextSeekBar= (EditText) findViewById(R.id.editText);
+                                mTextSeekBar.setVisibility(View.VISIBLE);
+                                mTextSeekBar.setText("Shutter Speed:"+mSeekbar.getProgress()+"/"+mSeekbar.getMax());
+
+                                mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                                                                        @Override
+                                                                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                                                            progress=progressValue;
+                                                                            //Toast.makeText(getApplicationContext(), "Progress:"+progress, Toast.LENGTH_SHORT).show();
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onStartTrackingTouch(SeekBar seekBar) {
+                                                                            Toast.makeText(getApplicationContext(), "Start", Toast.LENGTH_SHORT).show();
+
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onStopTrackingTouch(SeekBar seekBar) {
+                                                                            mTextSeekBar.setText("Shutter Speed:"+ mSeekbar.getProgress()+ "/"+mSeekbar.getMax());
+                                                                            Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    });
+                                        Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
+
 
                                 break;
 

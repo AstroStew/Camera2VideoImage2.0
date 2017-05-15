@@ -75,12 +75,13 @@
         android:layout_alignStart="@+id/CameraButton"
         android:layout_marginBottom="12dp"
         android:background="#ffffff"
-        android:backgroundTint="#ffffff"
+
         android:text="Raw Image Capture"
-        android:theme="@style/Base.TextAppearance.AppCompat.Widget.Button" />
+        android:theme="@style/AlertDialog.AppCompat.Light" />
 
     <SeekBar
         android:id="@+id/seekBar"
+        android:progress="@+id/progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/chronometer"
@@ -91,6 +92,20 @@
         android:theme="@style/Base.TextAppearance.AppCompat.Inverse"
         android:visibility="invisible"
         tools:layout_width="wrap_content" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBar"
+        android:layout_centerHorizontal="true"
+        android:background="#999999"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="none"
+        android:text="Shutter speed:"
+        android:textColor="#000000"
+        android:visibility="invisible" />
 
 
 </RelativeLayout>
