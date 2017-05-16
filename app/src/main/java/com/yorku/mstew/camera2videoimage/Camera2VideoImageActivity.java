@@ -433,6 +433,7 @@ int xx;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
                 setContentView(R.layout.activity_camera2_video_image);
 
 
@@ -930,15 +931,21 @@ int xx;
 
 
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    //mIsTimelapse = true;
+                    mIsTimelapse = true;
                     mRecordImageButton.setImageResource(R.mipmap.btn_timelapse);
-                    setupTimelapse();
-                    Toast.makeText(getApplicationContext(), "Recording Timelapse", Toast.LENGTH_SHORT).show();
+                    createVideoFileName();
+                    startRecord();
+                    mMediaRecorder.start();
+                    //Toast.makeText(getApplicationContext(), "Recording Timelapse", Toast.LENGTH_SHORT).show();
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.setVisibility(View.VISIBLE);
                     mChronometer.start();
-                    mMediaRecorder.start();
-                    startRecord();
+
+
+
+
+
+
 
 
 
@@ -951,7 +958,7 @@ int xx;
                 }
             }else {
                 mIsRecording = true;
-                mRecordImageButton.setImageResource(R.mipmap.vidpicbusy);
+                mRecordImageButton.setImageResource(R.mipmap.btn_timelapse);
                 try {
                     createVideoFileName();
                 } catch (IOException e) {
