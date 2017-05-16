@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.graphics.Paint;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -42,6 +43,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
@@ -408,17 +410,36 @@ int xx;
     EditText mMinimumShutterSpeed;
     EditText mMaximumShutterSpeed;
     Button mAutobutton;
+    EditText mISOtext;
     public boolean mIsAuto2=false;
     int AutoNumber=1;
     boolean menuonline=false;
     ImageButton mCloseALLbutton;
+    Button mShutterAuto;
+    boolean ShutterAutoon=false;
+    String ShutterSpeed2String;
+    String ShutterSpeed1String;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_camera2_video_image);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                setContentView(R.layout.activity_camera2_video_image);
 
 
+       //mShutterAuto=(Button) findViewById(R.id.shutterAuto);
+        /*mShutterAuto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!ShutterAutoon){
+                    AutoNumber=3;
+
+                }
+            }
+        });
+        */
 
 
         //Folders for Images and Videos
@@ -495,51 +516,94 @@ int xx;
                            int position = item.getItemId();
                            Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
                            long ShutterSpeed1 = (ShutterSpeed.getLower());
+
                            long ShutterSpeed2 = (ShutterSpeed.getUpper());
+                           Toast.makeText(getApplicationContext(), "ShutterSpeedMax: "+ ShutterSpeed2, Toast.LENGTH_LONG).show();
                            double ShutterSpeed1Double = (double) ShutterSpeed1 / 1000000000;
                            double ShutterSpeed2Double = (double) ShutterSpeed2 / 1000000000;
 
+
                            //trying to convert to fractions
                            double x = 1 / ShutterSpeed1Double;
+                           if(ShutterSpeed2Double<=1){
+
                            double y = 1 / ShutterSpeed2Double;
-                           String ShutterSpeed1String = ("1" + "/" + x);
-                           String ShutterSpeed2String = ("1/" + y);
+                                ShutterSpeed2String = ("1"+"/"+ (int)y);
+                           }
+                           else {
+                           double y=ShutterSpeed2Double;
+                                ShutterSpeed2String = ("" + (int)y);
+
+                           }
+                           ShutterSpeed1String = ("1" + "/" + (int)x);
+
+
+                           mISOtext=(EditText) findViewById(R.id.ISOtext);
+                           mISOtext.setText("ISO:AUTO");
 
 
                            switch (position) {
                                case R.id.ChangeISO:
 
 
+                               mISOtext.setVisibility(View.VISIBLE);
+                                   mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
+                                   mCloseALLbutton.setVisibility(View.VISIBLE);
+                                   mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
+                                       @Override
+                                       public void onClick(View v) {
+                                           mISOtext.setVisibility(View.INVISIBLE);
+                                            mCloseALLbutton.setVisibility(View.INVISIBLE);
+
+                                       }
+                                   });
+
+                                   //mISOtext.setText("ISO:"+ ISOvalue);
+
+
                                    break;
                                case R.id.ISO100:
 
-                                   Toast.makeText(getApplicationContext(), "100", Toast.LENGTH_SHORT).show();
+                                   //Toast.makeText(getApplicationContext(), "100 ISO", Toast.LENGTH_SHORT).show();
                                    ISOvalue = 100;
+                                   mISOtext.setText("ISO:"+ ISOvalue);
+
                                    startPreview();
                                    break;
                                case R.id.ISO200:
                                    ISOvalue = 200;
+
+                                   mISOtext.setText("ISO:"+ ISOvalue);
                                    startPreview();
                                    break;
                                case R.id.ISO400:
                                    ISOvalue = 400;
+                                   mISOtext.setText("ISO:"+ ISOvalue);
                                    startPreview();
-                                   Toast.makeText(getApplicationContext(), "400", Toast.LENGTH_SHORT).show();
+
+                                   //Toast.makeText(getApplicationContext(), "400 ISO", Toast.LENGTH_SHORT).show();
                                    break;
                                case R.id.ISO800:
                                    ISOvalue = 800;
+                                   mISOtext.setText("ISO:"+ ISOvalue);
                                    startPreview();
-                                   Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
+
+                                   //Toast.makeText(getApplicationContext(), "800", Toast.LENGTH_SHORT).show();
                                    break;
                                case R.id.ISO1600:
                                    ISOvalue = 1600;
+                                   mISOtext.setText("ISO:"+ ISOvalue);
                                    startPreview();
-                                   Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
+                                   //Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
                                    break;
                                case R.id.ChangeShutterSpeed:
                                    mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                    mSeekbar.setVisibility(View.VISIBLE);
-                                   mSeekbar.setMax((int) ShutterSpeed2 - (int) ShutterSpeed1);
+                                   if(ShutterSpeed2-ShutterSpeed1!=0) {
+                                       mSeekbar.setMax((int) (ShutterSpeed2 - ShutterSpeed1));
+                                   }
+                                   //Note:The SeekBar can only take Interger Values. If ShutterSpeed2-ShutterSpeed1==0 then the ShutterSpeed difference is too great
+                                   //Integers can 
                                    //mSeekbar.setProgress(100000);
                                    mMinimumShutterSpeed = (EditText) findViewById(R.id.MinimumShutterSpeed);
                                    mMinimumShutterSpeed.setVisibility(View.VISIBLE);
@@ -549,7 +613,8 @@ int xx;
                                    mMaximumShutterSpeed.setText(ShutterSpeed2String);
                                    mTextSeekBar = (EditText) findViewById(R.id.editText);
                                    mTextSeekBar.setVisibility(View.VISIBLE);
-                                   mTextSeekBar.setText("Shutter Speed:" + mSeekbar.getProgress() + "/" + mSeekbar.getMax());
+
+                                   mTextSeekBar.setText("Shutter Speed(in ns) :" + xx + "/" + mSeekbar.getMax());
                                    mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
                                    mCloseALLbutton.setVisibility(View.VISIBLE);
                                    mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
@@ -573,6 +638,7 @@ int xx;
 
                                        @Override
                                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
                                            progress = progressValue;
 
                                        }
@@ -585,7 +651,7 @@ int xx;
 
                                        @Override
                                        public void onStopTrackingTouch(SeekBar seekBar) {
-                                           mTextSeekBar.setText("Shutter Speed:" + mSeekbar.getProgress() + "/" + mSeekbar.getMax());
+                                           mTextSeekBar.setText("Shutter Speed(in ns):" + mSeekbar.getProgress() + "/" + mSeekbar.getMax());
                                            Toast.makeText(getApplicationContext(), "Setting Shutter Speed", Toast.LENGTH_SHORT).show();
                                            xx = mSeekbar.getProgress();
                                            startPreview();
@@ -744,6 +810,10 @@ int xx;
             }
             else if(AutoNumber==2){
                 Toast.makeText(getApplicationContext(), "5193301137", Toast.LENGTH_SHORT).show();
+            }
+            else if(AutoNumber==3){
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, CaptureRequest )
             }
 
 
