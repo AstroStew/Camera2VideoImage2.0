@@ -518,7 +518,7 @@ int xx;
                            long ShutterSpeed1 = (ShutterSpeed.getLower());
 
                            long ShutterSpeed2 = (ShutterSpeed.getUpper());
-                           Toast.makeText(getApplicationContext(), "ShutterSpeedMax: "+ ShutterSpeed2, Toast.LENGTH_LONG).show();
+                           //Toast.makeText(getApplicationContext(), "ShutterSpeedMax: "+ ShutterSpeed2, Toast.LENGTH_LONG).show();
                            double ShutterSpeed1Double = (double) ShutterSpeed1 / 1000000000;
                            double ShutterSpeed2Double = (double) ShutterSpeed2 / 1000000000;
 
@@ -554,6 +554,13 @@ int xx;
                                        public void onClick(View v) {
                                            mISOtext.setVisibility(View.INVISIBLE);
                                             mCloseALLbutton.setVisibility(View.INVISIBLE);
+                                           if(mSeekbar.getVisibility()==View.VISIBLE){
+                                               mSeekbar.setVisibility(View.INVISIBLE);
+                                               mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
+                                               mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
+                                               mTextSeekBar.setVisibility(View.INVISIBLE);
+                                           }
+
 
                                        }
                                    });
@@ -602,8 +609,12 @@ int xx;
                                    if(ShutterSpeed2-ShutterSpeed1!=0) {
                                        mSeekbar.setMax((int) (ShutterSpeed2 - ShutterSpeed1));
                                    }
+                                   else if(ShutterSpeed2-ShutterSpeed1==0){
+                                       Toast.makeText(getApplicationContext(), "Error in difference", Toast.LENGTH_SHORT).show();
+                                   }
+
                                    //Note:The SeekBar can only take Interger Values. If ShutterSpeed2-ShutterSpeed1==0 then the ShutterSpeed difference is too great
-                                   //Integers can 
+                                   //Integers can
                                    //mSeekbar.setProgress(100000);
                                    mMinimumShutterSpeed = (EditText) findViewById(R.id.MinimumShutterSpeed);
                                    mMinimumShutterSpeed.setVisibility(View.VISIBLE);
@@ -624,6 +635,9 @@ int xx;
                                                                               mSeekbar.setVisibility(View.INVISIBLE);
                                                                               mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
                                                                               mCloseALLbutton.setVisibility(View.INVISIBLE);
+                                                                              if (mISOtext.getVisibility()==View.VISIBLE){
+                                                                                  mISOtext.setVisibility(View.INVISIBLE);
+                                                                              }
 
                                                                               //boolean menuonline=false;
 
@@ -657,7 +671,7 @@ int xx;
                                            startPreview();
                                        }
                                    });
-                                   Toast.makeText(getApplicationContext(), "ChangeShutterSpeed", Toast.LENGTH_SHORT).show();
+
 
 
                                    break;
