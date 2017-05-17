@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -36,10 +37,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -67,6 +70,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.toIntExact;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -129,7 +133,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     };
 
-int xx;
+long xx;
     @Override
     protected void onResume() {
         super.onResume();
@@ -410,7 +414,7 @@ int xx;
     //onCreate was here since the start
 
     Button mSettingsbutton;
-    int ISOvalue;
+    int ISOvalue=0;
     int progressValue;
     EditText mTextSeekBar;
     EditText mMinimumShutterSpeed;
@@ -426,6 +430,7 @@ int xx;
     String ShutterSpeed2String;
     String ShutterSpeed1String;
     private static Uri mRequestingAppUri;
+    SeekBar mSeekBar2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -523,25 +528,44 @@ int xx;
 
 
                    //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
-                   final PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
+                    PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+               SubMenu sM=popupMenu.getMenu().addSubMenu(0,100,0, "Change Resolution");
+               StreamConfigurationMap scmap=mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+               final Size previewSizes[] =scmap.getOutputSizes(ImageFormat.JPEG);
+               for (int i=0; i<previewSizes.length; i++){
+                   sM.add(0,i+200,0,""+previewSizes[i]);
+               }
+
+
+
+
                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                        @Override
                        public boolean onMenuItemClick(MenuItem item) {
+                           //add settings
                            int position = item.getItemId();
-                           Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
-                           long ShutterSpeed1 = (ShutterSpeed.getLower());
+                           for(int i=0; i < previewSizes.length; i++){
+                               if(position==200+i){
+                                   Toast.makeText(getApplicationContext(), ""+ previewSizes[i], Toast.LENGTH_SHORT).show();
+                                   adjustAspectRatio(previewSizes[i].getHeight(),previewSizes[i].getWidth());
+                                   setupCamera(previewSizes[i].getHeight(),previewSizes[i].getWidth());
+                                   startPreview();
 
-                           long ShutterSpeed2 = (ShutterSpeed.getUpper());
+                               }
+                           }
+
+
+                           Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+                           final long ShutterSpeed1 = (ShutterSpeed.getLower());
+
+                           final long ShutterSpeed2 = (ShutterSpeed.getUpper());
                            //Toast.makeText(getApplicationContext(), "ShutterSpeedMax: "+ ShutterSpeed2, Toast.LENGTH_LONG).show();
                            double ShutterSpeed1Double = (double) ShutterSpeed1 / 1000000000;
                            double ShutterSpeed2Double = (double) ShutterSpeed2 / 1000000000;
-
-
                            //trying to convert to fractions
                            double x = 1 / ShutterSpeed1Double;
                            if(ShutterSpeed2Double<=1){
-
                            double y = 1 / ShutterSpeed2Double;
                                 ShutterSpeed2String = ("1"+"/"+ (int)y);
                            }
@@ -551,10 +575,12 @@ int xx;
 
                            }
                            ShutterSpeed1String = ("1" + "/" + (int)x);
-
+                            //since ShutterSpeed1 is usually a fraction anyways
 
                            mISOtext=(EditText) findViewById(R.id.ISOtext);
-                           mISOtext.setText("ISO:AUTO");
+                           if (ISOvalue==0) {
+                               mISOtext.setText("ISO:AUTO");
+                           }
 
 
                            switch (position) {
@@ -621,11 +647,18 @@ int xx;
                                case R.id.ChangeShutterSpeed:
                                    mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                    mSeekbar.setVisibility(View.VISIBLE);
-                                   if(ShutterSpeed2-ShutterSpeed1!=0) {
+                                   mTextSeekBar = (EditText) findViewById(R.id.editText);
+                                   mTextSeekBar.setVisibility(View.VISIBLE);
+                                   if(ShutterSpeed2Double<1) {
                                        mSeekbar.setMax((int) (ShutterSpeed2 - ShutterSpeed1));
                                    }
-                                   else if(ShutterSpeed2-ShutterSpeed1==0){
-                                       Toast.makeText(getApplicationContext(), "Error in difference", Toast.LENGTH_SHORT).show();
+                                   else {
+                                       //Working on a precision bar for camera's with higher shutter speed capacity
+                                       Toast.makeText(getApplicationContext(), "Precision Option Available", Toast.LENGTH_SHORT).show();
+                                        mSeekBar2= (SeekBar) findViewById(R.id.seekBar2);
+                                       mSeekBar2.setVisibility(View.VISIBLE);
+                                       mSeekbar.setMax((int)Math.round(ShutterSpeed2Double));
+                                       mTextSeekBar.setText("Shutter Speed(in s)");
                                    }
 
                                    //Note:The SeekBar can only take Interger Values. If ShutterSpeed2-ShutterSpeed1==0 then the ShutterSpeed difference is too great
@@ -637,8 +670,8 @@ int xx;
                                    mMaximumShutterSpeed = (EditText) findViewById(R.id.MaximumShutterSpeed);
                                    mMaximumShutterSpeed.setVisibility(View.VISIBLE);
                                    mMaximumShutterSpeed.setText(ShutterSpeed2String);
-                                   mTextSeekBar = (EditText) findViewById(R.id.editText);
-                                   mTextSeekBar.setVisibility(View.VISIBLE);
+
+
 
                                    mTextSeekBar.setText("Shutter Speed(in ns) :" + xx + "/" + mSeekbar.getMax());
                                    mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
@@ -682,7 +715,7 @@ int xx;
                                        public void onStopTrackingTouch(SeekBar seekBar) {
                                            mTextSeekBar.setText("Shutter Speed(in ns):" + mSeekbar.getProgress() + "/" + mSeekbar.getMax());
                                            Toast.makeText(getApplicationContext(), "Setting Shutter Speed", Toast.LENGTH_SHORT).show();
-                                           xx = mSeekbar.getProgress();
+                                           xx = (mSeekbar.getProgress());
                                            startPreview();
                                        }
                                    });
@@ -1432,17 +1465,35 @@ int xx;
     //Raw Image Switch
     private Switch mRawSwitch;
     //ISO CHANGE
+//ASpect Ratio stuff
+    private static final String TAG = Camera2VideoImageActivity.TAG;
+    private void adjustAspectRatio(int videoWidth, int videoHeight) {
+        int viewWidth = mTextureView.getWidth();
+        int viewHeight = mTextureView.getHeight();
+        double aspectRatio = (double) videoHeight / videoWidth;
 
+        int newWidth, newHeight;
+        if (viewHeight > (int) (viewWidth * aspectRatio)) {
+            // limited by narrow width; restrict height
+            newWidth = viewWidth;
+            newHeight = (int) (viewWidth * aspectRatio);
+        } else {
+            // limited by short height; restrict width
+            newWidth = (int) (viewHeight / aspectRatio);
+            newHeight = viewHeight;
+        }
+        int xoff = (viewWidth - newWidth) / 2;
+        int yoff = (viewHeight - newHeight) / 2;
+        Log.v(TAG, "video=" + videoWidth + "x" + videoHeight +
+                " view=" + viewWidth + "x" + viewHeight +
+                " newView=" + newWidth + "x" + newHeight +
+                " off=" + xoff + "," + yoff);
 
-
-
-
-
-
-
-
+        Matrix txform = new Matrix();
+        mTextureView.getTransform(txform);
+        txform.setScale((float) newWidth / viewWidth, (float) newHeight / viewHeight);
+        //txform.postRotate(10);          // just for fun
+        txform.postTranslate(xoff, yoff);
+        mTextureView.setTransform(txform);
+    }
 }
-
-
-
-
