@@ -155,7 +155,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
             mCameraDevice = camera;
-            //Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
 
             if (mIsRecording) {
                 try {
@@ -264,49 +264,50 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             for (String cameraId : cameraManager.getCameraIdList()) {
+
                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
 
 
                 //CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-            if (contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
-                    CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
-                //continue;
-                map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                if (contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
+                        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
+                    //continue;
+                    map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
 
-                int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
-                mTotalRotation = sensorDeviceRotation(cameraCharacteristics, deviceOrientation);
-                boolean swapRotation = mTotalRotation == 90 || mTotalRotation == 270;
-                int rotatedWidth = width;
-                int rotatedHeight = height;
-                if (swapRotation) {
-                    rotatedWidth = height;
-                    rotatedHeight = width;
+                    int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
+                    mTotalRotation = sensorDeviceRotation(cameraCharacteristics, deviceOrientation);
+                    boolean swapRotation = mTotalRotation == 90 || mTotalRotation == 270;
+                    int rotatedWidth = width;
+                    int rotatedHeight = height;
+                    if (swapRotation) {
+                        rotatedWidth = height;
+                        rotatedHeight = width;
+
+                    }
+
+                    mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
+
+                    mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
+
+
+                    mImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
+                    mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), ImageFormat.JPEG, 1);
+                    mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+                    mRawImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.RAW_SENSOR), rotatedWidth, rotatedHeight);
+                    mRawImageReader = ImageReader.newInstance(mRawImageSize.getWidth(), mRawImageSize.getHeight(), ImageFormat.RAW_SENSOR, 1);
+                    mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener, mBackgroundHandler);
+
+                    mCameraId = cameraManager.getCameraIdList()[FlipNumber];
+                    mCameraCharacteristics = cameraCharacteristics;
+
+
+                    //continue;
 
                 }
 
-                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
-
-                mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
-
-
-                mImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
-                mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), ImageFormat.JPEG, 1);
-                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
-                mRawImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.RAW_SENSOR), rotatedWidth, rotatedHeight);
-                mRawImageReader = ImageReader.newInstance(mRawImageSize.getWidth(), mRawImageSize.getHeight(), ImageFormat.RAW_SENSOR, 1);
-                mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener, mBackgroundHandler);
-
-                mCameraId = cameraManager.getCameraIdList()[FlipNumber];
-                mCameraCharacteristics = cameraCharacteristics;
-
-
-                //continue;
 
             }
-
-
-        }
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -451,8 +452,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private static Uri mRequestingAppUri;
     SeekBar mSeekBar2;
     ImageButton mFlipCamera;
-    boolean mFlipCameraBoolean=true;
+    Boolean FlipNumberBoolean=false;
     int FlipNumber;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -474,6 +476,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             }
         });
         */
+        //FlipNumber=0;
+
         createVideoFolder();
         createImageFolder();
         Intent intent=getIntent();
@@ -497,20 +501,29 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mFlipCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mFlipCameraBoolean){
-                    mFlipCameraBoolean=false;
+                if (FlipNumberBoolean){
+
+                    FlipNumberBoolean=false;
                     FlipNumber=0;
                     mFlipCamera.setImageResource(R.drawable.flipfront);
-                    connectCamera();
-                    Toast.makeText(getApplicationContext(), "FlipA", Toast.LENGTH_SHORT).show();
+                    mMediaRecorder=new MediaRecorder();
+
+
+                    Toast.makeText(getApplicationContext(), "FlipNumber should now be 0", Toast.LENGTH_SHORT).show();
+                    startPreview();
+
 
 
                 }else {
-                    mFlipCameraBoolean=true;
+
                     FlipNumber=1;
-                    mFlipCamera.setImageResource(R.drawable.flipback);
                     connectCamera();
-                    Toast.makeText(getApplicationContext(), "FlipB", Toast.LENGTH_SHORT).show();
+                    startPreview();
+                    FlipNumberBoolean=true;
+                    mFlipCamera.setImageResource(R.drawable.flipback);
+
+                    Toast.makeText(getApplicationContext(), "FlipNumber should now be 1", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
