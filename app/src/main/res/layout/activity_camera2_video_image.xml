@@ -173,11 +173,9 @@
         android:textColor="#ffffff"
         android:visibility="invisible"
         android:enabled="false"
-        android:layout_alignBottom="@+id/button"
+        android:layout_below="@+id/CloseALLbutton"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/button"
-        android:layout_toEndOf="@+id/button" />
+        android:layout_alignParentEnd="true" />
 
     <SeekBar
         android:id="@+id/seekBar2"
@@ -190,6 +188,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <ImageButton
+        android:id="@+id/FlipButton"
+        android:src="@drawable/flipfront"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/button"
+        android:layout_alignLeft="@+id/chronometer"
+        android:layout_alignStart="@+id/chronometer"
+        android:text="Button" />
 
 
 </RelativeLayout>

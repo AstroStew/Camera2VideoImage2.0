@@ -247,9 +247,12 @@ long xx;
                         CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
                     continue;
                 }
-                if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT) {
+                if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT ) {
+
                     continue;
                 }
+
+
                 StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                 /*Size largestImageSize=Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),new CompareSizeByArea()
@@ -287,9 +290,11 @@ long xx;
                 mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener, mBackgroundHandler);
 
                 mCameraId = cameraId;
+
                 mCameraCharacteristics = cameraCharacteristics;
                 return;
             }
+
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -431,6 +436,9 @@ long xx;
     String ShutterSpeed1String;
     private static Uri mRequestingAppUri;
     SeekBar mSeekBar2;
+    ImageButton mFlipCamera;
+    boolean mFlipCameraBoolean=true;
+    int FlipNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -471,7 +479,26 @@ long xx;
         mStillImageButton = (ImageButton) findViewById(R.id.CameraButton);
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
 
+        mFlipCamera= (ImageButton) findViewById(R.id.FlipButton);
 
+        mFlipCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mFlipCameraBoolean){
+                    mFlipCameraBoolean=false;
+                    FlipNumber=0;
+                    mFlipCamera.setImageResource(R.drawable.flipfront);
+                    startPreview();
+
+
+                }else if (!mFlipCameraBoolean){
+                    mFlipCameraBoolean=true;
+                    FlipNumber=1;
+                    mFlipCamera.setImageResource(R.drawable.flipback);
+                    startPreview();
+                }
+            }
+        });
         mSettingsbutton = (Button) findViewById(R.id.button);
         mRawSwitch = (Switch) findViewById(R.id.RawSwitch);
         mRawSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -647,6 +674,7 @@ long xx;
                                case R.id.ChangeShutterSpeed:
                                    mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                    mSeekbar.setVisibility(View.VISIBLE);
+                                   mSeekbar.setProgress(progressValue);
                                    mTextSeekBar = (EditText) findViewById(R.id.editText);
                                    mTextSeekBar.setVisibility(View.VISIBLE);
                                    if(ShutterSpeed2Double<1) {
