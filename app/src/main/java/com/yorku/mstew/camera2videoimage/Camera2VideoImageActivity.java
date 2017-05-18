@@ -38,6 +38,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+import android.text.Editable;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.util.Range;
@@ -73,6 +74,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_AUTO;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
@@ -477,6 +479,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int ISOprogressValue;
     int ISOseekProgress;
     private int mWBMode = CONTROL_AWB_MODE_AUTO;
+    ImageButton mConfirm;
 
 
     @Override
@@ -678,9 +681,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         if (ISOvalue==0) {
                             mISOtext.setText("ISO:AUTO");
                         }
+
                         final Range <Integer> ISOrange= mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
                         final int LowestISO=ISOrange.getLower();
                         int HighestISO=ISOrange.getUpper();
+
+
+
+
+
 
                         switch (position) {
                             case R.id.WhiteBalanceCloudyDaylight:
@@ -803,7 +812,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onStopTrackingTouch(SeekBar seekBar) {
-                                        mISOtext.setText("ISO:" + (mISOseekbar.getProgress()+LowestISO) + "/" + (mISOseekbar.getMax()+LowestISO));
+                                        mISOtext.setText("ISO:" + (mISOseekbar.getProgress()+LowestISO));
                                        ISOseekProgress=(mISOseekbar.getProgress()+LowestISO);
                                         ISOvalue=ISOseekProgress;
                                         startPreview();
@@ -811,13 +820,49 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                startPreview();
+                                break;
+                            case R.id.custominputISO:
+                                mConfirm=(ImageButton) findViewById(R.id.confirmbutton);
+                                mConfirm.setVisibility(View.VISIBLE);
+
+
+                                mISOtext.setEnabled(true);
 
 
 
+
+
+                               String mISOtextString = mISOtext.getText().toString();
+                                String mISOARRAY []= mISOtextString.split(":");
+                                final int[] results=new int[2];
+                                if(mISOARRAY[1].equals("AUTO")){
+                                    results[1]=200;
+
+                                }else{
+                                    results[1]=Integer.parseInt(mISOARRAY[1]);
+                                    Toast.makeText(getApplicationContext(), ""+results[1], Toast.LENGTH_SHORT).show();
+
+                                }
+                                ISOvalue=results[1];
+                                //Click to input
+                                /*mConfirm.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        mISOtext.setEnabled(false);
+
+                                        startPreview();
+                                        mConfirm.setVisibility(View.INVISIBLE);
+
+
+                                    }
+                                });
+                                */
 
 
                                 startPreview();
                                 break;
+
 
 
                             case R.id.ChangeShutterSpeed:

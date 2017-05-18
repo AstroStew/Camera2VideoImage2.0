@@ -31,6 +31,11 @@
         android:id="@+id/customISO"
         android:title="custom ISO"
                 android:icon="@drawable/customiso"/>
+            <item
+        android:id="@+id/custominputISO"
+        android:title="Input ISO"
+                android:icon="@drawable/custom_input_iso"
+                />
 
         </menu>
 
