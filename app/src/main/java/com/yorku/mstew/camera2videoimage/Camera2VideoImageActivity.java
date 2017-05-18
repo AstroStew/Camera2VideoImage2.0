@@ -198,8 +198,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     //doesn't work
     private String mCameraId;
-    private String cameraId;
-    int deviceOrientation;
+
+
     private int mTotalRotation;
     StreamConfigurationMap map;
     private CameraCaptureSession mPreviewCaptureSession;
@@ -249,10 +249,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
         return true;
     } */
-    /*private static final String[] VIDEO_PERMISSIONS ={
+    private static final String[] VIDEO_PERMISSIONS ={
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
-    }; */
+    };
 
 
     private void setupCamera(int width, int height) {
@@ -263,15 +263,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            for (String cameraId : cameraManager.getCameraIdList()) {
 
-                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+            mCameraId = cameraManager.getCameraIdList()[FlipNumber];
 
 
-                //CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-                if (!contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
-                        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
-                    continue; }
+
+
+
+                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(mCameraId);
+
                     map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
 
@@ -294,34 +294,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.JPEG), rotatedWidth, rotatedHeight);
                     mImageReader = ImageReader.newInstance(mImageSize.getWidth(), mImageSize.getHeight(), ImageFormat.JPEG, 1);
                     mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+
+
                     mRawImageSize = chooseOptimalSize(map.getOutputSizes(ImageFormat.RAW_SENSOR), rotatedWidth, rotatedHeight);
                     mRawImageReader = ImageReader.newInstance(mRawImageSize.getWidth(), mRawImageSize.getHeight(), ImageFormat.RAW_SENSOR, 1);
                     mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener, mBackgroundHandler);
 
-
-                    /*if(ROTATE != null){
-                        Log.e("FrontCamera", "Test");
-
-                        mCameraId = CameraManager.getCameraIdList()[1];
-
-                        ROTATE = null;
-
-                    } else {
-
-                        Log.e("BackCamera", "Test");
-
-                        mCameraId = CameraManager.getCameraIdList()[0];
-
-
-                    }
-                    */
-                    mCameraId = cameraManager.getCameraIdList()[FlipNumber];
+                    //mCameraId = cameraManager.getCameraIdList()[FlipNumber];
                     mCameraCharacteristics = cameraCharacteristics;
 
 
                     //continue;
 
-                }
+
+
+
+
 
 
 
@@ -471,7 +459,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     ImageButton mFlipCamera;
     Boolean FlipNumberBoolean=false;
     int FlipNumber;
-    public static String ROTATE=null;
 
 
     @Override
@@ -529,8 +516,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     if (mTextureView.isAvailable()) {
                         Toast.makeText(getApplicationContext(), "FlipNumber should now be 0", Toast.LENGTH_SHORT).show();
 
-                        ROTATE = "fulfilled";
-                        Log.e("Rotate", "" + ROTATE);
+
+
                         setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
                         connectCamera();
 
@@ -538,7 +525,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
                     }
                 }else{
-                    Log.e("ClickBack","Test");
+
                     FlipNumberBoolean=true;
                     FlipNumber=1;
                     mFlipCamera.setImageResource(R.drawable.flipback);
