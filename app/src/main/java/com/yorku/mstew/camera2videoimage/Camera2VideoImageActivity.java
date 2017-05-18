@@ -269,9 +269,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                 //CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-                if (contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
+                if (!contains(cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
                         CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
-                    //continue;
+                    continue; }
                     map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
 
@@ -298,6 +298,23 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mRawImageReader = ImageReader.newInstance(mRawImageSize.getWidth(), mRawImageSize.getHeight(), ImageFormat.RAW_SENSOR, 1);
                     mRawImageReader.setOnImageAvailableListener(mOnRawImageAvailableListener, mBackgroundHandler);
 
+
+                    /*if(ROTATE != null){
+                        Log.e("FrontCamera", "Test");
+
+                        mCameraId = CameraManager.getCameraIdList()[1];
+
+                        ROTATE = null;
+
+                    } else {
+
+                        Log.e("BackCamera", "Test");
+
+                        mCameraId = CameraManager.getCameraIdList()[0];
+
+
+                    }
+                    */
                     mCameraId = cameraManager.getCameraIdList()[FlipNumber];
                     mCameraCharacteristics = cameraCharacteristics;
 
@@ -307,8 +324,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }
 
 
-            }
-        } catch (CameraAccessException e) {
+
+        } catch(CameraAccessException e) {
             e.printStackTrace();
         }
     }
@@ -454,6 +471,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     ImageButton mFlipCamera;
     Boolean FlipNumberBoolean=false;
     int FlipNumber;
+    public static String ROTATE=null;
 
 
     @Override
@@ -476,7 +494,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             }
         });
         */
-        //FlipNumber=0;
 
         createVideoFolder();
         createImageFolder();
@@ -485,10 +502,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         if(MediaStore.ACTION_IMAGE_CAPTURE.equals(action)){
             mRequestingAppUri=intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
         }
-
-        //Folders for Images and Videos
-
-
         mMediaRecorder = new MediaRecorder();
         //mIsAuto2=false;
         //this is new
@@ -498,35 +511,53 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
         mFlipCamera= (ImageButton) findViewById(R.id.FlipButton);
 
+
+
         mFlipCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (FlipNumberBoolean){
+                if (FlipNumberBoolean) {
 
-                    FlipNumberBoolean=false;
-                    FlipNumber=0;
+                    FlipNumberBoolean = false;
+                    FlipNumber = 0;
                     mFlipCamera.setImageResource(R.drawable.flipfront);
-                    mMediaRecorder=new MediaRecorder();
+                    closeCamera();
+                    stopBackgroundThread();
 
+                    startBackgroundThread();
 
-                    Toast.makeText(getApplicationContext(), "FlipNumber should now be 0", Toast.LENGTH_SHORT).show();
-                    startPreview();
+                    if (mTextureView.isAvailable()) {
+                        Toast.makeText(getApplicationContext(), "FlipNumber should now be 0", Toast.LENGTH_SHORT).show();
 
+                        ROTATE = "fulfilled";
+                        Log.e("Rotate", "" + ROTATE);
+                        setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
+                        connectCamera();
 
-
-                }else {
-
-                    FlipNumber=1;
-                    connectCamera();
-                    startPreview();
+                    } else {
+                        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+                    }
+                }else{
+                    Log.e("ClickBack","Test");
                     FlipNumberBoolean=true;
+                    FlipNumber=1;
                     mFlipCamera.setImageResource(R.drawable.flipback);
+                    closeCamera();
+                    stopBackgroundThread();
+                    startBackgroundThread();
+                    if(mTextureView.isAvailable()){
+                        setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
+                        connectCamera();
+                    }else{
+                        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+                    }
 
-                    Toast.makeText(getApplicationContext(), "FlipNumber should now be 1", Toast.LENGTH_SHORT).show();
+
 
                 }
             }
         });
+
         mSettingsbutton = (Button) findViewById(R.id.button);
         mRawSwitch = (Switch) findViewById(R.id.RawSwitch);
         mRawSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -660,8 +691,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                //mISOtext.setText("ISO:"+ ISOvalue);
-
 
                                 break;
                             case R.id.ISO100:
@@ -741,10 +770,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         if (mISOtext.getVisibility()==View.VISIBLE){
                                             mISOtext.setVisibility(View.INVISIBLE);
                                         }
-
-                                        //boolean menuonline=false;
-
-
                                     }
                                 });
 
