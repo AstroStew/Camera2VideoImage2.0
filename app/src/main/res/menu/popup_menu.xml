@@ -27,6 +27,10 @@
         android:id="@+id/ISO1600"
         android:title="ISO1600"
                 android:icon="@mipmap/isopic1600"/>
+            <item
+        android:id="@+id/customISO"
+        android:title="custom ISO"
+                android:icon="@drawable/customiso"/>
 
         </menu>
 

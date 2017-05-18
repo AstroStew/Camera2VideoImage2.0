@@ -2,6 +2,7 @@ package com.yorku.mstew.camera2videoimage;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
@@ -37,10 +38,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.Surface;
@@ -55,6 +58,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -135,6 +139,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     };
 
     long xx;
+    long xx2;
     @Override
     protected void onResume() {
         super.onResume();
@@ -459,6 +464,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     ImageButton mFlipCamera;
     Boolean FlipNumberBoolean=false;
     int FlipNumber;
+    private TextView  mCameraInfoTextView;
+    SeekBar mISOseekbar;
+    int ISOprogressValue;
+    int ISOseekProgress;
 
 
     @Override
@@ -603,11 +612,18 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 SubMenu sM=popupMenu.getMenu().addSubMenu(0,100,0, "Change Resolution");
+
+
+
                 StreamConfigurationMap scmap=mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
                 final Size previewSizes[] =scmap.getOutputSizes(ImageFormat.JPEG);
-                for (int i=0; i<previewSizes.length; i++){
+
+                                for (int i=0; i<previewSizes.length; i++){
                     sM.add(0,i+200,0,""+previewSizes[i]);
                 }
+
+
 
 
 
@@ -653,13 +669,16 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         if (ISOvalue==0) {
                             mISOtext.setText("ISO:AUTO");
                         }
-
+                        final Range <Integer> ISOrange= mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
+                        final int LowestISO=ISOrange.getLower();
+                        int HighestISO=ISOrange.getUpper();
 
                         switch (position) {
                             case R.id.ChangeISO:
 
 
                                 mISOtext.setVisibility(View.VISIBLE);
+
                                 mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
                                 mCloseALLbutton.setVisibility(View.VISIBLE);
                                 mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
@@ -680,6 +699,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                                 break;
+
                             case R.id.ISO100:
 
                                 //Toast.makeText(getApplicationContext(), "100 ISO", Toast.LENGTH_SHORT).show();
@@ -714,6 +734,43 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 startPreview();
                                 //Toast.makeText(getApplicationContext(), "1600", Toast.LENGTH_SHORT).show();
                                 break;
+                            case R.id.customISO:
+                                Toast.makeText(getApplicationContext(), "Custom ISO", Toast.LENGTH_SHORT).show();
+                                mISOseekbar = (SeekBar) findViewById(R.id.ISOseekbar);
+                                mISOseekbar.setVisibility(View.VISIBLE);
+
+                                mISOseekbar.setMax((int)HighestISO-LowestISO);
+
+                                mISOseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                    @Override
+                                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                        progress=ISOprogressValue;
+                                    }
+
+                                    @Override
+                                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                                    }
+
+                                    @Override
+                                    public void onStopTrackingTouch(SeekBar seekBar) {
+                                        mISOtext.setText("ISO:" + (mISOseekbar.getProgress()+LowestISO) + "/" + (mISOseekbar.getMax()+LowestISO));
+                                       ISOseekProgress=(mISOseekbar.getProgress()+LowestISO);
+                                        ISOvalue=ISOseekProgress;
+                                        startPreview();
+
+                                    }
+                                });
+
+
+
+
+
+
+                                startPreview();
+                                break;
+
+
                             case R.id.ChangeShutterSpeed:
                                 mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                 mSeekbar.setVisibility(View.VISIBLE);
@@ -744,7 +801,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
-                                mTextSeekBar.setText("Shutter Speed(in ns) :" + xx + "/" + mSeekbar.getMax());
+                                //mTextSeekBar.setText("Shutter Speed(in ns) :" +  + "/" + mSeekbar.getMax());
                                 mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
                                 mCloseALLbutton.setVisibility(View.VISIBLE);
                                 mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
@@ -780,9 +837,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onStopTrackingTouch(SeekBar seekBar) {
-                                        mTextSeekBar.setText("Shutter Speed(in ns):" + mSeekbar.getProgress() + "/" + mSeekbar.getMax());
+                                        mTextSeekBar.setText("Shutter Speed(in ns):" + (mSeekbar.getProgress()+ShutterSpeed1) + "/" + Math.round(mSeekbar.getMax()+ShutterSpeed1));
                                         Toast.makeText(getApplicationContext(), "Setting Shutter Speed", Toast.LENGTH_SHORT).show();
-                                        xx = (mSeekbar.getProgress());
+                                        xx=(mSeekbar.getProgress()+ShutterSpeed1);
+
                                         startPreview();
                                     }
                                 });
@@ -795,19 +853,38 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.getCameraInfo:
+                                LayoutInflater inflater = LayoutInflater.from(Camera2VideoImageActivity.this);
+                                View cameraInfoSubView = inflater.inflate(R.layout.camera_info_alertdialog, null);
+                                mCameraInfoTextView = (TextView)cameraInfoSubView.findViewById(R.id.cameraInfoTextView);
+                                mCameraInfoTextView.setMovementMethod(new ScrollingMovementMethod());
+
+
+
                                 AlertDialog.Builder builder = new AlertDialog.Builder(Camera2VideoImageActivity.this);
                                 builder.setTitle("Camera Information");
-                                builder.setMessage("Shutter Speed Information(in s):" + ShutterSpeed1String + "-" + ShutterSpeed2String + "\n" + "ISO Range:" + mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
+                                builder.setMessage("Shutter Speed Information(in s):" + ShutterSpeed1String + "-" + ShutterSpeed2String + "\n" + "ISO Range:" +mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
                                         + "\n" + "White Level:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_WHITE_LEVEL) + "\n" + "Sensor Physical Size: " + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
                                         + "\n" + "Sensor Max Analog Sensitivity:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
                                         + "\n" + "Standard reference illuminant:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1)
                                         + "\n" + "Camera Compensation Range:"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE)
-                                );
+                                        + "\n" + "Supported JPEG Resolution:");
+                                for (int i = 0; i < previewSizes.length; i++) {
+                                    String oldTextView = mCameraInfoTextView.getText().toString();
+                                    String newText= oldTextView + "\n" + previewSizes[i] + ""; // can manipulate using substring also
+                                    mCameraInfoTextView.setText(newText);
+                                }
+                                builder.setView(cameraInfoSubView);
 
-                                builder.setPositiveButton("OK", null);
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+
+
                                 AlertDialog alertDialog = builder.create();
                                 alertDialog.show();
-
                                 break;
                             default:
                                 return false;
@@ -935,7 +1012,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             else if(AutoNumber==0){
                 //manual settings
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) xx );
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, xx );
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
 
             }
@@ -1564,4 +1641,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         txform.postTranslate(xoff, yoff);
         mTextureView.setTransform(txform);
     }
-}
+
+
+
+
+    }
+
+
+
+
+
+

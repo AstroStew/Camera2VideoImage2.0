@@ -146,9 +146,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/RawSwitch"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:text="Auto" />
+        android:text="Auto"
+        android:layout_alignRight="@+id/button"
+        android:layout_alignEnd="@+id/button" />
 
     <ImageButton
         android:id="@+id/CloseALLbutton"
@@ -174,8 +175,10 @@
         android:visibility="invisible"
         android:enabled="false"
         android:layout_below="@+id/CloseALLbutton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignLeft="@+id/Auto"
+        android:layout_alignStart="@+id/Auto"
+        android:layout_alignRight="@+id/button"
+        android:layout_alignEnd="@+id/button" />
 
     <SeekBar
         android:id="@+id/seekBar2"
@@ -198,6 +201,17 @@
         android:layout_alignLeft="@+id/chronometer"
         android:layout_alignStart="@+id/chronometer"
         android:text="Button" />
+
+    <SeekBar
+        android:id="@+id/ISOseekbar"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ISOtext" />
 
 
 </RelativeLayout>
