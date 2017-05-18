@@ -74,6 +74,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_AUTO;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_DAYLIGHT;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_FLUORESCENT;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_INCANDESCENT;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_SHADE;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_TWILIGHT;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_WARM_FLUORESCENT;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.toIntExact;
 
@@ -160,7 +168,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
             mCameraDevice = camera;
-            Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Camera Connected", Toast.LENGTH_SHORT).show();
 
             if (mIsRecording) {
                 try {
@@ -468,6 +476,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     SeekBar mISOseekbar;
     int ISOprogressValue;
     int ISOseekProgress;
+    private int mWBMode = CONTROL_AWB_MODE_AUTO;
 
 
     @Override
@@ -674,6 +683,43 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         int HighestISO=ISOrange.getUpper();
 
                         switch (position) {
+                            case R.id.WhiteBalanceCloudyDaylight:
+                                mWBMode=CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
+                                startPreview();
+                                break;
+                            case R.id.WhiteBalanceDaylight:
+                                mWBMode=CONTROL_AWB_MODE_DAYLIGHT;
+                                startPreview();
+                                break;
+                            case R.id.WhiteBalanceFluorescent:
+                                mWBMode=CONTROL_AWB_MODE_FLUORESCENT;
+                                startPreview();
+                                break;
+                            case R.id.WhiteBalanceShade:
+                                mWBMode=CONTROL_AWB_MODE_SHADE;
+                                startPreview();
+                                break;
+                            case R.id.WhiteBalanceTwilight:
+                                mWBMode=CONTROL_AWB_MODE_TWILIGHT;
+                                startPreview();
+                                break;
+                            case R.id.WhiteBalanceWarmFluorescent:
+                                mWBMode=CONTROL_AWB_MODE_WARM_FLUORESCENT;
+                                startPreview();
+                                break;
+                            case R.id.WhiteBalanceIncandenscent:
+                                mWBMode=CONTROL_AWB_MODE_INCANDESCENT;
+                                startPreview();
+                                break;
+                            case R.id.WhiteBalanceAuto:
+                                if (mWBMode != CONTROL_AWB_MODE_AUTO) {
+                                    mWBMode = CONTROL_AWB_MODE_AUTO;
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(), "AUTO is already on", Toast.LENGTH_SHORT).show();
+                                }
+                                startPreview();
+                                break;
                             case R.id.ChangeISO:
 
 
@@ -691,6 +737,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                             mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
                                             mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
                                             mTextSeekBar.setVisibility(View.INVISIBLE);
+                                        }
+                                        if(mISOseekbar.getVisibility()==View.VISIBLE) {
+                                            mISOseekbar.setVisibility(View.INVISIBLE);
                                         }
 
 
@@ -806,13 +855,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 mCloseALLbutton.setVisibility(View.VISIBLE);
                                 mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
                                     @Override
-                                    public void onClick(View v) {mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
+                                    public void onClick(View v) {
+                                        mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
                                         mTextSeekBar.setVisibility(View.INVISIBLE);
                                         mSeekbar.setVisibility(View.INVISIBLE);
                                         mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
                                         mCloseALLbutton.setVisibility(View.INVISIBLE);
                                         if (mISOtext.getVisibility()==View.VISIBLE){
                                             mISOtext.setVisibility(View.INVISIBLE);
+                                        }
+                                        if(mISOseekbar.getVisibility()==View.VISIBLE) {
+                                            mISOseekbar.setVisibility(View.INVISIBLE);
                                         }
                                     }
                                 });
@@ -1014,6 +1067,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, xx );
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE,mWBMode);
 
             }
             else if(AutoNumber==2){

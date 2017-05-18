@@ -35,10 +35,14 @@
         </menu>
 
 
+
             <item
                 android:id="@+id/uselesscode"
                 android:title="UselessCode" />
                 />
+        <item
+            android:id="@+id/getCameraInfo"
+            android:title="GetCameraInfo" />
             <item
                 android:id="@+id/ChangeShutterSpeed"
                 android:title="ChangeShutterSpeed"
@@ -46,22 +50,43 @@
 
             <item
                 android:id="@+id/ChangeWhiteBalance"
-                android:title="ChangeWhiteBalance" />
+                android:title="ChangeWhiteBalance" >
+
+        <menu>
             <item
-                android:id="@+id/getCameraInfo"
-                android:title="GetCameraInfo" />
+                android:id="@+id/WhiteBalanceCloudyDaylight"
+                android:title="Cloud Daylight"/>
+            <item
+                android:id="@+id/WhiteBalanceDaylight"
+                android:title="Daylight"/>
+            <item
+                android:id="@+id/WhiteBalanceFluorescent"
+                android:title="Fluorescent"/>
+            <item
+                android:id="@+id/WhiteBalanceShade"
+                android:title="Shade"/>
+            <item
+                android:id="@+id/WhiteBalanceTwilight"
+                android:title="Twilight"/>
+            <item
+                android:id="@+id/WhiteBalanceWarmFluorescent"
+                android:title="Fluorescent"/>
+            <item
+                android:id="@+id/WhiteBalanceIncandenscent"
+                android:title="Incandenscent"/>
+            <item
+                android:id="@+id/WhiteBalanceAuto"
+                android:title="Auto"/>
+
+
+
+
+        </menu>
+
+
+
 
 
     </item>
-
-
-
-
-
-
-
-
-
-
-
+    </item>
 </menu>
