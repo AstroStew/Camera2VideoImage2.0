@@ -498,7 +498,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int ISOprogressValue;
     int ISOseekProgress;
     private int mWBMode = CONTROL_AWB_MODE_AUTO;
-    private int mSceneMode = CONTROL_SCENE_MODE_LANDSCAPE;
+    private int mSceneMode = CONTROL_SCENE_MODE_PORTRAIT;
     private EditText mISOEditText;
     private TextView mISOEditTextView;
     private EditText mShutterSpeedEditText;
@@ -1088,11 +1088,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 break;
                             case R.id.ChangeSceneAuto:
-                                mSceneMode= CONTROL_MODE_AUTO;
+                                mSceneMode=2;
                                 startPreview();
                                 break;
                             case R.id.ChangeSceneBarcode:
-                                mSceneMode=CONTROL_SCENE_MODE_BARCODE;
+                                mSceneMode=16;
                                 startPreview();
                                 break;
                             case R.id.ChangeSceneBeach:
