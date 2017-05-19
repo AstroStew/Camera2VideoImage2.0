@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -148,7 +149,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     };
 
-    long xx;
+    long ShutterSpeedValue;
     long xx2;
     @Override
     protected void onResume() {
@@ -481,6 +482,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private int mWBMode = CONTROL_AWB_MODE_AUTO;
     private EditText mISOEditText;
     private TextView mISOEditTextView;
+    private EditText mShutterSpeedEditText;
+    private TextView mShutterSpeedEditTextView;
 
 
     @Override
@@ -536,10 +539,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     startBackgroundThread();
 
                     if (mTextureView.isAvailable()) {
-                        Toast.makeText(getApplicationContext(), "FlipNumber should now be 0", Toast.LENGTH_SHORT).show();
-
-
-
                         setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
                         connectCamera();
 
@@ -657,7 +656,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         }
 
 
-                        Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+                        final Range<Long> ShutterSpeed = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
                         final long ShutterSpeed1 = (ShutterSpeed.getLower());
 
                         final long ShutterSpeed2 = (ShutterSpeed.getUpper());
@@ -928,7 +927,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     public void onStopTrackingTouch(SeekBar seekBar) {
                                         mTextSeekBar.setText("Shutter Speed(in ns):" + (mSeekbar.getProgress()+ShutterSpeed1) + "/" + Math.round(mSeekbar.getMax()+ShutterSpeed1));
                                         Toast.makeText(getApplicationContext(), "Setting Shutter Speed", Toast.LENGTH_SHORT).show();
-                                        xx=(mSeekbar.getProgress()+ShutterSpeed1);
+                                        ShutterSpeedValue=(mSeekbar.getProgress()+ShutterSpeed1);
 
                                         startPreview();
                                     }
@@ -938,6 +937,34 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 break;
                             case R.id.ChangeShutterSpeedInput:
+
+                                LayoutInflater inflater3= LayoutInflater.from(Camera2VideoImageActivity.this);
+                                final View ChangeShutterSpeedView=inflater3.inflate(R.layout.shutterspeed_input_alertdialog, null);
+                                final AlertDialog.Builder manualShutterSpeedDialog = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+
+
+
+                                mShutterSpeedEditText= (EditText)ChangeShutterSpeedView.findViewById(R.id.ShutterSpeedEditText);
+                                mShutterSpeedEditTextView= (TextView) ChangeShutterSpeedView.findViewById(R.id.ShutterSpeedTitle);
+                                mShutterSpeedEditTextView.setText("ShutterSpeed Range: "+ShutterSpeed1+" to "+ShutterSpeed2);
+                                manualShutterSpeedDialog.setTitle("Manual Shutter Speed Input");
+                                manualShutterSpeedDialog.setView(ChangeShutterSpeedView);
+                                manualShutterSpeedDialog.setCancelable(true);
+                                manualShutterSpeedDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        int tempShutterSpeed=Integer.parseInt(mShutterSpeedEditText.getText().toString());
+                                        if(tempShutterSpeed <= ShutterSpeed2 && tempShutterSpeed>= ShutterSpeed1 ){
+                                            ShutterSpeedValue=tempShutterSpeed;
+                                            //.setText("ISO:"+ ISOvalue);
+                                            startPreview();
+                                            return;
+                                        }else{
+                                            Toast.makeText(getApplicationContext(), "ShutterSpeed value is out of range", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                                manualShutterSpeedDialog.show();
 
 
 
@@ -1113,7 +1140,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             else if(AutoNumber==0){
                 //manual settings
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, xx );
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue );
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE,mWBMode);
 
