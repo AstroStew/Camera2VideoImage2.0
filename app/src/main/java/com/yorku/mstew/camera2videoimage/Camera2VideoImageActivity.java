@@ -484,6 +484,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private TextView mISOEditTextView;
     private EditText mShutterSpeedEditText;
     private TextView mShutterSpeedEditTextView;
+    private EditText mShutterSpeedEditText2;
+    private TextView mShutterSpeedEditTextView2;
+
 
 
     @Override
@@ -496,16 +499,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera2_video_image);
 
 
-        //mShutterAuto=(Button) findViewById(R.id.shutterAuto);
-        /*mShutterAuto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!ShutterAutoon){
-                    AutoNumber=3;
-                }
-            }
-        });
-        */
+
 
         createVideoFolder();
         createImageFolder();
@@ -938,19 +932,23 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 break;
                             case R.id.ChangeShutterSpeedInput:
 
+
                                 LayoutInflater inflater3= LayoutInflater.from(Camera2VideoImageActivity.this);
                                 final View ChangeShutterSpeedView=inflater3.inflate(R.layout.shutterspeed_input_alertdialog, null);
                                 final AlertDialog.Builder manualShutterSpeedDialog = new AlertDialog.Builder(Camera2VideoImageActivity.this);
-
-
-
                                 mShutterSpeedEditText= (EditText)ChangeShutterSpeedView.findViewById(R.id.ShutterSpeedEditText);
                                 mShutterSpeedEditTextView= (TextView) ChangeShutterSpeedView.findViewById(R.id.ShutterSpeedTitle);
                                 mShutterSpeedEditTextView.setText("ShutterSpeed Range: "+ShutterSpeed1+" to "+ShutterSpeed2);
                                 manualShutterSpeedDialog.setTitle("Manual Shutter Speed Input");
                                 manualShutterSpeedDialog.setView(ChangeShutterSpeedView);
                                 manualShutterSpeedDialog.setCancelable(true);
-                                manualShutterSpeedDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+
+
+
+
+
+                                manualShutterSpeedDialog.setPositiveButton("Confirm ", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         int tempShutterSpeed=Integer.parseInt(mShutterSpeedEditText.getText().toString());
@@ -966,6 +964,36 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 });
                                 manualShutterSpeedDialog.show();
 
+                                break;
+                            case R.id.ChangeShutterSpeedInput2:
+                                LayoutInflater inflater4= LayoutInflater.from(Camera2VideoImageActivity.this);
+                                final View ChangeShutterSpeedView2=inflater4.inflate(R.layout.shutterspeed_input_alertdialog2, null);
+                                final AlertDialog.Builder manualShutterSpeedDialog2 = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                mShutterSpeedEditText2= (EditText)ChangeShutterSpeedView2.findViewById(R.id.ShutterSpeedEditText2);
+                                mShutterSpeedEditTextView2= (TextView) ChangeShutterSpeedView2.findViewById(R.id.ShutterSpeedTitle2);
+                                mShutterSpeedEditTextView2.setText("ShutterSpeed Range: "+ShutterSpeed1String+" to "+ShutterSpeed2String);
+                                manualShutterSpeedDialog2.setTitle("Manual Shutter Speed Input");
+                                manualShutterSpeedDialog2.setView(ChangeShutterSpeedView2);
+                                manualShutterSpeedDialog2.setCancelable(true);
+
+
+
+
+
+
+                                manualShutterSpeedDialog2.setPositiveButton("Confirm ", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String tempShutterSpeedString[]=new String[2];
+                                        String tt;
+                                       tt=mShutterSpeedEditText2.getText().toString();
+
+                                        //make regex if statement here to satify numbers numbers greater than 1
+                                        tempShutterSpeedString=tt.split("/");
+                                        double tempShutterSpeed1=Double.parseDouble(tempShutterSpeedString[0]);
+                                        double tempShutterSpeed2=Double.parseDouble(tempShutterSpeedString[1]);
+
+                                        double tempShutterSpeed= ((tempShutterSpeed1/tempShutterSpeed2)*1000000000);
 
 
 
@@ -973,10 +1001,24 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
+
+
+
+                                        if(tempShutterSpeed <= ShutterSpeed2 && tempShutterSpeed>= ShutterSpeed1 ){
+                                            ShutterSpeedValue=(long)tempShutterSpeed;
+                                            //.setText("ISO:"+ ISOvalue);
+                                            startPreview();
+                                            return;
+                                        }else{
+                                            Toast.makeText(getApplicationContext(), "ShutterSpeed value is out of range", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                                manualShutterSpeedDialog2.show();
 
 
                                 break;
-
                             case R.id.ChangeWhiteBalance:
                                 Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
                                 break;

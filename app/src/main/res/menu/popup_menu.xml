@@ -85,10 +85,14 @@
                         />
                     <item
                         android:id="@+id/ChangeShutterSpeedInput"
-                        android:title="Input Shutter Speed"
+                        android:title="Input Shutter Speed(ns)"
                         android:icon="@drawable/custom_input_iso"
                         />
-
+                    <item
+                        android:id="@+id/ChangeShutterSpeedInput2"
+                        android:title="Input Shutter Speed(s)"
+                        android:icon="@drawable/custom_input_iso"
+                        />
                 </menu>
         </item>
 
