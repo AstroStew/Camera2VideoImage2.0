@@ -825,7 +825,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 break;
                             case R.id.custominputISO:
 
-                                
+
 
                                 LayoutInflater inflater = LayoutInflater.from(Camera2VideoImageActivity.this);
                                 final View subsubView=inflater.inflate(R.layout.manual_input_alertdialog, null);
@@ -856,7 +856,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 manualISODialog.show();
 
                             break;
-                            case R.id.ChangeShutterSpeed:
+                            case R.id.ChangeShutterSpeedSeek:
                                 mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                 mSeekbar.setVisibility(View.VISIBLE);
                                 mSeekbar.setProgress(progressValue);
@@ -933,6 +933,18 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         startPreview();
                                     }
                                 });
+
+
+
+                                break;
+                            case R.id.ChangeShutterSpeedInput:
+
+
+
+
+
+
+
 
 
 
