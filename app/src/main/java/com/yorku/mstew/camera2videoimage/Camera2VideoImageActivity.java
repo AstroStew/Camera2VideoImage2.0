@@ -479,7 +479,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int ISOprogressValue;
     int ISOseekProgress;
     private int mWBMode = CONTROL_AWB_MODE_AUTO;
-    ImageButton mConfirm;
+    private EditText mISOEditText;
+    private TextView mISOEditTextView;
 
 
     @Override
@@ -684,7 +685,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                         final Range <Integer> ISOrange= mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
                         final int LowestISO=ISOrange.getLower();
-                        int HighestISO=ISOrange.getUpper();
+                        final int HighestISO=ISOrange.getUpper();
 
 
 
@@ -823,48 +824,38 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 startPreview();
                                 break;
                             case R.id.custominputISO:
-                                mConfirm=(ImageButton) findViewById(R.id.confirmbutton);
-                                mConfirm.setVisibility(View.VISIBLE);
+
+                                
+
+                                LayoutInflater inflater = LayoutInflater.from(Camera2VideoImageActivity.this);
+                                final View subsubView=inflater.inflate(R.layout.manual_input_alertdialog, null);
+                                final AlertDialog.Builder manualISODialog = new AlertDialog.Builder(Camera2VideoImageActivity.this);
 
 
-                                mISOtext.setEnabled(true);
 
-
-
-
-
-                               String mISOtextString = mISOtext.getText().toString();
-                                String mISOARRAY []= mISOtextString.split(":");
-                                final int[] results=new int[2];
-                                if(mISOARRAY[1].equals("AUTO")){
-                                    results[1]=200;
-
-                                }else{
-                                    results[1]=Integer.parseInt(mISOARRAY[1]);
-                                    Toast.makeText(getApplicationContext(), ""+results[1], Toast.LENGTH_SHORT).show();
-
-                                }
-                                ISOvalue=results[1];
-                                //Click to input
-                                /*mConfirm.setOnClickListener(new View.OnClickListener() {
+                                mISOEditText= (EditText)subsubView.findViewById(R.id.isoEditText);
+                                mISOEditTextView= (TextView) subsubView.findViewById(R.id.isoTitle);
+                                mISOEditTextView.setText("ISO Range:"+LowestISO+"to"+HighestISO);
+                                manualISODialog.setTitle("Manual ISO Input");
+                                manualISODialog.setView(subsubView);
+                                manualISODialog.setCancelable(true);
+                                manualISODialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onClick(View v) {
-                                        mISOtext.setEnabled(false);
-
-                                        startPreview();
-                                        mConfirm.setVisibility(View.INVISIBLE);
-
-
+                                    public void onClick(DialogInterface dialog, int which) {
+                                         int tempISO=Integer.parseInt(mISOEditText.getText().toString());
+                                        if(tempISO <= HighestISO && tempISO>= LowestISO ){
+                                            ISOvalue=tempISO;
+                                            mISOtext.setText("ISO:"+ ISOvalue);
+                                            startPreview();
+                                            return;
+                                        }else{
+                                            Toast.makeText(getApplicationContext(), "ISO value is out of range", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 });
-                                */
+                                manualISODialog.show();
 
-
-                                startPreview();
-                                break;
-
-
-
+                            break;
                             case R.id.ChangeShutterSpeed:
                                 mSeekbar = (SeekBar) findViewById(R.id.seekBar);
                                 mSeekbar.setVisibility(View.VISIBLE);
@@ -951,8 +942,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.getCameraInfo:
-                                LayoutInflater inflater = LayoutInflater.from(Camera2VideoImageActivity.this);
-                                View cameraInfoSubView = inflater.inflate(R.layout.camera_info_alertdialog, null);
+                                LayoutInflater inflater2 = LayoutInflater.from(Camera2VideoImageActivity.this);
+                                View cameraInfoSubView = inflater2.inflate(R.layout.camera_info_alertdialog, null);
                                 mCameraInfoTextView = (TextView)cameraInfoSubView.findViewById(R.id.cameraInfoTextView);
                                 mCameraInfoTextView.setMovementMethod(new ScrollingMovementMethod());
 
@@ -981,8 +972,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
-                                AlertDialog alertDialog = builder.create();
-                                alertDialog.show();
+                                AlertDialog alertDialog2 = builder.create();
+                                alertDialog2.show();
                                 break;
                             default:
                                 return false;
