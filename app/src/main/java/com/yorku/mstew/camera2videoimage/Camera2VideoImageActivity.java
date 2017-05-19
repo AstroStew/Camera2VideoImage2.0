@@ -994,17 +994,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         double tempShutterSpeed2=Double.parseDouble(tempShutterSpeedString[1]);
 
                                         double tempShutterSpeed= ((tempShutterSpeed1/tempShutterSpeed2)*1000000000);
-
-
-
-
-
-
-
-
-
-
-
                                         if(tempShutterSpeed <= ShutterSpeed2 && tempShutterSpeed>= ShutterSpeed1 ){
                                             ShutterSpeedValue=(long)tempShutterSpeed;
                                             //.setText("ISO:"+ ISOvalue);
@@ -1019,9 +1008,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                                 break;
-                            case R.id.ChangeWhiteBalance:
-                                Toast.makeText(getApplicationContext(), "ChangeWhiteBalance", Toast.LENGTH_SHORT).show();
-                                break;
+                            
                             case R.id.getCameraInfo:
                                 LayoutInflater inflater2 = LayoutInflater.from(Camera2VideoImageActivity.this);
                                 View cameraInfoSubView = inflater2.inflate(R.layout.camera_info_alertdialog, null);
@@ -1056,6 +1043,44 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 AlertDialog alertDialog2 = builder.create();
                                 alertDialog2.show();
                                 break;
+                            case R.id.ChangeSceneAuto:
+                                break;
+                            case R.id.ChangeSceneBarcode:
+                                break;
+                            case R.id.ChangeSceneBeach:
+                                break;
+                            case R.id.ChangeSceneCandlelight:
+                                break;
+                            case R.id.ChangeSceneFireworks:
+                                break;
+                            case R.id.ChangeSceneHDR:
+                                break;
+                            case R.id.ChangeSceneLandscape:
+                                break;
+                            case R.id.ChangeSceneNight:
+                                break;
+                            case R.id.ChangeSceneNightPortrait:
+                                break;
+                            case R.id.ChangeSceneParty:
+                                break;
+                            case R.id.ChangeScenePortrait:
+                                break;
+                            case R.id.ChangeSceneSnow:
+                                break;
+                            case R.id.ChangeSceneSports:
+                                break;
+                            case R.id.ChangeSceneSteadyphoto:
+                                break;
+                            case R.id.ChangeSceneSunset:
+                                break;
+                            case R.id.ChangeSceneTheatre:
+                                break;
+
+
+
+
+
+
                             default:
                                 return false;
                         }

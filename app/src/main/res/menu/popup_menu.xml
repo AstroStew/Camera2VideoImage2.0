@@ -96,4 +96,73 @@
                 </menu>
         </item>
 
+
+        <item
+            android:id="@+id/ChangeScene"
+            android:title="Change Scene"
+            >
+            <menu>
+                <item
+                    android:id="@+id/ChangeSceneAuto"
+                    android:title="Auto Scene" />
+                <item
+                     android:id="@+id/ChangeSceneBarcode"
+                     android:title="Barcode Scene" />
+                <item
+                    android:id="@+id/ChangeSceneBeach"
+                    android:title="Beach Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneCandlelight"
+                    android:title="Candlelight Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneFireworks"
+                    android:title="Fireworks Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneHDR"
+                    android:title="HDR Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneLandscape"
+                    android:title="Landscape Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneNight"
+                    android:title="Night Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneNightPortrait"
+                    android:title="Night Potrait Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneParty"
+                    android:title="Party Scene"/>
+                <item
+                    android:id="@+id/ChangeScenePortrait"
+                    android:title="Portrait Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneSnow"
+                    android:title="Snow Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneSports"
+                    android:title="Sports Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneSteadyphoto"
+                    android:title="Steadyphoto Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneSunset"
+                    android:title="Sunset Scene"/>
+                <item
+                    android:id="@+id/ChangeSceneTheatre"
+                    android:title="Theatre Scene"/>
+
+
+
+
+
+
+
+            </menu>
+
+
+
+        </item>
+
+
+
     </menu>
