@@ -42,6 +42,7 @@ import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.method.ScrollingMovementMethod;
+import android.transition.Scene;
 import android.util.Log;
 import android.util.Range;
 import android.util.Size;
@@ -87,6 +88,8 @@ import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_SHADE;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_TWILIGHT;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_WARM_FLUORESCENT;
 import static android.hardware.camera2.CameraMetadata.CONTROL_MODE_AUTO;
+import static android.hardware.camera2.CameraMetadata.CONTROL_MODE_USE_SCENE_MODE;
+import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_ACTION;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_BARCODE;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_BEACH;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_CANDLELIGHT;
@@ -481,7 +484,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     Button mAutobutton;
     EditText mISOtext;
     public boolean mIsAuto2=false;
-    int AutoNumber=1;
+    int AutoNumber=0;
     boolean menuonline=false;
     ImageButton mCloseALLbutton;
     Button mShutterAuto;
@@ -494,6 +497,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     Boolean FlipNumberBoolean=false;
     int FlipNumber;
     private TextView  mCameraInfoTextView;
+    private TextView mCameraInfoTextView2;
     SeekBar mISOseekbar;
     int ISOprogressValue;
     int ISOseekProgress;
@@ -505,6 +509,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private TextView mShutterSpeedEditTextView;
     private EditText mShutterSpeedEditText2;
     private TextView mShutterSpeedEditTextView2;
+
 
 
 
@@ -608,21 +613,21 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(AutoNumber==0){
                     AutoNumber=1;
-                    Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
-                    mAutobutton.setText("AUTO ON");
+                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
+                    mAutobutton.setText("AUTO OFF");
 
                 }
                  else if(AutoNumber==1){
                     AutoNumber=0;
-                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
-                    mAutobutton.setText("AUTO OFF");
+                    Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
+                    mAutobutton.setText("AUTO ON");
                     startPreview();
 
 
 
                 }
-                if(AutoNumber==2){
-                     AutoNumber=0;
+                else if(AutoNumber==2){
+                    AutoNumber=0;
                     Toast.makeText(getApplicationContext(), "SceneAutoOff", Toast.LENGTH_SHORT).show();
                     mAutobutton.setText("AUTO ON");
                     startPreview();
@@ -656,7 +661,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-                SubMenu sM=popupMenu.getMenu().addSubMenu(0,100,0, "Change Resolution");
+                SubMenu sM=popupMenu.getMenu().addSubMenu(0,100,0, "Change Resolution:");
 
 
 
@@ -667,7 +672,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 for (int i=0; i<previewSizes.length; i++){
                     sM.add(0,i+200,0,""+previewSizes[i]);
                 }
-                //StreamConfigurationMap SupportedScenemap=mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                final int[] SupportedSceneModes=new int[mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES).length];
+
+                    for(int i=0; i<mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES).length;i++){
+                        sM.add(0,i+200,0,""+SupportedSceneModes[i]);
+                    }
+
+
+
 
 
 
@@ -1053,7 +1065,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 LayoutInflater inflater2 = LayoutInflater.from(Camera2VideoImageActivity.this);
                                 View cameraInfoSubView = inflater2.inflate(R.layout.camera_info_alertdialog, null);
                                 mCameraInfoTextView = (TextView)cameraInfoSubView.findViewById(R.id.cameraInfoTextView);
+                                mCameraInfoTextView.setText("Camera Resolutions;");
                                 mCameraInfoTextView.setMovementMethod(new ScrollingMovementMethod());
+                                mCameraInfoTextView2= (TextView)cameraInfoSubView.findViewById(R.id.cameraInfoTextView2);
+                                mCameraInfoTextView2.setText("Supported Camera Scenes:");
+                                mCameraInfoTextView2.setMovementMethod(new ScrollingMovementMethod());
+
 
 
 
@@ -1064,13 +1081,20 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         + "\n" + "Sensor Max Analog Sensitivity:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
                                         + "\n" + "Standard reference illuminant:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1)
                                         + "\n" + "Camera Compensation Range:"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE)
+                                        + "\n" + "Camera Supported Scenes"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES)
 
-                                        + "\n" + "Supported JPEG Resolution:");
+                                        + "\n" + "Supported Camera Resolution:");
                                 for (int i = 0; i < previewSizes.length; i++) {
                                     String oldTextView = mCameraInfoTextView.getText().toString();
-                                    String newText= oldTextView + "\n" + previewSizes[i] + ""; // can manipulate using substring also
+                                    String newText= oldTextView + " , " + previewSizes[i] + ""; // can manipulate using substring also
                                     mCameraInfoTextView.setText(newText);
                                 }
+                                for(int i=0; i< SupportedSceneModes.length; i++){
+                                    String oldTextView2=mCameraInfoTextView2.getText().toString();
+                                    String newText2 =oldTextView2+ "" + SupportedSceneModes[i]+"";
+                                    mCameraInfoTextView2.setText(newText2);
+                                }
+
                                 builder.setView(cameraInfoSubView);
 
                                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -1087,8 +1111,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.ChangeScene:
 
                                 break;
-                            case R.id.ChangeSceneAuto:
-                                mSceneMode=2;
+                            case R.id.ChangeSceneAction:
+                                mSceneMode=CONTROL_SCENE_MODE_ACTION;
                                 startPreview();
                                 break;
                             case R.id.ChangeSceneBarcode:
@@ -1277,13 +1301,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         try {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
-            Toast.makeText(getApplicationContext(), ""+AutoNumber, Toast.LENGTH_SHORT).show();
-            if (AutoNumber==1){
+            Toast.makeText(getApplicationContext(), "Autonumber is:"+AutoNumber, Toast.LENGTH_SHORT).show();
+            if (AutoNumber==0){
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
             }
-            if(AutoNumber==0){
+            if(AutoNumber==1){
                 //manual settings
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue );
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE,mWBMode);
@@ -1291,9 +1317,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             }
             if(AutoNumber==2){
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_USE_SCENE_MODE);
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_SCENE_MODE, mSceneMode);
 
+                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE,CaptureRequest.CONTROL_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_USE_SCENE_MODE);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_SCENE_MODE,mSceneMode);
+                Toast.makeText(getApplicationContext(), ""+mSceneMode, Toast.LENGTH_SHORT).show();
 
             }
             else if(AutoNumber==3){

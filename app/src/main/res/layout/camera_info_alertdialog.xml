@@ -3,15 +3,28 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1">
-    
+
     <TextView
         android:id="@+id/cameraInfoTextView"
         android:layout_width="287dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0.10"
-        android:text="TextView"
+        android:maxLines="20"
+        android:scrollbars="vertical"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/cameraInfoTextView2"
+        android:layout_width="287dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.10"
+        android:text="Supported Scene Modes"
         android:maxLines = "20"
-        android:scrollbars = "vertical"/>
+        android:scrollbars = "vertical"
+        android:layout_below="@+id/cameraInfoTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </LinearLayout>

@@ -103,8 +103,9 @@
             >
             <menu>
                 <item
-                    android:id="@+id/ChangeSceneAuto"
-                    android:title="Auto Scene" />
+                    android:id="@+id/ChangeSceneAction"
+                    android:title="Action Scene" />
+
                 <item
                      android:id="@+id/ChangeSceneBarcode"
                      android:title="Barcode Scene" />
