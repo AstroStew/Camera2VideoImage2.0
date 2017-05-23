@@ -39,8 +39,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.transition.Scene;
 import android.util.Log;
@@ -61,6 +63,7 @@ import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -514,6 +517,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private TextView mShutterSpeedEditTextView;
     private EditText mShutterSpeedEditText2;
     private TextView mShutterSpeedEditTextView2;
+    SeekBar mChangeFocusSeekBar;
+    LinearLayout mManualFocusLayout;
+    private double mFocusDistance=20;
+    private double getmFocusDistanceMem =20;
 
 
 
@@ -588,6 +595,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
+
+
 
         mSettingsbutton = (Button) findViewById(R.id.button);
         mRawSwitch = (Switch) findViewById(R.id.RawSwitch);
@@ -744,10 +756,43 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+                        mChangeFocusSeekBar=(SeekBar) findViewById(R.id.FocusChangeSeekBar);
+                        mChangeFocusSeekBar.setMax(100);
+
+
+
+
 
 
 
                         switch (position) {
+                            case R.id.manualFocus:
+                                if (mChangeFocusSeekBar.getVisibility()==View.VISIBLE ){
+                                    mChangeFocusSeekBar.setVisibility(View.INVISIBLE);
+                                }else {
+
+                                    mChangeFocusSeekBar.setVisibility(View.VISIBLE);
+                                    mChangeFocusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                                        @Override
+                                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                            mFocusDistance=(progress*0.05);
+                                        }
+
+                                        @Override
+                                        public void onStartTrackingTouch(SeekBar seekBar) {
+
+                                        }
+
+                                        @Override
+                                        public void onStopTrackingTouch(SeekBar seekBar) {
+                                            startPreview();
+
+                                        }
+                                    });
+                                }
+                                startPreview();
+                                break;
                             case R.id.WhiteBalanceCloudyDaylight:
                                 mWBMode=CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
                                 startPreview();
@@ -1121,6 +1166,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.ChangeScene:
 
                                 break;
+                            case R.id.ChangeSceneDisabled:
+                                mSceneMode=CONTROL_SCENE_MODE_DISABLED;
+                                startPreview();
+                                break;
+                            case R.id.ChangeSceneFacePriority:
+                                mSceneMode=CONTROL_SCENE_MODE_FACE_PRIORITY;
+                                startPreview();
+                                break;
                             case R.id.ChangeSceneAction:
                                 mSceneMode=CONTROL_SCENE_MODE_ACTION;
                                 startPreview();
@@ -1317,7 +1370,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         try {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
-            Toast.makeText(getApplicationContext(), "Autonumber is:"+AutoNumber, Toast.LENGTH_SHORT).show();
             if (AutoNumber==0){
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
                 //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
@@ -1338,7 +1390,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_USE_SCENE_MODE);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_SCENE_MODE,mSceneMode);
                 Toast.makeText(getApplicationContext(), "mSceneModeNumber:"+mSceneMode, Toast.LENGTH_SHORT).show();
-                //Toast.makeText(getApplicationContext(), "Range of Scenes"+mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES) , Toast.LENGTH_SHORT).show();
 
             }
             else if(AutoNumber==3){
@@ -1945,6 +1996,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     //
     //Raw Image Switch
     private Switch mRawSwitch;
+
     //ISO CHANGE
 //ASpect Ratio stuff
     private static final String TAG = Camera2VideoImageActivity.TAG;

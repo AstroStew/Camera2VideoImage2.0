@@ -219,6 +219,15 @@
         android:visibility="invisible"
 
         />
+    <SeekBar
+        android:id="@+id/FocusChangeSeekBar"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="251dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>
