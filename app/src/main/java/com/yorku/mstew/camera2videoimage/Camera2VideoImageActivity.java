@@ -521,6 +521,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     LinearLayout mManualFocusLayout;
     private double mFocusDistance=20;
     private double getmFocusDistanceMem =20;
+    boolean mUnlockFocus=false;
 
 
 
@@ -767,9 +768,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                         switch (position) {
                             case R.id.manualFocus:
+                                if(!mUnlockFocus){
+                                 mUnlockFocus=true;
+                                    //Toast.makeText(getApplicationContext(), "UNLOCKED FOCUS", Toast.LENGTH_SHORT).show();
+                                    startPreview();
+                                }
+                                else if(mUnlockFocus){
+                                    mUnlockFocus=false;
+                                    //Toast.makeText(getApplicationContext(), "AUTO FOCUS ENABLED", Toast.LENGTH_SHORT).show();
+                                    startPreview();
+                                }
                                 if (mChangeFocusSeekBar.getVisibility()==View.VISIBLE ){
                                     mChangeFocusSeekBar.setVisibility(View.INVISIBLE);
-                                }else {
+                                }else if(mChangeFocusSeekBar.getVisibility()==View.INVISIBLE){
 
                                     mChangeFocusSeekBar.setVisibility(View.VISIBLE);
                                     mChangeFocusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -791,7 +802,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         }
                                     });
                                 }
-                                startPreview();
+                                //startPreview();
                                 break;
                             case R.id.WhiteBalanceCloudyDaylight:
                                 mWBMode=CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
@@ -1371,13 +1382,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
             if (AutoNumber==0){
+                //AutoSettings
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
                 //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
             }
             if(AutoNumber==1){
                 //manual settings
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
+                if(mUnlockFocus){
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float)((float)1/mFocusDistance));
+                    Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
+                }
+                 else if(!mUnlockFocus){
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE,CaptureRequest.CONTROL_AF_MODE_AUTO);
+                    Toast.makeText(getApplicationContext(), "CONTROL AF AUTO", Toast.LENGTH_SHORT).show();
+                }
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue );
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE,mWBMode);
