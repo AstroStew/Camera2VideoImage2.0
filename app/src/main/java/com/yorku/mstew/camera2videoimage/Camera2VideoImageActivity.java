@@ -49,6 +49,7 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.Surface;
 import android.view.TextureView;
@@ -69,6 +70,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,6 +81,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_AUTO;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_AUTO;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_DAYLIGHT;
@@ -94,6 +97,7 @@ import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_BARCODE
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_BEACH;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_CANDLELIGHT;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_DISABLED;
+import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_FACE_PRIORITY;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_FIREWORKS;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_HDR;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_LANDSCAPE;
@@ -502,7 +506,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int ISOprogressValue;
     int ISOseekProgress;
     private int mWBMode = CONTROL_AWB_MODE_AUTO;
-    private int mSceneMode = CONTROL_SCENE_MODE_PORTRAIT;
+    private int mSceneMode = CONTROL_SCENE_MODE_FACE_PRIORITY;
+    private int mAFMode=CONTROL_AF_MODE_AUTO;
     private EditText mISOEditText;
     private TextView mISOEditTextView;
     private EditText mShutterSpeedEditText;
@@ -662,6 +667,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 SubMenu sM=popupMenu.getMenu().addSubMenu(0,100,0, "Change Resolution:");
+                //SubMenu sM2=popupMenu.getMenu().addSubMenu();
 
 
 
@@ -672,10 +678,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 for (int i=0; i<previewSizes.length; i++){
                     sM.add(0,i+200,0,""+previewSizes[i]);
                 }
+
+
                 final int[] SupportedSceneModes=new int[mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES).length];
 
-                    for(int i=0; i<mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES).length;i++){
-                        sM.add(0,i+200,0,""+SupportedSceneModes[i]);
+
+                for(int i=0; i<SupportedSceneModes.length; i++){
+                        SupportedSceneModes[i]=mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES)[i];
+
                     }
 
 
@@ -1089,9 +1099,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     String newText= oldTextView + " , " + previewSizes[i] + ""; // can manipulate using substring also
                                     mCameraInfoTextView.setText(newText);
                                 }
-                                for(int i=0; i< SupportedSceneModes.length; i++){
+                                for(int i=0; i< mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES).length; i++){
                                     String oldTextView2=mCameraInfoTextView2.getText().toString();
-                                    String newText2 =oldTextView2+ "" + SupportedSceneModes[i]+"";
+                                    String newText2 =oldTextView2+ "" + mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES)[i]+" , ";
                                     mCameraInfoTextView2.setText(newText2);
                                 }
 
@@ -1199,6 +1209,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 lockFocus();
+            }
+        });
+        mStillImageButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
             }
         });
         mRecordImageButton = (ImageButton) findViewById(R.id.VideoButton);
@@ -1321,7 +1337,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE,CaptureRequest.CONTROL_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_USE_SCENE_MODE);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_SCENE_MODE,mSceneMode);
-                Toast.makeText(getApplicationContext(), ""+mSceneMode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "mSceneModeNumber:"+mSceneMode, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Range of Scenes"+mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES) , Toast.LENGTH_SHORT).show();
 
             }
             else if(AutoNumber==3){
@@ -1622,6 +1639,20 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+
+    }
+    private void unLockFocus(){
+       try {
+           mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                   CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+           mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
+                                      mBackgroundHandler);
+           mCaptureState= STATE_PREVIEW;
+           mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,
+                   mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
 
     }
 

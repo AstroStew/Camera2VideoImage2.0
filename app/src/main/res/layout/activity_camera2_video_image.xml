@@ -212,6 +212,13 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/ISOtext" />
+    <SeekBar
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:visibility="invisible"
+
+        />
 
 
 </RelativeLayout>
