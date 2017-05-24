@@ -1282,9 +1282,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mStillImageButton.setImageResource(R.mipmap.campic);
                 if(!mBurstOn) {
                     lockFocus();
-                }else{
+                }else if(mBurstOn){
                     //Toast.makeText(getApplicationContext(), "Burst Done", Toast.LENGTH_SHORT).show();
                     mBurstOn=false;
+                }
+                if(mChronometer.getVisibility()==View.VISIBLE){
+
+                    mChronometer.stop();
+                    mChronometer.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -1293,21 +1298,26 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             public boolean onLongClick(View v) {
                 mStillImageButton.setImageResource(R.mipmap.btn_timelapse);
 
-                new CountDownTimer(20000, 4000){
+                mBurstOn=true;
+                Toast.makeText(getApplicationContext(), "Burst Started", Toast.LENGTH_SHORT).show();
+                mChronometer.setBase(SystemClock.elapsedRealtime());
+                mChronometer.setVisibility(View.VISIBLE);
+                mChronometer.start();
+                mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
                     @Override
-                    public void onTick(long millisUntilFinished) {
+                    public void onChronometerTick(Chronometer chronometer) {
                         lockFocus();
-                        startPreview();
+                        chronometer.refreshDrawableState();
                     }
-
-                    @Override
-                    public void onFinish() {
-                        mStillImageButton.setImageResource(R.mipmap.campic);
-
-                    }
+                });
 
 
-                }.start();
+
+
+                //mStillImageButton.setImageResource(R.mipmap.campic);
+
+
+
                 return true;
             }
         });
