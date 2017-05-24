@@ -27,6 +27,7 @@ import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -266,9 +267,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             }
                             if ( afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
-                                Toast.makeText(getApplicationContext(), "Autofocus no locked!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Autofocus not locked!", Toast.LENGTH_SHORT).show();
                             }
                             startStillCaptureRequest();
+
                             break;
                     }
 
@@ -522,6 +524,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private double mFocusDistance=20;
     private double getmFocusDistanceMem =20;
     boolean mUnlockFocus=false;
+    boolean mBurstOn=false;
+    int mBurstNumber=0;
 
 
 
@@ -550,6 +554,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         //this is new
         mTextureView = (TextureView) findViewById(R.id.textureView);
         mStillImageButton = (ImageButton) findViewById(R.id.CameraButton);
+        mStillImageButton.setImageResource(R.mipmap.campic);
+
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
 
         mFlipCamera= (ImageButton) findViewById(R.id.FlipButton);
@@ -1149,7 +1155,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         + "\n" + "Camera Compensation Range:"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE)
                                         + "\n" + "Camera Supported Scenes"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES)
 
-                                        + "\n" + "Supported Camera Resolution:");
+                                        + "\n" + "Supported Available Burst Capabilities:"+ contains(mCameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BURST_CAPTURE)
+                                );
                                 for (int i = 0; i < previewSizes.length; i++) {
                                     String oldTextView = mCameraInfoTextView.getText().toString();
                                     String newText= oldTextView + " , " + previewSizes[i] + ""; // can manipulate using substring also
@@ -1272,13 +1279,36 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mStillImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lockFocus();
+                mStillImageButton.setImageResource(R.mipmap.campic);
+                if(!mBurstOn) {
+                    lockFocus();
+                }else{
+                    //Toast.makeText(getApplicationContext(), "Burst Done", Toast.LENGTH_SHORT).show();
+                    mBurstOn=false;
+                }
             }
         });
-        mStillImageButton.setOnTouchListener(new View.OnTouchListener() {
+        mStillImageButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
+            public boolean onLongClick(View v) {
+                mStillImageButton.setImageResource(R.mipmap.btn_timelapse);
+
+                new CountDownTimer(20000, 4000){
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        lockFocus();
+                        startPreview();
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        mStillImageButton.setImageResource(R.mipmap.campic);
+
+                    }
+
+
+                }.start();
+                return true;
             }
         });
         mRecordImageButton = (ImageButton) findViewById(R.id.VideoButton);
@@ -1698,6 +1728,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private void lockFocus() {
         mCaptureState = STATE_WAIT_LOCK;
 
+
         mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
         try {
             if (mIsRecording) {
@@ -1712,6 +1743,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
     }
+
     private void unLockFocus(){
        try {
            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
@@ -1780,18 +1812,24 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
                         CameraDevice.TEMPLATE_VIDEO_SNAPSHOT);
 
-            } else {
+            } else if(!mIsRecording||!mIsTimelapse) {
                 mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
                         CameraDevice.TEMPLATE_STILL_CAPTURE);
             }
+
 
 
             if (mRawSwitch.isChecked()) {
                 mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
                 mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
             } else {
-                mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+
+                    mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+
+
+
             }
+
 
             mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mTotalRotation);
 
@@ -1939,14 +1977,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         case STATE_PREVIEW:
                             //Do nothing
                             break;
+
                         case STATE_WAIT_LOCK:
-                            mCaptureState = STATE_PREVIEW;
-                            Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
-                            if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                                Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
+                             {
+                                mCaptureState = STATE_PREVIEW;
+                                Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
+                                if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                                    Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
+
+                                }
+                                    startStillCaptureRequest();
+
 
                             }
-                            startStillCaptureRequest();
 
                             break;
                     }
