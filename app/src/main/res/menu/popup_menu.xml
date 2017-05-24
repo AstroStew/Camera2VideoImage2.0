@@ -102,8 +102,8 @@
 
             </item>
         <item
-            android:id="@+id/l"
-            android:title="l">
+            android:id="@+id/PhotoBurstInput"
+            android:title="Photo Burst Input">
 
             </item>
 

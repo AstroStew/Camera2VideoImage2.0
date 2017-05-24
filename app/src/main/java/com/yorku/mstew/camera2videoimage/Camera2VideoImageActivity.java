@@ -526,6 +526,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     boolean mUnlockFocus=false;
     boolean mBurstOn=false;
     int mBurstNumber=0;
+    int ChronoCount=0;
+    EditText mPhotoBurstText;
+    int SecondStep=5;
 
 
 
@@ -776,12 +779,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.manualFocus:
                                 if(!mUnlockFocus){
                                  mUnlockFocus=true;
-                                    //Toast.makeText(getApplicationContext(), "UNLOCKED FOCUS", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "UNLOCKED FOCUS", Toast.LENGTH_SHORT).show();
                                     startPreview();
                                 }
+
                                 else if(mUnlockFocus){
                                     mUnlockFocus=false;
-                                    //Toast.makeText(getApplicationContext(), "AUTO FOCUS ENABLED", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "AUTO FOCUS ENABLED", Toast.LENGTH_SHORT).show();
                                     startPreview();
                                 }
                                 if (mChangeFocusSeekBar.getVisibility()==View.VISIBLE ){
@@ -809,6 +813,28 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     });
                                 }
                                 //startPreview();
+                                break;
+                            case R.id.PhotoBurstInput:
+
+                                LayoutInflater inflate4=LayoutInflater.from(Camera2VideoImageActivity.this);
+                                View ThePhotoBurstView=inflate4.inflate(R.layout.photo_burst_input  ,null);
+                                AlertDialog.Builder PhotoBurstInputthing= new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                PhotoBurstInputthing.setTitle("Photo Burst Input:");
+                                PhotoBurstInputthing.setView(ThePhotoBurstView);
+                                PhotoBurstInputthing.setCancelable(true);
+                                mPhotoBurstText=(EditText)ThePhotoBurstView.findViewById(R.id.PhotoBurstEditText);
+                                PhotoBurstInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        int TempSecondInterval=Integer.parseInt(mPhotoBurstText.getText().toString());
+                                        SecondStep=TempSecondInterval;
+                                    }
+                                });
+
+                                PhotoBurstInputthing.show();
+
+
+
                                 break;
                             case R.id.WhiteBalanceCloudyDaylight:
                                 mWBMode=CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
@@ -1298,6 +1324,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             public boolean onLongClick(View v) {
                 mStillImageButton.setImageResource(R.mipmap.btn_timelapse);
 
+
                 mBurstOn=true;
                 Toast.makeText(getApplicationContext(), "Burst Started", Toast.LENGTH_SHORT).show();
                 mChronometer.setBase(SystemClock.elapsedRealtime());
@@ -1306,8 +1333,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
                     @Override
                     public void onChronometerTick(Chronometer chronometer) {
-                        lockFocus();
-                        chronometer.refreshDrawableState();
+                        //chronometer.refreshDrawableState();
+                        ChronoCount=ChronoCount+1;
+                        if(ChronoCount%SecondStep==0){
+                            lockFocus();
+                        }
+
                     }
                 });
 
@@ -1432,11 +1463,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 if(mUnlockFocus){
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                     mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float)((float)1/mFocusDistance));
-                    Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
                 }
                  else if(!mUnlockFocus){
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE,CaptureRequest.CONTROL_AF_MODE_AUTO);
-                    Toast.makeText(getApplicationContext(), "CONTROL AF AUTO", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "CONTROL AF AUTO", Toast.LENGTH_SHORT).show();
                 }
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue );
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
