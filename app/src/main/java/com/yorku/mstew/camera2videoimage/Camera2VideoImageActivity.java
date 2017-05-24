@@ -528,7 +528,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int mBurstNumber=0;
     int ChronoCount=0;
     EditText mPhotoBurstText;
+    EditText mPhotoBurstLimitText;
+    int mPhotoTimeLimitNumber=1;
     int SecondStep=5;
+    int PhotoBurstTimeStop;
+    EditText mVideoTimelapse;
+    int VideoTimelapsSecondStep=2;
 
 
 
@@ -823,15 +828,51 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 PhotoBurstInputthing.setView(ThePhotoBurstView);
                                 PhotoBurstInputthing.setCancelable(true);
                                 mPhotoBurstText=(EditText)ThePhotoBurstView.findViewById(R.id.PhotoBurstEditText);
+                                mPhotoBurstLimitText=(EditText)ThePhotoBurstView.findViewById(R.id.PhotoBurstTimeLimitInputEditText);
                                 PhotoBurstInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         int TempSecondInterval=Integer.parseInt(mPhotoBurstText.getText().toString());
                                         SecondStep=TempSecondInterval;
+                                        if(mPhotoBurstLimitText.getText().toString()==""){
+                                            mPhotoTimeLimitNumber=1;
+
+                                        }else{
+                                            mPhotoTimeLimitNumber=0;
+                                            int TempTimeLimit=Integer.parseInt(mPhotoBurstLimitText.getText().toString());
+                                            PhotoBurstTimeStop=TempTimeLimit;
+                                        }
                                     }
                                 });
 
                                 PhotoBurstInputthing.show();
+
+
+
+
+                                break;
+                            case R.id.VideoTimeLapseInput:
+                                LayoutInflater inflate3=LayoutInflater.from(Camera2VideoImageActivity.this);
+                                View TheVideoTimelapseview=inflate3.inflate(R.layout.video_timelapse_input  ,null);
+                                AlertDialog.Builder VideoLapseInputthing= new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                VideoLapseInputthing.setTitle("Video timelapse Input:");
+                                VideoLapseInputthing.setView(TheVideoTimelapseview);
+                                VideoLapseInputthing.setCancelable(true);
+                                mVideoTimelapse=(EditText)TheVideoTimelapseview.findViewById(R.id.VideoTimeLapseEditText);
+                                VideoLapseInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        int TempSecondInterval=Integer.parseInt(mVideoTimelapse.getText().toString());
+                                        VideoTimelapsSecondStep=TempSecondInterval;
+
+
+                                    }
+                                });
+
+                                VideoLapseInputthing.show();
+
+
+
 
 
 
@@ -1333,10 +1374,31 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
                     @Override
                     public void onChronometerTick(Chronometer chronometer) {
-                        //chronometer.refreshDrawableState();
                         ChronoCount=ChronoCount+1;
-                        if(ChronoCount%SecondStep==0){
+                        //chronometer.refreshDrawableState();
+                        if(mPhotoTimeLimitNumber==1){
+
+
+                        if(ChronoCount%SecondStep==0) {
                             lockFocus();
+                        }
+
+                        }else if(mPhotoTimeLimitNumber==0){
+                            if(ChronoCount==(PhotoBurstTimeStop)){
+                                if(ChronoCount%SecondStep==0){
+                                    lockFocus();
+                                }
+
+                                mChronometer.stop();
+                            }
+                            else{
+                                if(ChronoCount%SecondStep==0){
+                                    lockFocus();
+                                }
+                            }
+
+
+
                         }
 
                     }
@@ -2059,7 +2121,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_TIME_LAPSE_HIGH));
         mMediaRecorder.setOutputFile(mVideoFileName);
         //Frequency of how fast
-        mMediaRecorder.setCaptureRate(2);
+        mMediaRecorder.setCaptureRate(VideoTimelapsSecondStep);
         mMediaRecorder.setOrientationHint(mTotalRotation);
         mMediaRecorder.prepare();
     }
