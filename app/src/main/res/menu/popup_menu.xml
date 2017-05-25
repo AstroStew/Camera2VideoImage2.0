@@ -98,9 +98,13 @@
         <item
             android:id="@+id/manualFocus"
             android:title="Manual Focus">
+        </item>
 
+        <item
+            android:id="@+id/LockAutoFocus"
+            android:title="Lock Auto Focus">
 
-            </item>
+        </item>
         <item
             android:id="@+id/PhotoBurstInput"
             android:title="Photo Burst Input">

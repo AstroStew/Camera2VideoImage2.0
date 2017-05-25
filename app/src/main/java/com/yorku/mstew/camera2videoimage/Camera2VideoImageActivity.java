@@ -1,6 +1,7 @@
 package com.yorku.mstew.camera2videoimage;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +41,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
@@ -85,6 +88,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import static android.hardware.camera2.CameraMetadata.CONTROL_AE_MODE_ON_ALWAYS_FLASH;
+import static android.hardware.camera2.CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AF_MODE_AUTO;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_AUTO;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
@@ -114,6 +119,10 @@ import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_SPORTS;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_STEADYPHOTO;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_SUNSET;
 import static android.hardware.camera2.CameraMetadata.CONTROL_SCENE_MODE_THEATRE;
+import static android.hardware.camera2.CameraMetadata.FLASH_MODE_OFF;
+import static android.hardware.camera2.CameraMetadata.FLASH_MODE_SINGLE;
+import static android.hardware.camera2.CameraMetadata.FLASH_MODE_TORCH;
+import static android.hardware.camera2.CameraMetadata.FLASH_STATE_UNAVAILABLE;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.toIntExact;
 
@@ -265,11 +274,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
                             }
                             if ( afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED){
                                 Toast.makeText(getApplicationContext(), "Autofocus not locked!", Toast.LENGTH_SHORT).show();
                             }
+
                             startStillCaptureRequest();
+
+
 
                             break;
                     }
@@ -284,6 +297,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     super.onCaptureCompleted(session, request, result);
                     mCaptureResult = result;
                     process(result);
+                    unLockFocus();
+
                 }
             };
     /*private boolean hasPermissionsGranted(String[] permissions){
@@ -481,7 +496,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     }
 
 
-
     //onCreate was here since the start
 
     Button mSettingsbutton;
@@ -534,6 +548,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int PhotoBurstTimeStop;
     EditText mVideoTimelapse;
     int VideoTimelapsSecondStep=2;
+    ImageButton mFlashButtonOnOff;
+    int mFlashMode=0;
+    boolean BooleanAutoFocusLock=false;
+    int AutoFocusLocks=1;
+
 
 
 
@@ -567,6 +586,57 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
 
         mFlipCamera= (ImageButton) findViewById(R.id.FlipButton);
+
+        mFlashButtonOnOff=(ImageButton) findViewById(R.id.FlashButton);
+        mFlashButtonOnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(getApplicationContext(), "Flash", Toast.LENGTH_SHORT).show();
+                PopupMenu popMenu2= new PopupMenu(Camera2VideoImageActivity.this, mFlashButtonOnOff);
+                popMenu2.inflate(R.menu.flash_popup_menu);
+                popMenu2.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int position2 = item.getItemId();
+                        switch(position2){
+                            case R.id.FlashOff:
+                                mFlashButtonOnOff.setImageResource(R.drawable.ic_flash_off_black_24dp);
+                                mFlashMode=0;
+                                startPreview();
+
+
+
+
+
+                                break;
+                            case R.id.FlashAuto:
+                                mFlashButtonOnOff.setImageResource(R.drawable.ic_flash_auto_black_24dp);
+                                mFlashMode=1;
+
+
+                                break;
+                            case R.id.FlashOn:
+                                mFlashButtonOnOff.setImageResource(R.drawable.ic_flash_on_black_24dp);
+                                mFlashMode=2;
+                                break;
+                            case R.id.TorchOn:
+                                mFlashButtonOnOff.setImageResource(R.drawable.ic_highlight_black_24dp);
+                                mFlashMode=3;
+                                startPreview();
+                                break;
+
+
+                        }
+                        return false;
+                    }
+                });
+
+                popMenu2.show();
+
+
+            }
+        });
+
 
 
 
@@ -694,7 +764,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 SubMenu sM=popupMenu.getMenu().addSubMenu(0,100,0, "Change Resolution:");
-                //SubMenu sM2=popupMenu.getMenu().addSubMenu();
+
 
 
 
@@ -821,16 +891,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                         switch (position) {
+                            case R.id.LockAutoFocus:
+
+
+                                break;
+
+
                             case R.id.manualFocus:
                                 if(!mUnlockFocus){
                                  mUnlockFocus=true;
-                                    Toast.makeText(getApplicationContext(), "UNLOCKED FOCUS", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Manual Focus Activated", Toast.LENGTH_SHORT).show();
                                     startPreview();
                                 }
 
                                 else if(mUnlockFocus){
                                     mUnlockFocus=false;
-                                    Toast.makeText(getApplicationContext(), "AUTO FOCUS ENABLED", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Auto Focus Enabled", Toast.LENGTH_SHORT).show();
                                     startPreview();
                                 }
                                 if (mChangeFocusSeekBar.getVisibility()==View.VISIBLE ){
@@ -882,7 +958,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {
                                         int TempSecondInterval=Integer.parseInt(mPhotoBurstText.getText().toString());
                                         SecondStep=TempSecondInterval;
-                                        if(mPhotoBurstLimitText.getText().toString()==""){
+                                        if(mPhotoBurstLimitText.getText().toString().isEmpty()){
                                             mPhotoTimeLimitNumber=1;
 
                                         }else{
@@ -1252,9 +1328,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         + "\n" + "Sensor Max Analog Sensitivity:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
                                         + "\n" + "Standard reference illuminant:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1)
                                         + "\n" + "Camera Compensation Range:"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE)
-
-
+                                        + "\n" + "Flash Available: "+mCameraCharacteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE)
                                         + "\n" + "Supported Available Burst Capabilities:"+ contains(mCameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BURST_CAPTURE)
+
                                 );
                                 for (int i = 0; i < previewSizes.length; i++) {
                                     String oldTextView = mCameraInfoTextView.getText().toString();
@@ -1553,6 +1629,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             mCaptureRequestBuilder.addTarget(previewSurface);
             if (AutoNumber==0){
                 //AutoSettings
+
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
                 //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
             }
@@ -1586,6 +1663,16 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                 //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, CaptureRequest )
             }
+            if (mFlashMode==0){
+                mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE,FLASH_MODE_OFF);
+            }
+            if(mFlashMode==3) {
+                mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, FLASH_MODE_TORCH);
+            }
+
+
+
+
 
 
 
@@ -1870,6 +1957,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
         mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
+
         try {
             if (mIsRecording) {
                 mRecordCaptureSession.capture(mCaptureRequestBuilder.build(), mRecordCaptureCallback, mBackgroundHandler);
@@ -1947,6 +2035,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private void startStillCaptureRequest() {
         mIsWritingImage = false;
         mIsWritingRawImage = false;
+
         try {
             if (mIsRecording || mIsTimelapse) {
                 mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
@@ -1972,6 +2061,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
             mCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mTotalRotation);
+            if(mFlashMode==2){
+                mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, FLASH_MODE_SINGLE);
+
+            }
+
 
             //Testing Exposure Time
             //units nanoseconds
@@ -2141,6 +2235,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     super.onCaptureCompleted(session, request, result);
                     process(result);
                     mCaptureResult = result;
+
+
 
 
                 }
