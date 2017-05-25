@@ -773,6 +773,44 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                         mChangeFocusSeekBar=(SeekBar) findViewById(R.id.FocusChangeSeekBar);
                         mChangeFocusSeekBar.setMax(100);
+                        mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
+                        mCloseALLbutton.setVisibility(View.VISIBLE);
+                        mSeekbar = (SeekBar) findViewById(R.id.seekBar);
+                        mISOseekbar = (SeekBar) findViewById(R.id.ISOseekbar);
+                        mTextSeekBar = (EditText) findViewById(R.id.editText);
+                        mMinimumShutterSpeed = (EditText) findViewById(R.id.MinimumShutterSpeed);
+                        mMaximumShutterSpeed = (EditText) findViewById(R.id.MaximumShutterSpeed);
+                        mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(mISOtext.getVisibility()==View.VISIBLE){
+                                mISOtext.setVisibility(View.INVISIBLE);
+                                }
+                                if(mSeekbar.getVisibility()==View.VISIBLE){
+                                    mSeekbar.setVisibility(View.INVISIBLE);
+                                }
+                                if(mISOseekbar.getVisibility()==View.VISIBLE){
+                                    mISOseekbar.setVisibility(View.INVISIBLE);
+                                }
+                                if(mTextSeekBar.getVisibility()==View.VISIBLE){
+                                    mTextSeekBar.setVisibility(View.INVISIBLE);
+                                }
+                                if(mMinimumShutterSpeed.getVisibility()==View.VISIBLE){
+                                    mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
+                                }
+                                if(mMaximumShutterSpeed.getVisibility()==View.VISIBLE){
+                                    mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
+                                }
+                                if(mChangeFocusSeekBar.getVisibility()==View.VISIBLE){
+                                    mChangeFocusSeekBar.setVisibility(View.INVISIBLE);
+                                }
+
+
+
+
+                            }
+                        });
+
 
 
 
@@ -918,29 +956,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                                 mISOtext.setVisibility(View.VISIBLE);
-
-                                mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
-                                mCloseALLbutton.setVisibility(View.VISIBLE);
-                                mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        mISOtext.setVisibility(View.INVISIBLE);
-                                        mCloseALLbutton.setVisibility(View.INVISIBLE);
-                                        if(mSeekbar.getVisibility()==View.VISIBLE){
-                                            mSeekbar.setVisibility(View.INVISIBLE);
-                                            mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
-                                            mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
-                                            mTextSeekBar.setVisibility(View.INVISIBLE);
-                                        }
-                                        if(mISOseekbar.getVisibility()==View.VISIBLE) {
-                                            mISOseekbar.setVisibility(View.INVISIBLE);
-                                        }
-
-
-                                    }
-                                });
-
-
                                 break;
 
                             case R.id.ISO100:
@@ -979,7 +994,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 break;
                             case R.id.customISO:
                                 Toast.makeText(getApplicationContext(), "Custom ISO", Toast.LENGTH_SHORT).show();
-                                mISOseekbar = (SeekBar) findViewById(R.id.ISOseekbar);
+
                                 mISOseekbar.setVisibility(View.VISIBLE);
 
                                 mISOseekbar.setMax((int)HighestISO-LowestISO);
@@ -1041,10 +1056,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             break;
                             case R.id.ChangeShutterSpeedSeek:
-                                mSeekbar = (SeekBar) findViewById(R.id.seekBar);
+
                                 mSeekbar.setVisibility(View.VISIBLE);
                                 mSeekbar.setProgress(progressValue);
-                                mTextSeekBar = (EditText) findViewById(R.id.editText);
+
                                 mTextSeekBar.setVisibility(View.VISIBLE);
                                 if(ShutterSpeed2Double<1) {
                                     mSeekbar.setMax((int) (ShutterSpeed2 - ShutterSpeed1));
@@ -1061,17 +1076,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 //Note:The SeekBar can only take Interger Values. If ShutterSpeed2-ShutterSpeed1==0 then the ShutterSpeed difference is too great
                                 //Integers can
                                 //mSeekbar.setProgress(100000);
-                                mMinimumShutterSpeed = (EditText) findViewById(R.id.MinimumShutterSpeed);
+
                                 mMinimumShutterSpeed.setVisibility(View.VISIBLE);
                                 mMinimumShutterSpeed.setText(ShutterSpeed1String);
-                                mMaximumShutterSpeed = (EditText) findViewById(R.id.MaximumShutterSpeed);
+
                                 mMaximumShutterSpeed.setVisibility(View.VISIBLE);
                                 mMaximumShutterSpeed.setText(ShutterSpeed2String);
 
 
 
                                 //mTextSeekBar.setText("Shutter Speed(in ns) :" +  + "/" + mSeekbar.getMax());
-                                mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
+                                /*mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
                                 mCloseALLbutton.setVisibility(View.VISIBLE);
                                 mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -1088,7 +1103,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                             mISOseekbar.setVisibility(View.INVISIBLE);
                                         }
                                     }
-                                });
+                                }); */
 
 
 
