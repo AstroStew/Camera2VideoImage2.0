@@ -723,6 +723,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -804,6 +805,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if(mChangeFocusSeekBar.getVisibility()==View.VISIBLE){
                                     mChangeFocusSeekBar.setVisibility(View.INVISIBLE);
                                 }
+                                mCloseALLbutton.setVisibility(View.INVISIBLE);
 
 
 
@@ -859,14 +861,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 break;
                             case R.id.PhotoBurstInput:
 
-                                LayoutInflater inflate4=LayoutInflater.from(Camera2VideoImageActivity.this);
-                                View ThePhotoBurstView=inflate4.inflate(R.layout.photo_burst_input  ,null);
-                                AlertDialog.Builder PhotoBurstInputthing= new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                final LayoutInflater inflate4=LayoutInflater.from(Camera2VideoImageActivity.this);
+                                final View ThePhotoBurstView=inflate4.inflate(R.layout.photo_burst_input  ,null);
+                                final AlertDialog.Builder PhotoBurstInputthing= new AlertDialog.Builder(Camera2VideoImageActivity.this);
                                 PhotoBurstInputthing.setTitle("Photo Burst Input:");
                                 PhotoBurstInputthing.setView(ThePhotoBurstView);
                                 PhotoBurstInputthing.setCancelable(true);
                                 mPhotoBurstText=(EditText)ThePhotoBurstView.findViewById(R.id.PhotoBurstEditText);
                                 mPhotoBurstLimitText=(EditText)ThePhotoBurstView.findViewById(R.id.PhotoBurstTimeLimitInputEditText);
+                                PhotoBurstInputthing.setNegativeButton("Close", new DialogInterface.OnClickListener(){
+
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                       dialog.dismiss();
+                                    }
+                                });
                                 PhotoBurstInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -897,6 +907,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 VideoLapseInputthing.setView(TheVideoTimelapseview);
                                 VideoLapseInputthing.setCancelable(true);
                                 mVideoTimelapse=(EditText)TheVideoTimelapseview.findViewById(R.id.VideoTimeLapseEditText);
+                                VideoLapseInputthing.setNegativeButton("Close", new DialogInterface.OnClickListener(){
+
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
                                 VideoLapseInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -915,6 +933,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                                 break;
+
                             case R.id.WhiteBalanceCloudyDaylight:
                                 mWBMode=CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
                                 startPreview();
@@ -1038,6 +1057,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 manualISODialog.setTitle("Manual ISO Input");
                                 manualISODialog.setView(subsubView);
                                 manualISODialog.setCancelable(true);
+                                manualISODialog.setNegativeButton("Close", new DialogInterface.OnClickListener(){
+
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
                                 manualISODialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -1082,32 +1109,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 mMaximumShutterSpeed.setVisibility(View.VISIBLE);
                                 mMaximumShutterSpeed.setText(ShutterSpeed2String);
-
-
-
-                                //mTextSeekBar.setText("Shutter Speed(in ns) :" +  + "/" + mSeekbar.getMax());
-                                /*mCloseALLbutton= (ImageButton) findViewById(R.id.CloseALLbutton);
-                                mCloseALLbutton.setVisibility(View.VISIBLE);
-                                mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        mMinimumShutterSpeed.setVisibility(View.INVISIBLE);
-                                        mTextSeekBar.setVisibility(View.INVISIBLE);
-                                        mSeekbar.setVisibility(View.INVISIBLE);
-                                        mMaximumShutterSpeed.setVisibility(View.INVISIBLE);
-                                        mCloseALLbutton.setVisibility(View.INVISIBLE);
-                                        if (mISOtext.getVisibility()==View.VISIBLE){
-                                            mISOtext.setVisibility(View.INVISIBLE);
-                                        }
-                                        if(mISOseekbar.getVisibility()==View.VISIBLE) {
-                                            mISOseekbar.setVisibility(View.INVISIBLE);
-                                        }
-                                    }
-                                }); */
-
-
-
-
                                 mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                                     @Override
@@ -1148,6 +1149,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 manualShutterSpeedDialog.setTitle("Manual Shutter Speed Input");
                                 manualShutterSpeedDialog.setView(ChangeShutterSpeedView);
                                 manualShutterSpeedDialog.setCancelable(true);
+                                manualShutterSpeedDialog.setNegativeButton("Close", new DialogInterface.OnClickListener(){
+
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
 
 
 
@@ -1181,6 +1190,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 manualShutterSpeedDialog2.setTitle("Manual Shutter Speed Input");
                                 manualShutterSpeedDialog2.setView(ChangeShutterSpeedView2);
                                 manualShutterSpeedDialog2.setCancelable(true);
+                                manualShutterSpeedDialog2.setNegativeButton("Close", new DialogInterface.OnClickListener(){
+
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
 
 
 
@@ -1235,7 +1252,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         + "\n" + "Sensor Max Analog Sensitivity:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
                                         + "\n" + "Standard reference illuminant:" + mCameraCharacteristics.get(mCameraCharacteristics.SENSOR_REFERENCE_ILLUMINANT1)
                                         + "\n" + "Camera Compensation Range:"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE)
-                                        + "\n" + "Camera Supported Scenes"+mCameraCharacteristics.get(mCameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES)
+
 
                                         + "\n" + "Supported Available Burst Capabilities:"+ contains(mCameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BURST_CAPTURE)
                                 );
@@ -1264,6 +1281,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 alertDialog2.show();
                                 break;
                             case R.id.ChangeScene:
+                                if(SupportedSceneModes[0]==0){
+                                    Toast.makeText(getApplicationContext(), "No Supported Scene Modes", Toast.LENGTH_SHORT).show();
+                                }
 
                                 break;
                             case R.id.ChangeSceneDisabled:
@@ -1405,6 +1425,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 }
 
                                 mChronometer.stop();
+                                mChronometer.setVisibility(View.INVISIBLE);
+                                mStillImageButton.setImageResource(R.mipmap.campic);
                             }
                             else{
                                 if(ChronoCount%SecondStep==0){

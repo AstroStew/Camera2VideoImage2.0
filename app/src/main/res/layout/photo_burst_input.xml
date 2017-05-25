@@ -38,6 +38,7 @@
             android:id="@+id/PhotoBurstTimeLimitInputEditText"
             android:hint="Leave blank for no time limit"
             android:ems="10"
+            android:inputType="number"
             android:layout_marginLeft="20dp"
 
             />
