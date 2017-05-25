@@ -1979,9 +1979,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
            mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
                                       mBackgroundHandler);
            mCaptureState= STATE_PREVIEW;
-           mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,
-                   mBackgroundHandler);
-        } catch (CameraAccessException e) {
+           /*mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,
+                   mBackgroundHandler); */
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
