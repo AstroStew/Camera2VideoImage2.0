@@ -109,6 +109,11 @@
 
         </item>
         <item
+            android:id="@+id/OpticalStabilizationInput"
+            android:title="Optical Stabilization">
+
+        </item>
+        <item
             android:id="@+id/PhotoBurstInput"
             android:title="Photo Burst Input">
 

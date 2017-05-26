@@ -217,7 +217,7 @@
         android:max="100"
         android:visibility="invisible"
 
-        />
+        android:id="@+id/seekBar3" />
     <SeekBar
         android:id="@+id/FocusChangeSeekBar"
         android:visibility="invisible"
@@ -236,6 +236,19 @@
         android:layout_alignTop="@+id/FlipButton"
         android:layout_toRightOf="@+id/FlipButton"
         android:layout_toEndOf="@+id/FlipButton" />
+
+    <TextView
+        android:id="@+id/TimeIntervalDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:textColor="#ff0000"
+        android:background="#0000ff"
+        android:textSize="20dp"
+        android:text="TextView"
+        android:layout_below="@+id/button"
+        android:layout_alignRight="@+id/FlashButton"
+        android:layout_alignEnd="@+id/FlashButton" />
 
 
 </RelativeLayout>

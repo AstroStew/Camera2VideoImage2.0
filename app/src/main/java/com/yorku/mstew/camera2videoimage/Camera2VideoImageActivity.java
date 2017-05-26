@@ -557,7 +557,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     ImageButton mFlashButtonOnOff;
     int mFlashMode=0;
     boolean BooleanAutoFocusLock=false;
-    int AutoFocusLocks=1;
+    boolean BooleanOpticalStabilizationOn=true;
+    TextView mTimeInterval;
 
 
 
@@ -589,6 +590,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mTextureView = (TextureView) findViewById(R.id.textureView);
         mStillImageButton = (ImageButton) findViewById(R.id.CameraButton);
         mStillImageButton.setImageResource(R.mipmap.campic);
+        mTimeInterval=(TextView) findViewById(R.id.TimeIntervalDisplay);
 
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
 
@@ -859,6 +861,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         mMinimumShutterSpeed = (EditText) findViewById(R.id.MinimumShutterSpeed);
                         mMaximumShutterSpeed = (EditText) findViewById(R.id.MaximumShutterSpeed);
 
+
+
                         mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -883,7 +887,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if(mChangeFocusSeekBar.getVisibility()==View.VISIBLE){
                                     mChangeFocusSeekBar.setVisibility(View.INVISIBLE);
                                 }
+                                if(mTimeInterval.getVisibility()==View.VISIBLE){
+                                    mTimeInterval.setVisibility(View.INVISIBLE);
+                                }
                                 mCloseALLbutton.setVisibility(View.INVISIBLE);
+
 
 
 
@@ -915,7 +923,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 }
                                 break;
+                            case R.id.OpticalStabilizationInput:
+                                if(BooleanOpticalStabilizationOn){
+                                    BooleanOpticalStabilizationOn=false;
+                                    Toast.makeText(getApplicationContext(), "Optical Stabilization Disabled", Toast.LENGTH_SHORT).show();
+                                }
+                                else if(!BooleanOpticalStabilizationOn){
+                                    BooleanOpticalStabilizationOn=true;
+                                    Toast.makeText(getApplicationContext(), "Optical Stabilization Enabled", Toast.LENGTH_SHORT).show();
+                                }
+                                startPreview();
 
+
+                                break;
 
                             case R.id.manualFocus:
                                 if(!mUnlockFocus){
@@ -964,6 +984,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 PhotoBurstInputthing.setView(ThePhotoBurstView);
                                 PhotoBurstInputthing.setCancelable(true);
                                 mPhotoBurstText=(EditText)ThePhotoBurstView.findViewById(R.id.PhotoBurstEditText);
+
                                 mPhotoBurstLimitText=(EditText)ThePhotoBurstView.findViewById(R.id.PhotoBurstTimeLimitInputEditText);
                                 PhotoBurstInputthing.setNegativeButton("Close", new DialogInterface.OnClickListener(){
 
@@ -1485,6 +1506,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mBurstOn=false;
                 }
                 if(mChronometer.getVisibility()==View.VISIBLE){
+                    mTimeInterval.setVisibility(View.INVISIBLE);
 
                     mChronometer.stop();
                     mChronometer.setVisibility(View.INVISIBLE);
@@ -1495,6 +1517,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 mStillImageButton.setImageResource(R.mipmap.btn_timelapse);
+                mTimeInterval.setVisibility(View.VISIBLE);
+                mTimeInterval.setText("Second Step:"+SecondStep);
 
 
                 mBurstOn=true;
@@ -1559,6 +1583,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mIsRecording = false;
                     mIsTimelapse = false;
                     mRecordImageButton.setImageResource(R.mipmap.vidpiconline);
+                    mTimeInterval.setVisibility(View.INVISIBLE);
                     mMediaRecorder.stop();
                     mMediaRecorder.reset();
                     Intent mediaStoreUpdateIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -1570,7 +1595,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 } else {
                     //mIsRecording = true;
 
-                    //new
+
                     mRecordImageButton.setImageResource(R.mipmap.vidpicbusy);
                     try {
                         checkWriteStoragePermission();
@@ -1587,7 +1612,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 mIsTimelapse = true;
-
+                mTimeInterval.setVisibility(View.VISIBLE);
+                mTimeInterval.setText("Pictures per Second"+VideoTimelapsSecondStep);
                 try {
                     checkWriteStoragePermission();
                 } catch (IOException e) {
@@ -1645,8 +1671,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         Surface previewSurface = new Surface(surfaceTexture);
 
         try {
+
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.addTarget(previewSurface);
+            if(BooleanOpticalStabilizationOn){
+                mCaptureRequestBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);
+            }else if(!BooleanOpticalStabilizationOn){
+                mCaptureRequestBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_OFF);
+            }
             if (AutoNumber==0){
                 //AutoSettings
 
@@ -1689,6 +1721,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             if(mFlashMode==3) {
                 mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, FLASH_MODE_TORCH);
             }
+
 
 
 
