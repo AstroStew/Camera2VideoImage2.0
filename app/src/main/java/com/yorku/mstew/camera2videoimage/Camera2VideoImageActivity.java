@@ -63,6 +63,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -281,6 +282,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             }
 
                             startStillCaptureRequest();
+                            if(!BooleanAutoFocusLock){
+                                unLockFocus();
+                            }
+
 
 
 
@@ -297,7 +302,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     super.onCaptureCompleted(session, request, result);
                     mCaptureResult = result;
                     process(result);
-                    unLockFocus();
+
+                    //
 
                 }
             };
@@ -552,6 +558,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     int mFlashMode=0;
     boolean BooleanAutoFocusLock=false;
     int AutoFocusLocks=1;
+
 
 
 
@@ -851,6 +858,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         mTextSeekBar = (EditText) findViewById(R.id.editText);
                         mMinimumShutterSpeed = (EditText) findViewById(R.id.MinimumShutterSpeed);
                         mMaximumShutterSpeed = (EditText) findViewById(R.id.MaximumShutterSpeed);
+
                         mCloseALLbutton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -893,7 +901,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         switch (position) {
                             case R.id.LockAutoFocus:
 
+                                if(!BooleanAutoFocusLock){
+                                    BooleanAutoFocusLock=true;
+                                    Toast.makeText(getApplicationContext(), "AutoFocus locked", Toast.LENGTH_SHORT).show();
 
+
+
+
+                                }else if (BooleanAutoFocusLock){
+                                    BooleanAutoFocusLock=false;
+                                    Toast.makeText(getApplicationContext(), "AutoFocus Unlocked", Toast.LENGTH_SHORT).show();
+                                    unLockFocus();
+
+                                }
                                 break;
 
 
@@ -1680,6 +1700,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface(), mRawImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
                         @Override
@@ -2221,6 +2242,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 }
                                     startStillCaptureRequest();
+                                 if(!BooleanAutoFocusLock){
+                                     unLockFocus();
+                                 }
+
 
 
                             }
