@@ -270,6 +270,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             //Do nothing
                             break;
                         case STATE_WAIT_LOCK:
+                            if (!BooleanAutoFocusLock) {
+                                unLockFocus();
+                            }
                             mCaptureState = STATE_PREVIEW;
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED) {
@@ -282,9 +285,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             }
 
                             startStillCaptureRequest();
-                            if (!BooleanAutoFocusLock) {
-                                //unLockFocus();
-                            }
+
+
 
 
                             break;
@@ -633,6 +635,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mFlashButtonOnOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 //Toast.makeText(getApplicationContext(), "Flash", Toast.LENGTH_SHORT).show();
                 PopupMenu popMenu2 = new PopupMenu(Camera2VideoImageActivity.this, mFlashButtonOnOff);
                 popMenu2.inflate(R.menu.flash_popup_menu);
@@ -953,15 +957,16 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 if (!BooleanAutoFocusLock) {
                                     BooleanAutoFocusLock = true;
-                                    Toast.makeText(getApplicationContext(), "AutoFocus locked", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "AutoFocus lock Enabled", Toast.LENGTH_SHORT).show();
 
                                     startPreview();
 
 
                                 } else if (BooleanAutoFocusLock) {
                                     BooleanAutoFocusLock = false;
-                                    Toast.makeText(getApplicationContext(), "AutoFocus Unlocked", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "AutoFocus Unlock Enabled", Toast.LENGTH_SHORT).show();
                                     unLockFocus();
+
                                     startPreview();
 
                                 }
@@ -2014,17 +2019,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private static final int STATE_PREVIEW = 0;
     private static final int STATE_WAIT_LOCK = 1;
     private int mCaptureState = STATE_PREVIEW;
-    boolean mAFTRIGGERCANCELED=true;
+
 
     private void lockFocus() {
         if(AutoLocks==0) {
             mCaptureState = STATE_WAIT_LOCK;
 
-            if(mAFTRIGGERCANCELED==true) {
+
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
-            }else{
-                Toast.makeText(getApplicationContext(), "Control AF already triggered", Toast.LENGTH_SHORT).show();
-            }
+
 
 
             try {
@@ -2045,56 +2048,29 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     }
 
     private void unLockFocus() {
-        mIsWritingImage=false;
-        if (!BooleanAutoFocusLock) {
+        if (AutoLocks == 1) {
+
+            try {
+                //mCaptureState=STATE_WAIT_LOCK;
+
+                mCaptureState = STATE_PREVIEW;
 
 
-            if (AutoLocks == 1) {
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                        CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
 
-                try {
-                    //mCaptureState=STATE_WAIT_LOCK;
-                    mCaptureState = STATE_PREVIEW;
-
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                            CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-                    mAFTRIGGERCANCELED=true;
-                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
-                            mBackgroundHandler);
-                    //
-                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
-                            mBackgroundHandler);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }else
-            {
-                Toast.makeText(getApplicationContext(), "Toasty2071", Toast.LENGTH_SHORT).show();
+                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
+                        mBackgroundHandler);
+                //
+                mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,
+                        mBackgroundHandler);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }else if (BooleanAutoFocusLock){
-            if (AutoLocks == 1) {
 
-                try {
-                    //mCaptureState=STATE_WAIT_LOCK;
-                    mCaptureState = STATE_PREVIEW;
-                    mAFTRIGGERCANCELED=false;
-                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
-                            mBackgroundHandler);
-                    //
-                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
-                            mBackgroundHandler);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }else{
-                Toast.makeText(getApplicationContext(), "toasty2090", Toast.LENGTH_SHORT).show();
-            }
         }
-        AutoLocks = 0;
-
-
-}
+        AutoLocks=0;
+    }
 
     private ImageButton mStillImageButton;
     //image capture
@@ -2248,6 +2224,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
                             if (!BooleanAutoFocusLock){
                                 unLockFocus();
+                            }else{
+                                AutoLocks=0;
+
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -2327,16 +2306,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                         case STATE_WAIT_LOCK:
                         {
+                            if(!BooleanAutoFocusLock){
+                                unLockFocus();}
                             mCaptureState = STATE_PREVIEW;
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
 
                             }
+
+
                             startStillCaptureRequest();
-                            if(!BooleanAutoFocusLock){
-                                //unLockFocus();
-                            }
+
+
 
 
 
