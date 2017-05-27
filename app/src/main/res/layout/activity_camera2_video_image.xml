@@ -250,5 +250,15 @@
         android:layout_alignRight="@+id/FlashButton"
         android:layout_alignEnd="@+id/FlashButton" />
 
+    <TextView
+        android:id="@+id/infoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ISOseekbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:visibility="visible"
+        android:text="TextView" />
+
 
 </RelativeLayout>

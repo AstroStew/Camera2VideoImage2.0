@@ -551,6 +551,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     TextView mTimeInterval;
     int AutoLocks=0;
     int mCameraEffect=0;
+    long mCurrentSSvalue;
+
+    int mCurrentISOValue;
+    double mCurrentFocusDistance;
+    private float mMinFocusDistance;
+    private float mMaxFocusDistance;
+    private TextView mInfoTextView;
 
 
     @Override
@@ -565,6 +572,44 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
         createVideoFolder();
         createImageFolder();
+
+        mInfoTextView = (TextView)findViewById(R.id.infoTextView);
+
+        //we have to create a new thread in order to get real time info from ISO SS adn Aperature
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!Thread.interrupted())
+                {
+                    try {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String convertSS;
+                                if(1000000000/mCurrentSSvalue <= 1){
+                                    convertSS=String.valueOf(mCurrentSSvalue/1000000000);
+                                }else{
+                                    convertSS= "1/"+ String.valueOf(1000000000/mCurrentSSvalue);
+                                }
+                                if (1/ mCurrentFocusDistance < 1/mMaxFocusDistance - 0.1){
+                                    mInfoTextView.setText("ISO: "+mCurrentISOValue+"\t\t" + "Shutter Speed:" +convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100/ mCurrentFocusDistance) + " cm");
+                                } else {
+                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed: " + convertSS + "\t\t\t\t\t" + "Focus Distance: " + "INFINITE"); // this action have to be in UI thread
+                                }
+                                }
+                        });
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+        })).start();
+
+
         Intent intent = getIntent();
         String action = intent.getAction();
         if (MediaStore.ACTION_IMAGE_CAPTURE.equals(action)) {
@@ -950,6 +995,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         @Override
                                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                             mFocusDistance = (progress * 0.05);
+                                            mInfoTextView.setText(String.format("%.2f",mFocusDistance)+"m");
                                         }
 
                                         @Override
@@ -1719,6 +1765,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+        mMinFocusDistance = mCameraCharacteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+        mMaxFocusDistance = mCameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
+        mChangeFocusSeekBar.setMax((int) ((int) (1/mMaxFocusDistance - 1/mMinFocusDistance)/0.05));
     }
 
     @Override
@@ -2263,6 +2312,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
                     process(result);
+                    mCurrentFocusDistance=result.get(CaptureResult.LENS_FOCUS_DISTANCE);
+                    mCurrentISOValue=result.get(CaptureResult.SENSOR_SENSITIVITY);
+                    mCurrentSSvalue=result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
                     mCaptureResult = result;
 
 
