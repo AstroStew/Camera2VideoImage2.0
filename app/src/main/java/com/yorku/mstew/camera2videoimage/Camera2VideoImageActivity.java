@@ -570,13 +570,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera2_video_image);
 
 
+
+
         createVideoFolder();
         createImageFolder();
 
         mInfoTextView = (TextView)findViewById(R.id.infoTextView);
 
         //we have to create a new thread in order to get real time info from ISO SS adn Aperature
-        (new Thread(new Runnable() {
+        /*(new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!Thread.interrupted())
@@ -607,7 +609,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }
 
             }
-        })).start();
+        })).start(); */
 
 
         Intent intent = getIntent();
@@ -901,7 +903,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                         mChangeFocusSeekBar = (SeekBar) findViewById(R.id.FocusChangeSeekBar);
-                        mChangeFocusSeekBar.setMax(100);
+                        mChangeFocusSeekBar.setMax((int) ((int) (1/mMaxFocusDistance - 1/mMinFocusDistance)/0.05));
+
                         mCloseALLbutton = (ImageButton) findViewById(R.id.CloseALLbutton);
                         mCloseALLbutton.setVisibility(View.VISIBLE);
                         mSeekbar = (SeekBar) findViewById(R.id.seekBar);
@@ -951,6 +954,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if (!BooleanAutoFocusLock) {
                                     BooleanAutoFocusLock = true;
                                     Toast.makeText(getApplicationContext(), "AutoFocus locked", Toast.LENGTH_SHORT).show();
+
                                     startPreview();
 
 
@@ -995,7 +999,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         @Override
                                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                             mFocusDistance = (progress * 0.05);
-                                            mInfoTextView.setText(String.format("%.2f",mFocusDistance)+"m");
+                                            //mInfoTextView.setText(String.format("%.2f",mFocusDistance)+"m");
                                         }
 
                                         @Override
@@ -1767,7 +1771,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
         mMinFocusDistance = mCameraCharacteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
         mMaxFocusDistance = mCameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
-        mChangeFocusSeekBar.setMax((int) ((int) (1/mMaxFocusDistance - 1/mMinFocusDistance)/0.05));
+       //mChangeFocusSeekBar.setMax((int) ((int) (1/mMaxFocusDistance - 1/mMinFocusDistance)/0.05));
     }
 
     @Override
@@ -2010,13 +2014,18 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private static final int STATE_PREVIEW = 0;
     private static final int STATE_WAIT_LOCK = 1;
     private int mCaptureState = STATE_PREVIEW;
+    boolean mAFTRIGGERCANCELED=true;
 
     private void lockFocus() {
         if(AutoLocks==0) {
             mCaptureState = STATE_WAIT_LOCK;
 
+            if(mAFTRIGGERCANCELED==true) {
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
+            }else{
+                Toast.makeText(getApplicationContext(), "Control AF already triggered", Toast.LENGTH_SHORT).show();
+            }
 
-            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
 
             try {
                 if (mIsRecording) {
@@ -2036,25 +2045,55 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     }
 
     private void unLockFocus() {
-        if (AutoLocks == 1) {
+        mIsWritingImage=false;
+        if (!BooleanAutoFocusLock) {
 
-        try {
-            //mCaptureState=STATE_WAIT_LOCK;
-            mCaptureState = STATE_PREVIEW;
 
-            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
-                    mBackgroundHandler);
-            //
-           mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(),mPreviewCaptureCallback,
-                   mBackgroundHandler);
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (AutoLocks == 1) {
+
+                try {
+                    //mCaptureState=STATE_WAIT_LOCK;
+                    mCaptureState = STATE_PREVIEW;
+
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                            CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+                    mAFTRIGGERCANCELED=true;
+                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
+                            mBackgroundHandler);
+                    //
+                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
+                            mBackgroundHandler);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }else
+            {
+                Toast.makeText(getApplicationContext(), "Toasty2071", Toast.LENGTH_SHORT).show();
+            }
+        }else if (BooleanAutoFocusLock){
+            if (AutoLocks == 1) {
+
+                try {
+                    //mCaptureState=STATE_WAIT_LOCK;
+                    mCaptureState = STATE_PREVIEW;
+                    mAFTRIGGERCANCELED=false;
+                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
+                            mBackgroundHandler);
+                    //
+                    mPreviewCaptureSession.capture(mCaptureRequestBuilder.build(), mPreviewCaptureCallback,
+                            mBackgroundHandler);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }else{
+                Toast.makeText(getApplicationContext(), "toasty2090", Toast.LENGTH_SHORT).show();
+            }
         }
+        AutoLocks = 0;
 
-    }
-    AutoLocks=0;
+
 }
 
     private ImageButton mStillImageButton;
@@ -2312,10 +2351,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
                     process(result);
-                    mCurrentFocusDistance=result.get(CaptureResult.LENS_FOCUS_DISTANCE);
-                    mCurrentISOValue=result.get(CaptureResult.SENSOR_SENSITIVITY);
-                    mCurrentSSvalue=result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
-                    mCaptureResult = result;
+                     mCaptureResult = result;
 
 
 
