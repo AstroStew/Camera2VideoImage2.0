@@ -270,8 +270,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             //Do nothing
                             break;
                         case STATE_WAIT_LOCK:
-                            if (!BooleanAutoFocusLock) {
-                                unLockFocus();
+                            if(!mUnlockFocus) {
+                                if (!BooleanAutoFocusLock) {
+                                    unLockFocus();
+                                }
                             }
                             mCaptureState = STATE_PREVIEW;
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
@@ -1004,7 +1006,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         @Override
                                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                             mFocusDistance = (progress * 0.05);
-                                            //mInfoTextView.setText(String.format("%.2f",mFocusDistance)+"m");
+                                            mInfoTextView.setText(String.format("%.2f",mFocusDistance)+"m");
                                         }
 
                                         @Override
@@ -1714,8 +1716,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 //manual settings
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
                 if (mUnlockFocus) {
+                    //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_);
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
-                    mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float) ((float) 1 / mFocusDistance));
+
+                    mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float) ((float) 1 / (float )mFocusDistance));
                     //Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
                 } else if (!mUnlockFocus) {
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
@@ -1990,6 +1994,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         mIsWritingImage = true;
                         Image image = reader.acquireLatestImage();
                         mCaptureRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE,mCameraEffect);
+
                         if (image != null) {
                             mBackgroundHandler.post(new ImageSaver(image, mCaptureResult, mCameraCharacteristics));
 
@@ -2222,12 +2227,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         try {
                             fileOutputStream.write(bytes);
                             Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
+
                             if (!BooleanAutoFocusLock){
                                 unLockFocus();
-                            }else{
-                                AutoLocks=0;
-
+                            }else {
+                                AutoLocks = 0;
                             }
+
+
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -2306,8 +2314,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                         case STATE_WAIT_LOCK:
                         {
-                            if(!BooleanAutoFocusLock){
-                                unLockFocus();}
+                            if (!mUnlockFocus) {
+                                if (!BooleanAutoFocusLock) {
+                                    unLockFocus();
+                                }
+                            }
                             mCaptureState = STATE_PREVIEW;
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
