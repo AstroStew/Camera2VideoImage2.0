@@ -1631,6 +1631,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private CaptureRequest.Builder mCaptureRequestBuilder;
 
     private void startPreview() {
+
         SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
         surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         Surface previewSurface = new Surface(surfaceTexture);
@@ -1638,8 +1639,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         try {
 
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            mCaptureRequestBuilder.addTarget(previewSurface);
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, mCameraEffect);
+
+            mCaptureRequestBuilder.addTarget(previewSurface);
+
+
             if (BooleanOpticalStabilizationOn) {
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);
             } else if (!BooleanOpticalStabilizationOn) {
@@ -1677,6 +1681,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             } else if (AutoNumber == 3) {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, mWBMode);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE,mCameraEffect);
+
                 //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, CaptureRequest )
             }
             if (mFlashMode == 0) {
@@ -1922,6 +1931,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     if (!mIsWritingImage) {
                         mIsWritingImage = true;
                         Image image = reader.acquireLatestImage();
+                        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE,mCameraEffect);
                         if (image != null) {
                             mBackgroundHandler.post(new ImageSaver(image, mCaptureResult, mCameraCharacteristics));
 
@@ -2044,9 +2054,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     }
 
     private void startStillCaptureRequest() {
+
+
         mIsWritingImage = false;
         mIsWritingRawImage = false;
-
         try {
             if (mIsRecording || mIsTimelapse) {
                 mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(
