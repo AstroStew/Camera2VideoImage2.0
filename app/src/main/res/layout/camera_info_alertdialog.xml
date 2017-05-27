@@ -26,5 +26,14 @@
         android:layout_below="@+id/cameraInfoTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+    <TextView
+        android:id="@+id/cameraInfoTextView3"
+        android:layout_width="287dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.10"
+        android:maxLines="20"
+        android:scrollbars="vertical"
+        android:text="Supported Effects" />
 
 </LinearLayout>
