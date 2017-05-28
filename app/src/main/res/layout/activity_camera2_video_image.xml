@@ -260,5 +260,15 @@
         android:visibility="invisible"
         android:text="TextView" />
 
+    <TextView
+        android:id="@+id/infotextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/infoTextView"
+        android:layout_alignStart="@+id/infoTextView"
+        android:layout_below="@+id/infoTextView"
+        android:layout_marginTop="11dp"
+        android:text="TextView" />
+
 
 </RelativeLayout>
