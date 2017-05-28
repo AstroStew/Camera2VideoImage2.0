@@ -257,7 +257,7 @@
         android:layout_below="@+id/ISOseekbar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="14dp"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:text="TextView" />
 
 

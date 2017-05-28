@@ -497,18 +497,18 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     //onCreate was here since the start
 
-    Button mSettingsbutton;
-    int ISOvalue = 0;
+    private Button mSettingsbutton;
+    private int ISOvalue = 0;
     int progressValue;
-    EditText mTextSeekBar;
-    EditText mMinimumShutterSpeed;
-    EditText mMaximumShutterSpeed;
-    Button mAutobutton;
-    EditText mISOtext;
+    private EditText mTextSeekBar;
+    private EditText mMinimumShutterSpeed;
+    private EditText mMaximumShutterSpeed;
+    private Button mAutobutton;
+    private EditText mISOtext;
     public boolean mIsAuto2 = false;
-    int AutoNumber = 0;
-    boolean menuonline = false;
-    ImageButton mCloseALLbutton;
+    private int AutoNumber = 0;
+    private boolean menuonline = false;
+    private ImageButton mCloseALLbutton;
     Button mShutterAuto;
     boolean ShutterAutoon = false;
     String ShutterSpeed2String;
@@ -561,7 +561,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     double mCurrentFocusDistance;
     private float mMinFocusDistance;
     private float mMaxFocusDistance;
-    private TextView mInfoTextView;
+    private TextView mFocusTextView;
 
 
     @Override
@@ -579,10 +579,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         createVideoFolder();
         createImageFolder();
 
-        mInfoTextView = (TextView)findViewById(R.id.infoTextView);
+        mFocusTextView = (TextView)findViewById(R.id.infoTextView);
 
         //we have to create a new thread in order to get real time info from ISO SS adn Aperature
-        /*(new Thread(new Runnable() {
+       /* (new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!Thread.interrupted())
@@ -599,9 +599,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     convertSS= "1/"+ String.valueOf(1000000000/mCurrentSSvalue);
                                 }
                                 if (1/ mCurrentFocusDistance < 1/mMaxFocusDistance - 0.1){
-                                    mInfoTextView.setText("ISO: "+mCurrentISOValue+"\t\t" + "Shutter Speed:" +convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100/ mCurrentFocusDistance) + " cm");
+                                    mFocusTextView.setText("ISO: "+mCurrentISOValue+"\t\t" + "Shutter Speed:" +convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100/ mCurrentFocusDistance) + " cm");
                                 } else {
-                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed: " + convertSS + "\t\t\t\t\t" + "Focus Distance: " + "INFINITE"); // this action have to be in UI thread
+                                    mFocusTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed: " + convertSS + "\t\t\t\t\t" + "Focus Distance: " + "INFINITE"); // this action have to be in UI thread
                                 }
                                 }
                         });
@@ -817,7 +817,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     SupportedSceneModes[i] = mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES)[i];
 
                 }
-                int[] AvailableEffectsArray1=new int[mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_EFFECTS).length];
+                final int[] AvailableEffectsArray1=new int[mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_EFFECTS).length];
                 for (int i=0; i<AvailableEffectsArray1.length; i++){
                     AvailableEffectsArray1[i]=(mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_EFFECTS)[i]);
                 }
@@ -871,7 +871,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         }
                         for (int i=0; i<AvailableEffectsArray2.length; i++){
                             if(position== 100+i) {
-                                mCameraEffect = (i);
+                                mCameraEffect = AvailableEffectsArray1[i];
                                 startPreview();
                             }
 
@@ -961,6 +961,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     BooleanAutoFocusLock = true;
                                     Toast.makeText(getApplicationContext(), "AutoFocus lock Enabled", Toast.LENGTH_SHORT).show();
 
+
                                     startPreview();
 
 
@@ -989,10 +990,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.manualFocus:
                                 if (!mUnlockFocus) {
                                     mUnlockFocus = true;
+                                    mFocusTextView.setVisibility(View.VISIBLE);
                                     Toast.makeText(getApplicationContext(), "Manual Focus Activated", Toast.LENGTH_SHORT).show();
                                     startPreview();
                                 } else if (mUnlockFocus) {
                                     mUnlockFocus = false;
+                                    mFocusTextView.setVisibility(View.INVISIBLE);
                                     Toast.makeText(getApplicationContext(), "Auto Focus Enabled", Toast.LENGTH_SHORT).show();
                                     startPreview();
                                 }
@@ -1006,7 +1009,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         @Override
                                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                             mFocusDistance = (progress * 0.05);
-                                            mInfoTextView.setText(String.format("%.2f",mFocusDistance)+"m");
+                                            mFocusTextView.setText(String.format("%.2f",mFocusDistance)+"m");
                                         }
 
                                         @Override
@@ -1706,6 +1709,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             } else if (!BooleanOpticalStabilizationOn) {
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_OFF);
             }
+            if (mUnlockFocus) {
+                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float) ((float) 1 / (float )mFocusDistance));
+                //Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
+            } else if (!mUnlockFocus) {
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+                //Toast.makeText(getApplicationContext(), "CONTROL AF AUTO", Toast.LENGTH_SHORT).show();
+            }
             if (AutoNumber == 0) {
                 //AutoSettings
 
@@ -1715,16 +1727,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             if (AutoNumber == 1) {
                 //manual settings
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
-                if (mUnlockFocus) {
-                    //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_);
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
 
-                    mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float) ((float) 1 / (float )mFocusDistance));
-                    //Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
-                } else if (!mUnlockFocus) {
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
-                    //Toast.makeText(getApplicationContext(), "CONTROL AF AUTO", Toast.LENGTH_SHORT).show();
-                }
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, mWBMode);
@@ -2343,6 +2346,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
+                    mCurrentFocusDistance = result.get(CaptureResult.LENS_FOCUS_DISTANCE);
+                    mCurrentISOValue = result.get(CaptureResult.SENSOR_SENSITIVITY);
+                    mCurrentSSvalue = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
                     process(result);
                      mCaptureResult = result;
 
