@@ -21,8 +21,10 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.DngCreator;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.Face;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
+import android.media.FaceDetector;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -265,6 +267,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             CameraCaptureSession.CaptureCallback() {
 
                 private void process(CaptureResult captureResult) {
+                    Integer mode = captureResult.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
+                    Face [] faces = captureResult.get(CaptureResult.STATISTICS_FACES);
+                    if (faces != null && mode != null) {
+                        Log.e("tag", "faces:"+ faces.length + ", mode" + mode);
+
+                    }
                     switch (mCaptureState) {
                         case STATE_PREVIEW:
                             //Do nothing
@@ -301,6 +309,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                 {
+                    mCurrentFocusDistance = result.get(CaptureResult.LENS_FOCUS_DISTANCE);
+                    mCurrentISOValue = result.get(CaptureResult.SENSOR_SENSITIVITY);
+                    mCurrentSSvalue = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
                     super.onCaptureCompleted(session, request, result);
                     mCaptureResult = result;
                     process(result);
@@ -521,6 +532,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private TextView mCameraInfoTextView;
     private TextView mCameraInfoTextView2;
     TextView mCameraInfoTextView3;
+    TextView mCameraInfoTextView4;
     SeekBar mISOseekbar;
     int ISOprogressValue;
     int ISOseekProgress;
@@ -562,6 +574,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private float mMinFocusDistance;
     private float mMaxFocusDistance;
     private TextView mFocusTextView;
+
+    private boolean supports_face_detection_mode_simple;
+    private boolean isSupports_face_detection_mode_full;
+    FaceDetector FaceDetector;
+    String OFFtext="";
+    String SIMPLEtext="";
+    String FULLtext="";
 
 
     @Override
@@ -614,6 +633,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             }
         })).start(); */
+
 
 
         Intent intent = getIntent();
@@ -1393,6 +1413,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 mCameraInfoTextView3 = (TextView) cameraInfoSubView.findViewById(R.id.cameraInfoTextView3);
                                 mCameraInfoTextView3.setText("Supported Effects:");
                                 mCameraInfoTextView3.setMovementMethod(new ScrollingMovementMethod());
+                                mCameraInfoTextView4 = (TextView) cameraInfoSubView.findViewById(R.id.cameraInfoTextView4);
+                                mCameraInfoTextView4.setText("Supported Face Detections");
+                                mCameraInfoTextView4.setMovementMethod(new ScrollingMovementMethod());
 
 
                                 AlertDialog.Builder builder = new AlertDialog.Builder(Camera2VideoImageActivity.this);
@@ -1429,6 +1452,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         dialog.cancel();
                                     }
                                 });
+                                String oldTextView4 = mCameraInfoTextView4.getText().toString();
+
+                                mCameraInfoTextView4.setText(oldTextView4+ " "+ OFFtext+", "+SIMPLEtext+""+FULLtext+"" );
+
 
 
                                 AlertDialog alertDialog2 = builder.create();
@@ -1695,13 +1722,38 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
         surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         Surface previewSurface = new Surface(surfaceTexture);
+        for (int i =0; i < mCameraCharacteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES).length; i++){
+
+
+            if(mCameraCharacteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES)[i]==0){
+                OFFtext =  "OFF";
+
+            }
+            if(mCameraCharacteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES)[i]==1) {
+                SIMPLEtext = "SIMPLE";
+                supports_face_detection_mode_simple=true;
+            }
+            if(mCameraCharacteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES)[i]==2)
+            {
+                FULLtext = "FULL";
+                isSupports_face_detection_mode_full=true;
+            }
+            //String newText4 = oldTextView4 + "" + mCameraCharacteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES)[i]+ " , ";
+
+        }
 
         try {
 
             mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mCaptureRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, mCameraEffect);
-
             mCaptureRequestBuilder.addTarget(previewSurface);
+            if(supports_face_detection_mode_simple && isSupports_face_detection_mode_full==false){
+            mCaptureRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, CaptureRequest.STATISTICS_FACE_DETECT_MODE_SIMPLE);
+            }
+            if(isSupports_face_detection_mode_full){
+                mCaptureRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, CaptureRequest.STATISTICS_FACE_DETECT_MODE_FULL);
+            }
+
 
 
             if (BooleanOpticalStabilizationOn) {
@@ -1760,10 +1812,18 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface(), mRawImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
+
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
                             mPreviewCaptureSession = session;
                             try {
+                            if(supports_face_detection_mode_simple){
+                                if (isSupports_face_detection_mode_full) {
+                                    mCaptureRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, CameraMetadata.STATISTICS_FACE_DETECT_MODE_SIMPLE);
+                                } else{
+                                    mCaptureRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, CameraMetadata.STATISTICS_FACE_DETECT_MODE_SIMPLE);
+                                }
+                            }
 
                                 mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),
                                         null, mBackgroundHandler);

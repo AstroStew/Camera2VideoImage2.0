@@ -35,5 +35,14 @@
         android:maxLines="20"
         android:scrollbars="vertical"
         android:text="Supported Effects" />
+    <TextView
+        android:id="@+id/cameraInfoTextView4"
+        android:layout_width="287dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.10"
+        android:maxLines="20"
+        android:scrollbars="vertical"
+        android:text="Supported Face Detections" />
 
 </LinearLayout>
