@@ -211,8 +211,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     String SIMPLEtext="";
     String FULLtext="";
     TextView mInfoTextView;
+    private boolean mRawImageCaptureon=false;
 
     private boolean afstateBoolean=false;
+    CheckBox  mRawCheckBox;
+    boolean UnlockFocusSpecialBooleanCaptureon=true;
 
 
     //firstly we want to make the window sticky. We acheive this by making system flags
@@ -615,9 +618,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera2_video_image);
 
 
+
         createVideoFolder();
         createImageFolder();
         mInfoTextView = (TextView)findViewById(R.id.infotextView2);
+
 
         mFocusTextView = (TextView)findViewById(R.id.infoTextView);
         //we have to create a new thread in order to get real time info from ISO SS adn Aperature
@@ -773,26 +778,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
         mSettingsbutton = (Button) findViewById(R.id.button);
-        mRawSwitch = (Switch) findViewById(R.id.RawSwitch);
-        mRawSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Toast.makeText(getApplicationContext(), "RAW Capture turned ON", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "RAW Capture turned OFF", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        /*mAutobutton.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    mIsAuto2=true;
-                    return true;
-                }
-               }); */
-
-
         mAutobutton = (Button) findViewById(R.id.Auto);
         mAutobutton.setText("AUTO ON");
         mAutobutton.setOnClickListener(new View.OnClickListener() {
@@ -1000,7 +985,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             }
                         });
-
+                        //mRawCheckBox = (CheckBox) findViewById(R.id.RawInput);
 
                         switch (position) {
                             case R.id.LockAutoFocus:
@@ -1016,9 +1001,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 } else if (BooleanAutoFocusLock) {
                                     BooleanAutoFocusLock = false;
                                     Toast.makeText(getApplicationContext(), "AutoFocus Unlock Enabled", Toast.LENGTH_SHORT).show();
-                                    unLockFocus();
 
+                                    //mFocusTextView.setVisibility(View.INVISIBLE);
+                                    Toast.makeText(getApplicationContext(), "Auto Focus Enabled", Toast.LENGTH_SHORT).show();
+                                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+                                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CameraMetadata.CONTROL_AF_MODE_AUTO);
+                                    AutoLocks=1;
+                                    unLockFocus();
+                                    UnlockFocusSpecialBooleanCaptureon=false;
                                     startPreview();
+                                    /*
+
+                                    unLockFocus();
+                                    startPreview();*/
 
                                 }
                                 break;
@@ -1057,7 +1052,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         @Override
                                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                             mFocusDistance = (progress * 0.05);
-                                            mFocusTextView.setText(String.format("%.2f",mFocusDistance)+"m");
+                                            mFocusTextView.setText(String.format( "Focal Distance: "+"%.2f",mFocusDistance)+"m");
                                         }
 
                                         @Override
@@ -1567,6 +1562,29 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 mSceneMode = CONTROL_SCENE_MODE_THEATRE;
                                 startPreview();
                                 break;
+
+
+
+                            case R.id.ShowRealTimeInfo:
+                                 if(mInfoTextView.getVisibility()==View.INVISIBLE){
+                                     mInfoTextView.setVisibility(View.VISIBLE);
+                                 }else{
+                                     mInfoTextView.setVisibility(View.INVISIBLE);
+                                 }
+                                break;
+                            case R.id.RawInput:
+                                if(!mRawImageCaptureon){
+                                    mRawImageCaptureon=true;
+                                    Toast.makeText(getApplicationContext(), "Raw Capture Turned on", Toast.LENGTH_SHORT).show();
+
+                                    //mRawCheckBox.setChecked(true);
+                                }else{
+                                    mRawImageCaptureon=false;
+                                    Toast.makeText(getApplicationContext(), "Raw Capture Turned Off", Toast.LENGTH_SHORT).show();
+                                }
+
+                                break;
+
 
 
                             default:
@@ -2252,10 +2270,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             }
 
 
-
-            if (mRawSwitch.isChecked()) {
+            if(mRawImageCaptureon){
                 mCaptureRequestBuilder.addTarget(mRawImageReader.getSurface());
                 mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
+
             } else {
 
                 mCaptureRequestBuilder.addTarget(mImageReader.getSurface());
@@ -2284,7 +2302,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             try {
                                 createImageFileName(); //forImage
-                                if (mRawSwitch.isChecked()) {
+                                if (mRawImageCaptureon) {
                                     createRawImageFileName(); //for RawImage
                                 }
 
@@ -2340,9 +2358,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         fileOutputStream = new FileOutputStream(mImageFileName);
                         try {
 
-
+                            if(UnlockFocusSpecialBooleanCaptureon){
                             fileOutputStream.write(bytes);
-                            Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();}
+                            else if(!UnlockFocusSpecialBooleanCaptureon){
+                                UnlockFocusSpecialBooleanCaptureon=true;
+                            }
 
                             if (!BooleanAutoFocusLock){
                                 unLockFocus();
@@ -2500,7 +2521,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         return false;
     }
 
-
     //Create an Activity member for the raw folder
     private File mRawGalleryFolder;
     private String mRawFileName;
@@ -2517,11 +2537,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private boolean mIsWritingImage = false;
     private boolean mIsWritingRawImage = false;
 //Now Were going to create a pop-up menu
-
-    //
-    //Raw Image Switch
-    private Switch mRawSwitch;
-
     //ISO CHANGE
 //ASpect Ratio stuff
     private static final String TAG = Camera2VideoImageActivity.TAG;

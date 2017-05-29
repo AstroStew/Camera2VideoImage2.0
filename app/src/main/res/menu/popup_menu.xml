@@ -110,7 +110,8 @@
         </item>
         <item
             android:id="@+id/OpticalStabilizationInput"
-            android:title="Optical Stabilization">
+            android:title="Optical Stabilization"
+            android:checkable="true">
 
         </item>
         <item
@@ -123,6 +124,15 @@
             android:title="Video Time Lapse Input">
 
         </item>
+        <item
+            android:id="@+id/RawInput"
+            android:title="Capture Raw(DNG)"
+            android:checkable="true">
+
+        </item>
+        <item
+            android:id="@+id/ShowRealTimeInfo"
+            android:title="Show Real Time Information"></item>
 
 
         <item
@@ -201,4 +211,4 @@
 
 
 
-    </menu>
+</menu>
