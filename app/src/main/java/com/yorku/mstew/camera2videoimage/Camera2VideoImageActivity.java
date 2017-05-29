@@ -134,6 +134,85 @@ import static java.lang.StrictMath.toIntExact;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
+    private Button mSettingsbutton;
+    private int ISOvalue = 0;
+    private int progressValue;
+    private EditText mTextSeekBar;
+    private EditText mMinimumShutterSpeed;
+    private EditText mMaximumShutterSpeed;
+    private Button mAutobutton;
+    private EditText mISOtext;
+    public boolean mIsAuto2 = false;
+    private int AutoNumber = 0;
+    private boolean menuonline = false;
+    private ImageButton mCloseALLbutton;
+    private Button mShutterAuto;
+    boolean ShutterAutoon = false;
+    private String ShutterSpeed2String;
+    private String ShutterSpeed1String;
+    private static Uri mRequestingAppUri;
+    private SeekBar mSeekBar2;
+    private ImageButton mFlipCamera;
+    private Boolean FlipNumberBoolean = false;
+    private int FlipNumber;
+    private TextView mCameraInfoTextView;
+    private TextView mCameraInfoTextView2;
+    private TextView mCameraInfoTextView3;
+    private TextView mCameraInfoTextView4;
+    private SeekBar mISOseekbar;
+    private int ISOprogressValue;
+    private int ISOseekProgress;
+    private int mWBMode = CONTROL_AWB_MODE_AUTO;
+    private int mSceneMode = CONTROL_SCENE_MODE_FACE_PRIORITY;
+    private int mAFMode = CONTROL_AF_MODE_AUTO;
+    private EditText mISOEditText;
+    private TextView mISOEditTextView;
+    private EditText mShutterSpeedEditText;
+    private TextView mShutterSpeedEditTextView;
+    private EditText mShutterSpeedEditText2;
+    private TextView mShutterSpeedEditTextView2;
+    private SeekBar mChangeFocusSeekBar;
+    private LinearLayout mManualFocusLayout;
+    private double mFocusDistance = 20;
+    private double getmFocusDistanceMem = 20;
+    boolean mUnlockFocus = false;
+    boolean mBurstOn = false;
+    private int mBurstNumber = 0;
+    private int ChronoCount = 0;
+    private EditText mPhotoBurstText;
+    private EditText mPhotoBurstLimitText;
+    private int mPhotoTimeLimitNumber = 1;
+    int SecondStep = 5;
+    int PhotoBurstTimeStop;
+    EditText mVideoTimelapse;
+    int VideoTimelapsSecondStep = 2;
+    ImageButton mFlashButtonOnOff;
+    int mFlashMode = 0;
+    boolean BooleanAutoFocusLock = false;
+    boolean BooleanOpticalStabilizationOn = true;
+    TextView mTimeInterval;
+    int AutoLocks=0;
+    int mCameraEffect=0;
+    long mCurrentSSvalue=500000000;
+    int mCurrentAutoFocus;
+    Integer afStateRealTime;
+    int mNumberofFaces;
+
+    int mCurrentISOValue=200;
+    double mCurrentFocusDistance=1;
+    private float mMinFocusDistance;
+    private float mMaxFocusDistance=2;
+    private TextView mFocusTextView;
+
+    private boolean supports_face_detection_mode_simple;
+    private boolean isSupports_face_detection_mode_full;
+    FaceDetector FaceDetector;
+    String OFFtext="";
+    String SIMPLEtext="";
+    String FULLtext="";
+    TextView mInfoTextView;
+
+    private boolean afstateBoolean=false;
 
 
     //firstly we want to make the window sticky. We acheive this by making system flags
@@ -267,13 +346,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             CameraCaptureSession.CaptureCallback() {
 
                 private void process(CaptureResult captureResult) {
-                    Integer mode = captureResult.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
+                    Integer mode =  captureResult.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
                     Face [] faces = captureResult.get(CaptureResult.STATISTICS_FACES);
                     if (faces != null && mode != null) {
                         //Log.e("tag", "faces:"+ faces.length + ", mode" + mode);
 
 
                     }
+
 
 
 
@@ -293,18 +373,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
 
 
+
                             }
                             if (afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus not locked!", Toast.LENGTH_SHORT).show();
                             }
-                            if (faces.length==0){
-                                //Toast.makeText(getApplicationContext(), "No Face Detected", Toast.LENGTH_SHORT).show();
-                                //do something special
-                                //lets now make a background thread that will notify the user if a face is detected
+                            if(faces.length==0){
+
+                            }else{
+                                Toast.makeText(getApplicationContext(), "Face(s) Detected", Toast.LENGTH_SHORT).show();
                             }
-                            else{
-                                Toast.makeText(getApplicationContext(), " Face(s) Detected", Toast.LENGTH_SHORT).show();
-                            }
+
 
                             startStillCaptureRequest();
 
@@ -324,6 +403,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mCurrentFocusDistance = result.get(CaptureResult.LENS_FOCUS_DISTANCE);
                     mCurrentISOValue = result.get(CaptureResult.SENSOR_SENSITIVITY);
                     mCurrentSSvalue = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
+
+                    //Trying to implement facial recognition
+
                     super.onCaptureCompleted(session, request, result);
                     mCaptureResult = result;
                     process(result);
@@ -520,80 +602,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     //onCreate was here since the start
 
-    private Button mSettingsbutton;
-    private int ISOvalue = 0;
-    private int progressValue;
-    private EditText mTextSeekBar;
-    private EditText mMinimumShutterSpeed;
-    private EditText mMaximumShutterSpeed;
-    private Button mAutobutton;
-    private EditText mISOtext;
-    public boolean mIsAuto2 = false;
-    private int AutoNumber = 0;
-    private boolean menuonline = false;
-    private ImageButton mCloseALLbutton;
-    private Button mShutterAuto;
-    boolean ShutterAutoon = false;
-    private String ShutterSpeed2String;
-    private String ShutterSpeed1String;
-    private static Uri mRequestingAppUri;
-    private SeekBar mSeekBar2;
-    private ImageButton mFlipCamera;
-    private Boolean FlipNumberBoolean = false;
-    private int FlipNumber;
-    private TextView mCameraInfoTextView;
-    private TextView mCameraInfoTextView2;
-    private TextView mCameraInfoTextView3;
-    private TextView mCameraInfoTextView4;
-    private SeekBar mISOseekbar;
-    private int ISOprogressValue;
-    private int ISOseekProgress;
-    private int mWBMode = CONTROL_AWB_MODE_AUTO;
-    private int mSceneMode = CONTROL_SCENE_MODE_FACE_PRIORITY;
-    private int mAFMode = CONTROL_AF_MODE_AUTO;
-    private EditText mISOEditText;
-    private TextView mISOEditTextView;
-    private EditText mShutterSpeedEditText;
-    private TextView mShutterSpeedEditTextView;
-    private EditText mShutterSpeedEditText2;
-    private TextView mShutterSpeedEditTextView2;
-    private SeekBar mChangeFocusSeekBar;
-    private LinearLayout mManualFocusLayout;
-    private double mFocusDistance = 20;
-    private double getmFocusDistanceMem = 20;
-    boolean mUnlockFocus = false;
-    boolean mBurstOn = false;
-    private int mBurstNumber = 0;
-    private int ChronoCount = 0;
-    private EditText mPhotoBurstText;
-    private EditText mPhotoBurstLimitText;
-    private int mPhotoTimeLimitNumber = 1;
-    int SecondStep = 5;
-    int PhotoBurstTimeStop;
-    EditText mVideoTimelapse;
-    int VideoTimelapsSecondStep = 2;
-    ImageButton mFlashButtonOnOff;
-    int mFlashMode = 0;
-    boolean BooleanAutoFocusLock = false;
-    boolean BooleanOpticalStabilizationOn = true;
-    TextView mTimeInterval;
-    int AutoLocks=0;
-    int mCameraEffect=0;
-    long mCurrentSSvalue=500000000;
 
-    int mCurrentISOValue=200;
-    double mCurrentFocusDistance=1;
-    private float mMinFocusDistance;
-    private float mMaxFocusDistance=2;
-    private TextView mFocusTextView;
-
-    private boolean supports_face_detection_mode_simple;
-    private boolean isSupports_face_detection_mode_full;
-    FaceDetector FaceDetector;
-    String OFFtext="";
-    String SIMPLEtext="";
-    String FULLtext="";
-    TextView mInfoTextView;
 
 
     @Override
@@ -624,15 +633,21 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             public void run() {
                                 String convertSS;
 
+
                                 if (1000000000 / mCurrentSSvalue <= 1) {
                                     convertSS = String.valueOf(mCurrentSSvalue / 1000000000);
                                 } else {
                                     convertSS = "1/" + String.valueOf(1000000000 / mCurrentSSvalue);
                                 }
                                 if (1 / mCurrentFocusDistance < 1 / mMaxFocusDistance - 0.1) {
-                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed:" + convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + " cm");
+                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed:" + convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + " cm" +  "Current Focus : "+ afStateRealTime + "Faces Detected:" +
+                                    mNumberofFaces
+
+                                    );
                                 } else {
-                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed: " + convertSS + "\t\t\t\t\t" + "Focus Distance: " + "INFINITE"); // this action have to be in UI thread
+                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed: " + convertSS + "\t\t\t\t\t" + "Focus Distance: " + "INFINITE"
+                                     + "Faces Detected:" + mNumberofFaces
+                                    ); // this action have to be in UI thread
                                 }
                             }
                         });
@@ -1826,6 +1841,21 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             if (mFlashMode == 3) {
                 mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, FLASH_MODE_TORCH);
             }
+            final CameraCaptureSession.CaptureCallback PreCaptureCall = new CameraCaptureSession.CaptureCallback() {
+                @Override
+                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                    super.onCaptureCompleted(session, request, result);
+                    mCurrentFocusDistance=result.get(CaptureResult.LENS_FOCUS_DISTANCE);
+                    mCurrentISOValue=result.get(CaptureResult.SENSOR_SENSITIVITY);
+                    mCurrentSSvalue=result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
+
+                    afStateRealTime = result.get(CaptureResult.CONTROL_AF_STATE);
+                    Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
+                    Face [] faces = result.get(CaptureResult.STATISTICS_FACES);
+                    mNumberofFaces=faces.length;
+
+                }
+            };
 
 
 
@@ -1847,7 +1877,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             }
 
                                 mPreviewCaptureSession.setRepeatingRequest(mCaptureRequestBuilder.build(),
-                                        null, mBackgroundHandler);
+                                        PreCaptureCall, mBackgroundHandler);
 
                             } catch (CameraAccessException e) {
                                 e.printStackTrace();
@@ -2309,6 +2339,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     try {
                         fileOutputStream = new FileOutputStream(mImageFileName);
                         try {
+
+
                             fileOutputStream.write(bytes);
                             Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
 
@@ -2427,10 +2459,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    mCurrentFocusDistance = result.get(CaptureResult.LENS_FOCUS_DISTANCE);
-                    mCurrentISOValue = result.get(CaptureResult.SENSOR_SENSITIVITY);
-                    mCurrentSSvalue = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
-                    process(result);
+                     process(result);
                      mCaptureResult = result;
 
 
