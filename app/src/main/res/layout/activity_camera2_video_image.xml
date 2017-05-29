@@ -14,6 +14,8 @@
         android:id="@+id/textureView"
         android:layout_alignParentBottom="true" />
 
+
+
     <ImageButton
         android:text="Camera_Button"
         android:layout_width="wrap_content"

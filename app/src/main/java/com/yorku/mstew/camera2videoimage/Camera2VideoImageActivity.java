@@ -56,6 +56,8 @@ import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SubMenu;
@@ -608,6 +610,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -616,6 +619,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         setContentView(R.layout.activity_camera2_video_image);
+
+
+
 
 
 
@@ -694,6 +700,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                 //Toast.makeText(getApplicationContext(), "Flash", Toast.LENGTH_SHORT).show();
                 PopupMenu popMenu2 = new PopupMenu(Camera2VideoImageActivity.this, mFlashButtonOnOff);
+
                 popMenu2.inflate(R.menu.flash_popup_menu);
                 popMenu2.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -820,11 +827,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         });
 
 
+
         mSettingsbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 menuonline = true;
+
+
+
+
+
 
 
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
@@ -959,6 +972,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if (mISOtext.getVisibility() == View.VISIBLE) {
                                     mISOtext.setVisibility(View.INVISIBLE);
                                 }
+                                if(mFocusTextView.getVisibility()==View.VISIBLE){
+                                    mFocusTextView.setVisibility(View.INVISIBLE);
+                                }
+                                if(mInfoTextView.getVisibility() == View.VISIBLE){
+                                    mInfoTextView.setVisibility(View.INVISIBLE);
+                                }
+
                                 if (mSeekbar.getVisibility() == View.VISIBLE) {
                                     mSeekbar.setVisibility(View.INVISIBLE);
                                 }
@@ -1005,7 +1025,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "AutoFocus Unlock Enabled", Toast.LENGTH_SHORT).show();
 
                                     //mFocusTextView.setVisibility(View.INVISIBLE);
-                                    
+
 
                                     UnlockFocusSpecialBooleanCaptureon=false;
                                     startPreview();
@@ -1019,11 +1039,14 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             case R.id.OpticalStabilizationInput:
                                 if (BooleanOpticalStabilizationOn) {
                                     BooleanOpticalStabilizationOn = false;
+
                                     Toast.makeText(getApplicationContext(), "Optical Stabilization Disabled", Toast.LENGTH_SHORT).show();
                                 } else if (!BooleanOpticalStabilizationOn) {
                                     BooleanOpticalStabilizationOn = true;
                                     Toast.makeText(getApplicationContext(), "Optical Stabilization Enabled", Toast.LENGTH_SHORT).show();
+
                                 }
+
                                 startPreview();
 
 
@@ -1034,6 +1057,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     mUnlockFocus = true;
                                     mFocusTextView.setVisibility(View.VISIBLE);
                                     Toast.makeText(getApplicationContext(), "Manual Focus Activated", Toast.LENGTH_SHORT).show();
+
                                     startPreview();
                                 } else if (mUnlockFocus) {
                                     mUnlockFocus = false;
@@ -1573,8 +1597,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 break;
                             case R.id.RawInput:
                                 if(!mRawImageCaptureon){
+
                                     mRawImageCaptureon=true;
                                     Toast.makeText(getApplicationContext(), "Raw Capture Turned on", Toast.LENGTH_SHORT).show();
+
 
                                     //mRawCheckBox.setChecked(true);
                                 }else{
@@ -1941,6 +1967,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
 
     }
+
+
+
+
+
 
 //now we have to call the videoFolder onCreate
 
