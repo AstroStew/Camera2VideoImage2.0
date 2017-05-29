@@ -522,7 +522,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     private Button mSettingsbutton;
     private int ISOvalue = 0;
-    int progressValue;
+    private int progressValue;
     private EditText mTextSeekBar;
     private EditText mMinimumShutterSpeed;
     private EditText mMaximumShutterSpeed;
@@ -532,22 +532,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private int AutoNumber = 0;
     private boolean menuonline = false;
     private ImageButton mCloseALLbutton;
-    Button mShutterAuto;
+    private Button mShutterAuto;
     boolean ShutterAutoon = false;
-    String ShutterSpeed2String;
-    String ShutterSpeed1String;
+    private String ShutterSpeed2String;
+    private String ShutterSpeed1String;
     private static Uri mRequestingAppUri;
-    SeekBar mSeekBar2;
-    ImageButton mFlipCamera;
-    Boolean FlipNumberBoolean = false;
-    int FlipNumber;
+    private SeekBar mSeekBar2;
+    private ImageButton mFlipCamera;
+    private Boolean FlipNumberBoolean = false;
+    private int FlipNumber;
     private TextView mCameraInfoTextView;
     private TextView mCameraInfoTextView2;
-    TextView mCameraInfoTextView3;
-    TextView mCameraInfoTextView4;
-    SeekBar mISOseekbar;
-    int ISOprogressValue;
-    int ISOseekProgress;
+    private TextView mCameraInfoTextView3;
+    private TextView mCameraInfoTextView4;
+    private SeekBar mISOseekbar;
+    private int ISOprogressValue;
+    private int ISOseekProgress;
     private int mWBMode = CONTROL_AWB_MODE_AUTO;
     private int mSceneMode = CONTROL_SCENE_MODE_FACE_PRIORITY;
     private int mAFMode = CONTROL_AF_MODE_AUTO;
@@ -557,17 +557,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private TextView mShutterSpeedEditTextView;
     private EditText mShutterSpeedEditText2;
     private TextView mShutterSpeedEditTextView2;
-    SeekBar mChangeFocusSeekBar;
-    LinearLayout mManualFocusLayout;
+    private SeekBar mChangeFocusSeekBar;
+    private LinearLayout mManualFocusLayout;
     private double mFocusDistance = 20;
     private double getmFocusDistanceMem = 20;
     boolean mUnlockFocus = false;
     boolean mBurstOn = false;
-    int mBurstNumber = 0;
-    int ChronoCount = 0;
-    EditText mPhotoBurstText;
-    EditText mPhotoBurstLimitText;
-    int mPhotoTimeLimitNumber = 1;
+    private int mBurstNumber = 0;
+    private int ChronoCount = 0;
+    private EditText mPhotoBurstText;
+    private EditText mPhotoBurstLimitText;
+    private int mPhotoTimeLimitNumber = 1;
     int SecondStep = 5;
     int PhotoBurstTimeStop;
     EditText mVideoTimelapse;
@@ -623,7 +623,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             public void run() {
                                 String convertSS;
-                                mCurrent
+
                                 if (1000000000 / mCurrentSSvalue <= 1) {
                                     convertSS = String.valueOf(mCurrentSSvalue / 1000000000);
                                 } else {
@@ -1836,7 +1836,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         public void onConfigured(CameraCaptureSession session) {
 
                             mPreviewCaptureSession = session;
-                            
+
                             try {
                             if(supports_face_detection_mode_simple){
                                 if (isSupports_face_detection_mode_full) {
