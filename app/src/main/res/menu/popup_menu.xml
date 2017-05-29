@@ -12,28 +12,49 @@
         <menu>
             <item
                 android:id="@+id/WhiteBalanceCloudyDaylight"
-                android:title="Cloud Daylight"/>
+                android:title="Cloud Daylight"
+                android:icon="@drawable/ic_cloud_queue_black_24dp"
+                />
             <item
                 android:id="@+id/WhiteBalanceDaylight"
-                android:title="Daylight"/>
+                android:title="Daylight"
+                android:icon="@drawable/ic_wb_sunny_black_24dp"
+                />
             <item
                 android:id="@+id/WhiteBalanceFluorescent"
-                android:title="Fluorescent"/>
+                android:title="Fluorescent"
+                android:icon="@drawable/ic_highlight_black_24dp"
+
+                />
             <item
                 android:id="@+id/WhiteBalanceShade"
-                android:title="Shade"/>
+                android:title="Shade"
+                android:icon="@drawable/ic_brightness_medium_black_24dp"
+
+
+                />
             <item
                 android:id="@+id/WhiteBalanceTwilight"
-                android:title="Twilight"/>
+                android:title="Twilight"
+                android:icon="@drawable/twilight"
+
+                />
             <item
                 android:id="@+id/WhiteBalanceWarmFluorescent"
-                android:title="Fluorescent"/>
+                android:title="Warm Fluorescent"
+                android:icon="@drawable/ic_highlight_black_24dp"
+
+                />
             <item
                 android:id="@+id/WhiteBalanceIncandenscent"
-                android:title="Incandenscent"/>
+                android:title="Incandenscent"
+                android:icon="@drawable/ic_wb_incandescent_black_24dp"
+                />
             <item
                 android:id="@+id/WhiteBalanceAuto"
-                android:title="Auto"/>
+                android:title="Auto"
+                android:icon="@drawable/ic_wb_auto_black_24dp"
+                />
         </menu>
     </item>
 

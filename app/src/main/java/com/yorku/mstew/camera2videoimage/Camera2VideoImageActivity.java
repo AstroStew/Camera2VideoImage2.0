@@ -1092,6 +1092,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 }
                                 //startPreview();
                                 break;
+                            case R.id.manualinputFocus:
+                                Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+                                LayoutInflater inflate5 = LayoutInflater.from(Camera2VideoImageActivity.this);
+                                View ThemanualinputView= inflate5.inflate(R.layout.manual_focus_input, null);
+                                AlertDialog.Builder manualinputalert= new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                manualinputalert.setTitle("Manual Focus Input");
+                                manualinputalert.setView(ThemanualinputView);
+                                manualinputalert.setCancelable(true);
+                                
+
+
+
+                                break;
                             case R.id.PhotoBurstInput:
 
                                 final LayoutInflater inflate4 = LayoutInflater.from(Camera2VideoImageActivity.this);
