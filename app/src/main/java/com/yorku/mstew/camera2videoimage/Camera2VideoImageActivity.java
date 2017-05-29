@@ -182,6 +182,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private int mBurstNumber = 0;
     private int ChronoCount = 0;
     private EditText mPhotoBurstText;
+    private EditText mManualFocusInput;
     private EditText mPhotoBurstLimitText;
     private int mPhotoTimeLimitNumber = 1;
     int SecondStep = 5;
@@ -651,7 +652,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     convertSS = "1/" + String.valueOf(1000000000 / mCurrentSSvalue);
                                 }
                                 if (1 / mCurrentFocusDistance < 1 / mMaxFocusDistance - 0.1) {
-                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed:" + convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + " cm" +  "Current Focus : "+ afStateRealTime + "Faces Detected:" +
+                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed:" + convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + " cm"  + "Faces Detected:" +
                                     mNumberofFaces
 
                                     );
@@ -1093,14 +1094,48 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 //startPreview();
                                 break;
                             case R.id.manualinputFocus:
-                                Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+
+                                //Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
                                 LayoutInflater inflate5 = LayoutInflater.from(Camera2VideoImageActivity.this);
                                 View ThemanualinputView= inflate5.inflate(R.layout.manual_focus_input, null);
                                 AlertDialog.Builder manualinputalert= new AlertDialog.Builder(Camera2VideoImageActivity.this);
                                 manualinputalert.setTitle("Manual Focus Input");
                                 manualinputalert.setView(ThemanualinputView);
                                 manualinputalert.setCancelable(true);
-                                
+                                mManualFocusInput= (EditText) ThemanualinputView.findViewById(R.id.FocusEditText);
+                                manualinputalert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+
+                                    }
+                                });
+                                manualinputalert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (!mUnlockFocus) {
+                                            mUnlockFocus = true;
+                                            mFocusTextView.setVisibility(View.VISIBLE);
+                                            Toast.makeText(getApplicationContext(), "Manual Focus Activated", Toast.LENGTH_SHORT).show();
+
+
+                                        } else if (mUnlockFocus) {
+                                            mUnlockFocus = false;
+                                            mFocusTextView.setVisibility(View.INVISIBLE);
+                                            Toast.makeText(getApplicationContext(), "Auto Focus Enabled", Toast.LENGTH_SHORT).show();
+
+                                        }
+
+                                        double TempManualFocusInput= Double.parseDouble(mManualFocusInput.getText().toString());
+                                        mFocusTextView.setText(TempManualFocusInput+"");
+                                    mFocusDistance=TempManualFocusInput;
+
+                                    }
+                                });
+                                manualinputalert.show();
+                                startPreview();
+
+
 
 
 
@@ -1905,7 +1940,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mCurrentISOValue=result.get(CaptureResult.SENSOR_SENSITIVITY);
                     mCurrentSSvalue=result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
 
-                    afStateRealTime = result.get(CaptureResult.CONTROL_AF_STATE);
+
                     Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
                     Face [] faces = result.get(CaptureResult.STATISTICS_FACES);
                     mNumberofFaces=faces.length;
