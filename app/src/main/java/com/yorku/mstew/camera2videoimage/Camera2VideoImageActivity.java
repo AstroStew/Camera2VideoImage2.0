@@ -993,6 +993,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if (!BooleanAutoFocusLock) {
                                     BooleanAutoFocusLock = true;
                                     Toast.makeText(getApplicationContext(), "AutoFocus lock Enabled", Toast.LENGTH_SHORT).show();
+                                    //UnlockFocusSpecialBooleanCaptureon=true;
+
 
 
                                     startPreview();
@@ -1003,11 +1005,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "AutoFocus Unlock Enabled", Toast.LENGTH_SHORT).show();
 
                                     //mFocusTextView.setVisibility(View.INVISIBLE);
-                                    Toast.makeText(getApplicationContext(), "Auto Focus Enabled", Toast.LENGTH_SHORT).show();
-                                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-                                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CameraMetadata.CONTROL_AF_MODE_AUTO);
-                                    AutoLocks=1;
-                                    unLockFocus();
+                                    
+
                                     UnlockFocusSpecialBooleanCaptureon=false;
                                     startPreview();
                                     /*
@@ -2301,9 +2300,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                             try {
+                                if(UnlockFocusSpecialBooleanCaptureon){
                                 createImageFileName(); //forImage
                                 if (mRawImageCaptureon) {
                                     createRawImageFileName(); //for RawImage
+                                }}
+                                else{
+                                    UnlockFocusSpecialBooleanCaptureon=true;
                                 }
 
 
@@ -2358,12 +2361,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                         fileOutputStream = new FileOutputStream(mImageFileName);
                         try {
 
-                            if(UnlockFocusSpecialBooleanCaptureon){
+
                             fileOutputStream.write(bytes);
-                            Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();}
-                            else if(!UnlockFocusSpecialBooleanCaptureon){
-                                UnlockFocusSpecialBooleanCaptureon=true;
-                            }
+                            Toast.makeText(getApplicationContext(), "JPEG saved", Toast.LENGTH_SHORT).show();
 
                             if (!BooleanAutoFocusLock){
                                 unLockFocus();
