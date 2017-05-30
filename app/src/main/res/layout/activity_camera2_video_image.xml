@@ -9,22 +9,14 @@
     >
 
 
-    <TextureView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textureView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_gravity="bottom"
-        android:visibility="visible">
+        android:visibility="visible"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         tools:context="com.yorku.mstew.camera2videoimage.Camera2VideoImageActivity">
 
@@ -39,6 +31,28 @@
 
 
     </android.support.design.widget.CoordinatorLayout>
+
+    <TextureView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textureView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <TextView
+        android:id="@+id/infotextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/FlipButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/chronometer"
+        android:layout_toStartOf="@+id/chronometer"
+        android:text="TextView"
+        android:visibility="invisible" />
 
     <ImageButton
         android:id="@+id/CameraButton"
@@ -67,9 +81,11 @@
 
         android:textColor="#ffffff"
         android:visibility="invisible"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/TimeIntervalDisplay"
-        android:layout_toEndOf="@+id/TimeIntervalDisplay" />
+        android:layout_below="@+id/TimeIntervalDisplay"
+        android:layout_alignLeft="@+id/infoTextView"
+        android:layout_alignStart="@+id/infoTextView"
+        android:layout_toLeftOf="@+id/FlipButton"
+        android:layout_toStartOf="@+id/FlipButton" />
 
     <ImageButton
         android:text="Video_Button"
@@ -102,15 +118,15 @@
 
 
 
-    <ImageButton
+    <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_settings_black_24dp"
+        android:text="Settings"
 
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp" />
+        android:layout_alignBottom="@+id/CameraButton"
+        android:layout_toLeftOf="@+id/CloseALLbutton"
+        android:layout_toStartOf="@+id/CloseALLbutton" />
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -180,11 +196,10 @@
         android:layout_height="wrap_content"
         android:text="Button"
         android:visibility="invisible"
-        android:src="@mipmap/exitpic"
-
-        android:layout_alignTop="@+id/FlashButton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:src="@drawable/ic_exit_to_app_black_24dp"
+        android:layout_below="@+id/FlashButton"
+        android:layout_alignLeft="@+id/FlashButton"
+        android:layout_alignStart="@+id/FlashButton" />
 
     <SeekBar
         android:id="@+id/seekBar2"
@@ -204,9 +219,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Button"
-        android:layout_alignTop="@+id/button"
-        android:layout_toRightOf="@+id/button"
-        android:layout_toEndOf="@+id/button" />
+        android:layout_alignBottom="@+id/ISOtext"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <SeekBar
         android:id="@+id/FocusChangeSeekBar"
@@ -223,17 +238,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_flash_off_black_24dp"
-        android:layout_alignTop="@+id/FlipButton"
-        android:layout_toRightOf="@+id/FlipButton"
-        android:layout_toEndOf="@+id/FlipButton" />
+        android:layout_below="@+id/FlipButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:id="@+id/Auto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="A"
-        android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true" />
+        android:text="Auto"
+        android:layout_alignBottom="@+id/CameraButton"
+        android:layout_toLeftOf="@+id/CameraButton"
+        android:layout_toStartOf="@+id/CameraButton" />
 
     <TextView
         android:id="@+id/TimeIntervalDisplay"
@@ -245,8 +261,8 @@
         android:textSize="20dp"
         android:text="TextView"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/MaximumShutterSpeed"
-        android:layout_toLeftOf="@+id/MaximumShutterSpeed" />
+        android:layout_toStartOf="@+id/FlipButton"
+        android:layout_toLeftOf="@+id/FlipButton" />
 
     <TextView
         android:id="@+id/infoTextView"
@@ -258,19 +274,6 @@
         android:layout_toLeftOf="@+id/TimeIntervalDisplay"
         android:layout_toStartOf="@+id/TimeIntervalDisplay"
         android:layout_alignBottom="@+id/TimeIntervalDisplay" />
-
-    <TextView
-        android:id="@+id/infotextView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:text="TextView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/chronometer"
-        android:layout_alignBottom="@+id/Auto"
-        android:layout_toLeftOf="@+id/chronometer" />
 
     <SeekBar
         android:id="@+id/ISOseekbar"

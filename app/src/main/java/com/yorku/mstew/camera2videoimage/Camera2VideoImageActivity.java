@@ -140,7 +140,7 @@ import static java.lang.StrictMath.toIntExact;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
-    private ImageButton mSettingsbutton;
+    private Button mSettingsbutton;
     private int ISOvalue = 0;
     private int progressValue;
     private EditText mTextSeekBar;
@@ -694,13 +694,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     convertSS = "1/" + String.valueOf(1000000000 / mCurrentSSvalue);
                                 }
                                 if (1 / mCurrentFocusDistance < 1 / mMaxFocusDistance - 0.1) {
-                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed:" + convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + " cm"  + "\t\t\t\t"+ "Faces Detected:" +
+                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\n" + "Shutter Speed:" + convertSS + "\n" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + "cm"  + "\n"+ "Faces Detected:" +
                                     mNumberofFaces
 
                                     );
                                 } else {
-                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed: " + convertSS + "\t\t\t\t\t" + "Focus Distance: " + "INFINITE"
-                                     + "Faces Detected:" + mNumberofFaces
+                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\n" + "Shutter Speed: " + convertSS + "\n" + "Focus Distance: " + "INFINITE"
+                                     + "\n"+"Faces Detected:" + mNumberofFaces
                                     ); // this action have to be in UI thread
                                 }
                             }
@@ -815,7 +815,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         });
 
 
-        mSettingsbutton = (ImageButton) findViewById(R.id.button);
+        mSettingsbutton = (Button) findViewById(R.id.button);
         mAutobutton = (Button) findViewById(R.id.Auto);
         mAutobutton.setText("AUTO ON");
         mAutobutton.setOnClickListener(new View.OnClickListener() {
