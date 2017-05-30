@@ -189,40 +189,37 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private EditText mManualFocusInput;
     private EditText mPhotoBurstLimitText;
     private int mPhotoTimeLimitNumber = 1;
-    int SecondStep = 5;
-    int PhotoBurstTimeStop;
-    EditText mVideoTimelapse;
-    int VideoTimelapsSecondStep = 2;
-    ImageButton mFlashButtonOnOff;
-    int mFlashMode = 0;
-    boolean BooleanAutoFocusLock = false;
-    boolean BooleanOpticalStabilizationOn = true;
-    TextView mTimeInterval;
-    int AutoLocks=0;
-    int mCameraEffect=0;
-    long mCurrentSSvalue=500000000;
-    int mCurrentAutoFocus;
-    Integer afStateRealTime;
-    int mNumberofFaces;
-
-    int mCurrentISOValue=200;
-    double mCurrentFocusDistance=1;
+    private int SecondStep = 5;
+    private int PhotoBurstTimeStop;
+    private EditText mVideoTimelapse;
+    private int VideoTimelapsSecondStep = 2;
+    private ImageButton mFlashButtonOnOff;
+    private int mFlashMode = 0;
+    private boolean BooleanAutoFocusLock = false;
+    private boolean BooleanOpticalStabilizationOn = true;
+    private TextView mTimeInterval;
+    private int AutoLocks=0;
+    private int mCameraEffect=0;
+    private long mCurrentSSvalue=500000000;
+    private int mCurrentAutoFocus;
+    private Integer afStateRealTime;
+    private int mNumberofFaces;
+    private int mCurrentISOValue=200;
+    private double mCurrentFocusDistance=1;
     private float mMinFocusDistance;
     private float mMaxFocusDistance=2;
     private TextView mFocusTextView;
-
     private boolean supports_face_detection_mode_simple;
     private boolean isSupports_face_detection_mode_full;
-    FaceDetector FaceDetector;
-    String OFFtext="";
-    String SIMPLEtext="";
-    String FULLtext="";
-    TextView mInfoTextView;
+    private FaceDetector FaceDetector;
+    private String OFFtext="";
+    private String SIMPLEtext="";
+    private String FULLtext="";
+    private TextView mInfoTextView;
     private boolean mRawImageCaptureon=false;
-
     private boolean afstateBoolean=false;
-    CheckBox  mRawCheckBox;
-    boolean UnlockFocusSpecialBooleanCaptureon=true;
+    private CheckBox  mRawCheckBox;
+    private boolean UnlockFocusSpecialBooleanCaptureon=true;
     //MenuItem mPictureMenu;
     //MenuItem mVideoMenu;
 
@@ -298,7 +295,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
     }
 
-
     //Creating the camera device
     private CameraDevice mCameraDevice;
     private CameraDevice.StateCallback mCameraDeviceStateCallback = new CameraDevice.StateCallback() {
@@ -344,31 +340,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         }
 
     };
-    //
     //Getting Camera Id
-
-    //doesn't work
     private String mCameraId;
-
-
     private int mTotalRotation;
     StreamConfigurationMap map;
     private CameraCaptureSession mPreviewCaptureSession;
     private CameraCaptureSession.CaptureCallback mPreviewCaptureCallback = new
             CameraCaptureSession.CaptureCallback() {
-
                 private void process(CaptureResult captureResult) {
                     Integer mode =  captureResult.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
                     Face [] faces = captureResult.get(CaptureResult.STATISTICS_FACES);
                     if (faces != null && mode != null) {
                         //Log.e("tag", "faces:"+ faces.length + ", mode" + mode);
-
-
                     }
-
-
-
-
                     switch (mCaptureState) {
                         case STATE_PREVIEW:
                             //Do nothing
@@ -383,25 +367,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus locked", Toast.LENGTH_SHORT).show();
-
-
-
                             }
                             if (afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                                 Toast.makeText(getApplicationContext(), "Autofocus not locked!", Toast.LENGTH_SHORT).show();
                             }
                             if(faces.length==0){
-
                             }else{
                                 Toast.makeText(getApplicationContext(), "Face(s) Detected", Toast.LENGTH_SHORT).show();
                             }
-
-
                             startStillCaptureRequest();
-
-
-
-
                             break;
                     }
 
@@ -439,8 +413,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
     };
-
-
     private void setupCamera(int width, int height) {
        /* if(!hasPermissionsGranted(VIDEO_PERMISSIONS)){
             //requestVideoPermissions();
@@ -485,16 +457,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
             //mCameraId = cameraManager.getCameraIdList()[FlipNumber];
             mCameraCharacteristics = cameraCharacteristics;
-
-
             //continue;
-
-
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
-
     private static final int REQUEST_CAMERA_PERMISSION_RESULT = 0;
 
     private void connectCamera() {
@@ -576,15 +543,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         return (sensorOrientation + deviceOrientation + 360) % 360;
 
     }
-
-
     //setting preview size dimensions
     private static class CompareSizeByArea implements Comparator<Size> {
         @Override
         public int compare(Size lhs, Size rhs) {
             return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
                     (long) rhs.getWidth() * rhs.getHeight());
-
         }
 
     }
@@ -610,14 +574,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
         }
     }
-
-
-    //onCreate was here since the start
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -714,10 +670,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             }
         })).start();
 
-
-
-
-
         Intent intent = getIntent();
         String action = intent.getAction();
         if (MediaStore.ACTION_IMAGE_CAPTURE.equals(action)) {
@@ -813,8 +765,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }
             }
         });
-
-
         mSettingsbutton = (Button) findViewById(R.id.button);
         mAutobutton = (Button) findViewById(R.id.Auto);
         mAutobutton.setText("AUTO ON");
@@ -843,7 +793,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             }
 
         });
-
         mAutobutton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -856,20 +805,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
-
         mSettingsbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 menuonline = true;
-
-
-
-
-
-
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
@@ -879,9 +819,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 rawEnabledMenuItem.setChecked(mRawImageCaptureon);
                 final MenuItem OpticalStabalizationItem= popupMenu.getMenu().findItem(R.id.OpticalStabilizationInput);
                 OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
-
-
-
 
                 StreamConfigurationMap scmap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
@@ -1011,9 +948,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if(mFocusTextView.getVisibility()==View.VISIBLE){
                                     mFocusTextView.setVisibility(View.INVISIBLE);
                                 }
-                                if(mInfoTextView.getVisibility() == View.VISIBLE){
-                                    mInfoTextView.setVisibility(View.INVISIBLE);
-                                }
 
                                 if (mSeekbar.getVisibility() == View.VISIBLE) {
                                     mSeekbar.setVisibility(View.INVISIBLE);
@@ -1065,10 +999,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                     UnlockFocusSpecialBooleanCaptureon=false;
                                     startPreview();
-                                    /*
-
-                                    unLockFocus();
-                                    startPreview();*/
 
                                 }
                                 break;
@@ -1244,6 +1174,18 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 });
 
                                 VideoLapseInputthing.show();
+
+
+                                break;
+
+                            case R.id.LockWhiteBalance:
+
+
+                                //lock if unlocked
+                                //unlock if lock
+                                break;
+                            case R.id.CustomWhiteBalance:
+                                //Slider Activation
 
 
                                 break;
@@ -2267,12 +2209,48 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     }
                 }
             };
+    private void AutoWhiteBalanceLock(){
+        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_LOCK,true);
+        Toast.makeText(getApplicationContext(), "AWB Locked", Toast.LENGTH_SHORT).show();
+        ///needs work
+
+    }
+    private void AutoWhiteBalanceUnlock(){
+        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_LOCK,false);
+        Toast.makeText(getApplicationContext(), "AWB Unlocked", Toast.LENGTH_SHORT).show();
+        ///needs work
+
+    }
+    private void AutoExposureLock(){
+
+        Toast.makeText(getApplicationContext(), "AE locked", Toast.LENGTH_SHORT).show();
+
+        ///needs work
+
+    }
+    private void AutoExposureUnlock(){
+        Toast.makeText(getApplicationContext(), "AE Unlcoked", Toast.LENGTH_SHORT).show();
+        ///needs work
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     private static final int STATE_PREVIEW = 0;
     private static final int STATE_WAIT_LOCK = 1;
     private int mCaptureState = STATE_PREVIEW;
-
 
     private void lockFocus() {
         if(AutoLocks==0) {

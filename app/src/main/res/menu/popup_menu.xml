@@ -11,6 +11,28 @@
         android:id="@+id/ChangeWhiteBalance"
         android:title="White Balance">
         <menu>
+
+            <item
+                android:id="@+id/LockWhiteBalance"
+                android:title="Lock White Balance"
+                android:icon="@drawable/ic_lock_black_24dp"
+                android:checkable="true"
+                />
+            <item
+                android:id="@+id/CustomWhiteBalance"
+                android:title="Custom White Balance"
+                android:icon="@drawable/customiso"
+                />
+            <item
+                android:id="@+id/ChooseWhiteBalance"
+                android:title="Choose White Balance"
+                android:icon="@drawable/ic_list_black_24dp"
+                >
+                <menu>
+
+
+
+
             <item
                 android:id="@+id/WhiteBalanceCloudyDaylight"
                 android:title="Cloud Daylight"
@@ -64,6 +86,10 @@
                 android:icon="@drawable/ic_wb_auto_black_24dp"
                 android:checkable="true"
                 />
+                </menu>
+
+            </item>
+
         </menu>
     </item>
 
@@ -171,6 +197,7 @@
             android:title="Photo Burst Input">
 
             </item>
+
         <item
             android:id="@+id/VideoTimeLapseInput"
             android:title="Video Time Lapse Input">
