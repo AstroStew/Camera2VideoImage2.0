@@ -9,14 +9,45 @@
     >
 
 
-    <android.support.design.widget.CoordinatorLayout
+    <TextureView
+        android:id="@+id/textureView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/infotextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/chronometer"
+        android:layout_toStartOf="@+id/chronometer"
+        android:text="TextView"
+        android:visibility="invisible"
+        android:layout_alignBottom="@+id/CloseALLbutton" />
+
+    <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        android:visibility="visible"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/chronometer"
+        android:background="@drawable/gradient"
+        android:visibility="visible" />
+
+    <android.support.design.widget.CoordinatorLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="bottom"
+        android:visibility="visible">
+
 
         tools:context="com.yorku.mstew.camera2videoimage.Camera2VideoImageActivity">
 
@@ -31,28 +62,6 @@
 
 
     </android.support.design.widget.CoordinatorLayout>
-
-    <TextureView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textureView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-
-    <TextView
-        android:id="@+id/infotextView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/FlipButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/chronometer"
-        android:layout_toStartOf="@+id/chronometer"
-        android:text="TextView"
-        android:visibility="invisible" />
 
     <ImageButton
         android:id="@+id/CameraButton"
@@ -125,8 +134,10 @@
         android:text="Settings"
 
         android:layout_alignBottom="@+id/CameraButton"
-        android:layout_toLeftOf="@+id/CloseALLbutton"
-        android:layout_toStartOf="@+id/CloseALLbutton" />
+        android:layout_toRightOf="@+id/infoTextView"
+        android:layout_toEndOf="@+id/infoTextView"
+        android:layout_marginLeft="17dp"
+        android:layout_marginStart="17dp" />
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -287,6 +298,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+
+
 
 
 </RelativeLayout>
