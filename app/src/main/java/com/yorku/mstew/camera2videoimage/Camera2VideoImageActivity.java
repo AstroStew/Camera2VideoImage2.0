@@ -841,12 +841,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
-
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 SubMenu sM = popupMenu.getMenu().addSubMenu(0, 100, 0, "Change Resolution:");
                 SubMenu submenu2 = popupMenu.getMenu().addSubMenu(0,100, 0, "Available Effects");
+                final MenuItem rawEnabledMenuItem = popupMenu.getMenu().findItem(R.id.RawInput);
+                rawEnabledMenuItem.setChecked(mRawImageCaptureon);
+                final MenuItem OpticalStabalizationItem= popupMenu.getMenu().findItem(R.id.OpticalStabilizationInput);
+                OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
+
+
 
 
                 StreamConfigurationMap scmap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
@@ -1040,14 +1045,17 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 break;
                             case R.id.OpticalStabilizationInput:
                                 if (BooleanOpticalStabilizationOn) {
+                                    item.setChecked(false);
                                     BooleanOpticalStabilizationOn = false;
 
                                     Toast.makeText(getApplicationContext(), "Optical Stabilization Disabled", Toast.LENGTH_SHORT).show();
                                 } else if (!BooleanOpticalStabilizationOn) {
+                                    item.setChecked(true);
                                     BooleanOpticalStabilizationOn = true;
                                     Toast.makeText(getApplicationContext(), "Optical Stabilization Enabled", Toast.LENGTH_SHORT).show();
 
                                 }
+
 
                                 startPreview();
 
