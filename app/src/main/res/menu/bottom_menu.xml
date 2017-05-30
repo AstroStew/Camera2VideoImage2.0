@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Picture"
+        android:id="@+id/CameraMenu"
+        android:icon="@drawable/ic_camera_black_24dp"
+        />
+    <item
+    android:title="Video"
+        android:id="@+id/VideoMenu"
+    android:icon="@drawable/ic_videocam_black_24dp"
+    />
+    <item
+        android:title="Advanced Settings"
+        android:id="@+id/AdvancedSettingsMenu"
+        android:icon="@drawable/ic_settings_black_24dp"
+        />
+    <item
+        android:title="Page"
+        android:id="@+id/PageMenu"
+        android:icon="@drawable/ic_more_black_24dp"
+        />
+
+
+</menu>

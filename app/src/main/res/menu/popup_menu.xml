@@ -6,6 +6,7 @@
     android:title="Camera Info">
 
 </item>
+
     <item
         android:id="@+id/ChangeWhiteBalance"
         android:title="White Balance">
@@ -184,7 +185,11 @@
         </item>
         <item
             android:id="@+id/ShowRealTimeInfo"
-            android:title="Show Real Time Information"></item>
+            android:title="Show Real Time Information"
+
+            >
+
+        </item>
 
 
         <item

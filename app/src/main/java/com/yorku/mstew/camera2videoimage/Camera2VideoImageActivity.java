@@ -38,6 +38,9 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.internal.BottomNavigationMenu;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -130,13 +133,14 @@ import static android.hardware.camera2.CameraMetadata.FLASH_MODE_OFF;
 import static android.hardware.camera2.CameraMetadata.FLASH_MODE_SINGLE;
 import static android.hardware.camera2.CameraMetadata.FLASH_MODE_TORCH;
 import static android.hardware.camera2.CameraMetadata.FLASH_STATE_UNAVAILABLE;
+import static com.yorku.mstew.camera2videoimage.R.menu.bottom_menu;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.toIntExact;
 
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
-    private Button mSettingsbutton;
+    private ImageButton mSettingsbutton;
     private int ISOvalue = 0;
     private int progressValue;
     private EditText mTextSeekBar;
@@ -219,6 +223,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private boolean afstateBoolean=false;
     CheckBox  mRawCheckBox;
     boolean UnlockFocusSpecialBooleanCaptureon=true;
+    //MenuItem mPictureMenu;
+    //MenuItem mVideoMenu;
 
 
     //firstly we want to make the window sticky. We acheive this by making system flags
@@ -620,16 +626,51 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         setContentView(R.layout.activity_camera2_video_image);
+        //setContentView(R.layout.bottom_navigation_bar);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mMediaRecorder = new MediaRecorder();
+        //mIsAuto2=false;
+        //this is new
+        mTextureView = (TextureView) findViewById(R.id.textureView);
+        mStillImageButton = (ImageButton) findViewById(R.id.CameraButton);
+        mTimeInterval = (TextView) findViewById(R.id.TimeIntervalDisplay);
+        mChronometer = (Chronometer) findViewById(R.id.chronometer);
+        mFlipCamera = (ImageButton) findViewById(R.id.FlipButton);
+        mFlashButtonOnOff = (ImageButton) findViewById(R.id.FlashButton);
+        mRecordImageButton = (ImageButton) findViewById(R.id.VideoButton);
+
+        final BottomNavigationView mCom= (BottomNavigationView) findViewById(R.id.NavBot);
+        mCom.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int pposition3=item.getItemId();
+                switch(pposition3){
+                    case R.id.CameraMenu:
+
+                            mStillImageButton.setVisibility(View.VISIBLE);
+                            mRecordImageButton.setVisibility(View.INVISIBLE);
 
 
+                        break;
+                    case R.id.VideoMenu:
+                        mRecordImageButton.setVisibility(View.VISIBLE);
+                        mStillImageButton.setVisibility(View.INVISIBLE);
 
 
-
+                        break;
+                    case R.id.AdvancedSettingsMenu:
+                        break;
+                    case R.id.PageMenu:
+                        break;
+                }
+                return false;
+            }
+        });
 
         createVideoFolder();
         createImageFolder();
         mInfoTextView = (TextView)findViewById(R.id.infotextView2);
+        mInfoTextView.setVisibility(View.VISIBLE);
 
 
         mFocusTextView = (TextView)findViewById(R.id.infoTextView);
@@ -653,7 +694,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     convertSS = "1/" + String.valueOf(1000000000 / mCurrentSSvalue);
                                 }
                                 if (1 / mCurrentFocusDistance < 1 / mMaxFocusDistance - 0.1) {
-                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed:" + convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + " cm"  + "Faces Detected:" +
+                                    mInfoTextView.setText("ISO: " + mCurrentISOValue + "\t\t" + "Shutter Speed:" + convertSS + "\t\t\t\t" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + " cm"  + "\t\t\t\t"+ "Faces Detected:" +
                                     mNumberofFaces
 
                                     );
@@ -682,19 +723,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         if (MediaStore.ACTION_IMAGE_CAPTURE.equals(action)) {
             mRequestingAppUri = intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
         }
-        mMediaRecorder = new MediaRecorder();
-        //mIsAuto2=false;
-        //this is new
-        mTextureView = (TextureView) findViewById(R.id.textureView);
-        mStillImageButton = (ImageButton) findViewById(R.id.CameraButton);
-        mStillImageButton.setImageResource(R.mipmap.campic);
-        mTimeInterval = (TextView) findViewById(R.id.TimeIntervalDisplay);
 
-        mChronometer = (Chronometer) findViewById(R.id.chronometer);
-
-        mFlipCamera = (ImageButton) findViewById(R.id.FlipButton);
-
-        mFlashButtonOnOff = (ImageButton) findViewById(R.id.FlashButton);
         mFlashButtonOnOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -786,7 +815,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         });
 
 
-        mSettingsbutton = (Button) findViewById(R.id.button);
+        mSettingsbutton = (ImageButton) findViewById(R.id.button);
         mAutobutton = (Button) findViewById(R.id.Auto);
         mAutobutton.setText("AUTO ON");
         mAutobutton.setOnClickListener(new View.OnClickListener() {
@@ -1754,7 +1783,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 return true;
             }
         });
-        mRecordImageButton = (ImageButton) findViewById(R.id.VideoButton);
+
 
         mRecordImageButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)

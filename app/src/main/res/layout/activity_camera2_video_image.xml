@@ -1,33 +1,75 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:design="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_camera2_video_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="com.yorku.mstew.camera2videoimage.Camera2VideoImageActivity">
+    >
+
 
     <TextureView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:id="@+id/textureView"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="bottom"
+        android:visibility="visible">
+
+        tools:context="com.yorku.mstew.camera2videoimage.Camera2VideoImageActivity">
+
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/NavBot"
+            android:layout_width="match_parent"
+            android:layout_height="73dp"
+            android:layout_gravity="bottom"
+            design:menu="@menu/bottom_menu"
+
+            />
+
+
+    </android.support.design.widget.CoordinatorLayout>
 
     <ImageButton
-        android:text="Camera_Button"
+        android:id="@+id/CameraButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@mipmap/campic"
+
         android:layout_alignTop="@+id/VideoButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_marginLeft="39dp"
         android:layout_marginStart="39dp"
-        android:id="@+id/CameraButton"
+        android:layout_centerHorizontal="true"
+        android:onClick="cameraclick"
 
-        android:onClick="cameraclick" />
+        android:text="Camera_Button" />
+
+
+    <EditText
+        android:id="@+id/ISOtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#99999999"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="none"
+        android:text="ISO:"
+
+        android:textColor="#ffffff"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/TimeIntervalDisplay"
+        android:layout_toEndOf="@+id/TimeIntervalDisplay" />
 
     <ImageButton
         android:text="Video_Button"
@@ -36,13 +78,14 @@
         android:src="@mipmap/vidpiconline"
         android:id="@+id/VideoButton"
         android:contentDescription="Video_Button"
+        android:visibility="invisible"
+
+
+        android:layout_marginBottom="80dp"
+        android:onClick="videoclick"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="27dp"
-        android:onClick="videoclick" />
+        android:layout_alignLeft="@+id/CameraButton"
+        android:layout_alignStart="@+id/CameraButton" />
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -51,18 +94,20 @@
         android:textSize="25dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/VideoButton"
-        android:layout_marginBottom="31dp"
-        android:layout_alignLeft="@+id/VideoButton"
-        android:layout_alignStart="@+id/VideoButton" />
+        android:layout_above="@+id/CameraButton"
+        android:layout_alignLeft="@+id/CameraButton"
+        android:layout_alignStart="@+id/CameraButton"
+        android:layout_alignRight="@+id/CameraButton"
+        android:layout_alignEnd="@+id/CameraButton" />
 
 
 
-    <Button
+    <ImageButton
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:src="@drawable/ic_settings_black_24dp"
+
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp" />
@@ -129,15 +174,6 @@
         android:layout_toEndOf="@+id/editText"
         android:layout_toRightOf="@+id/editText" />
 
-    <Button
-        android:id="@+id/Auto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Auto"
-        android:layout_alignBottom="@+id/VideoButton"
-        android:layout_toLeftOf="@+id/TimeIntervalDisplay"
-        android:layout_toStartOf="@+id/TimeIntervalDisplay" />
-
     <ImageButton
         android:id="@+id/CloseALLbutton"
         android:layout_width="wrap_content"
@@ -146,33 +182,16 @@
         android:visibility="invisible"
         android:src="@mipmap/exitpic"
 
-        android:layout_alignTop="@+id/button"
-        android:layout_toLeftOf="@+id/editText"
-        android:layout_toStartOf="@+id/editText" />
-
-    <EditText
-        android:id="@+id/ISOtext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="none"
-        android:text="ISO:"
-        android:background="#99999999"
-        android:textColor="#ffffff"
-        android:visibility="invisible"
-        android:enabled="false"
-        android:layout_below="@+id/CloseALLbutton"
-        android:layout_alignLeft="@+id/Auto"
-        android:layout_alignStart="@+id/Auto"
-        android:layout_alignRight="@+id/button"
-        android:layout_alignEnd="@+id/button" />
+        android:layout_alignTop="@+id/FlashButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <SeekBar
         android:id="@+id/seekBar2"
         android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="23dp"
+        android:layout_marginBottom="13dp"
         android:layout_above="@+id/editText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -188,17 +207,6 @@
         android:layout_alignTop="@+id/button"
         android:layout_toRightOf="@+id/button"
         android:layout_toEndOf="@+id/button" />
-
-    <SeekBar
-        android:id="@+id/ISOseekbar"
-        android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/ISOtext" />
 
     <SeekBar
         android:id="@+id/FocusChangeSeekBar"
@@ -219,6 +227,14 @@
         android:layout_toRightOf="@+id/FlipButton"
         android:layout_toEndOf="@+id/FlipButton" />
 
+    <Button
+        android:id="@+id/Auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="A"
+        android:layout_below="@+id/button"
+        android:layout_centerHorizontal="true" />
+
     <TextView
         android:id="@+id/TimeIntervalDisplay"
         android:layout_width="wrap_content"
@@ -228,32 +244,46 @@
         android:background="#0000ff"
         android:textSize="20dp"
         android:text="TextView"
-        android:layout_below="@+id/button"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/button"
-        android:layout_toEndOf="@+id/button" />
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/MaximumShutterSpeed"
+        android:layout_toLeftOf="@+id/MaximumShutterSpeed" />
 
     <TextView
         android:id="@+id/infoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ISOseekbar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="14dp"
         android:visibility="invisible"
-        android:text="TextView" />
+        android:text="TextView"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/TimeIntervalDisplay"
+        android:layout_toStartOf="@+id/TimeIntervalDisplay"
+        android:layout_alignBottom="@+id/TimeIntervalDisplay" />
 
     <TextView
         android:id="@+id/infotextView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/infoTextView"
-        android:layout_alignStart="@+id/infoTextView"
-        android:layout_below="@+id/infoTextView"
-        android:layout_marginTop="11dp"
         android:visibility="invisible"
-        android:text="TextView" />
+        android:text="TextView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/chronometer"
+        android:layout_alignBottom="@+id/Auto"
+        android:layout_toLeftOf="@+id/chronometer" />
+
+    <SeekBar
+        android:id="@+id/ISOseekbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:layout_above="@+id/seekBar2"
+        android:layout_marginBottom="27dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>
