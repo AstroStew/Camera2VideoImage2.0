@@ -225,9 +225,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private boolean UnlockFocusSpecialBooleanCaptureon=true;
     private boolean AutoWhiteBalancelockBoolean=false;
     private boolean CustomeWhiteBalanceBoolean=false;
-     RggbChannelVector rggbChannelVector;
-    //MenuItem mPictureMenu;
-    //MenuItem mVideoMenu;
+    private  RggbChannelVector rggbChannelVector;
+    private ColorSpaceTransform ColorCorrectionTransform;
+    EditText  mWhitebalance1;
+    EditText  mWhitebalance2;
+    EditText  mWhitebalance3;
+    EditText  mWhitebalance4;
+
+    int SensorColortransform;
+    double RggbChannelBlue;
+    double RggbChannelG_even;
+    double RggbChannelG_odd;
+    double RggbChsnnelR;
+
 
 
     //firstly we want to make the window sticky. We acheive this by making system flags
@@ -659,12 +669,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 }
                                 if (1 / mCurrentFocusDistance < 1 / mMaxFocusDistance - 0.1) {
                                     mInfoTextView.setText("ISO: " + mCurrentISOValue + "\n" + "Shutter Speed:" + convertSS + "\n" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + "cm"  + "\n"+ "Faces Detected:" +
-                                    mNumberofFaces + "\n" +rggbChannelVector
+                                    mNumberofFaces +  "\n"  +rggbChannelVector +"\n"+   ColorCorrectionTransform
 
                                     );
                                 } else {
                                     mInfoTextView.setText("ISO: " + mCurrentISOValue + "\n" + "Shutter Speed: " + convertSS + "\n" + "Focus Distance: " + "INFINITE"
-                                     + "\n"+"Faces Detected:" + mNumberofFaces + "\n" +rggbChannelVector
+                                     + "\n"+"Faces Detected:" + mNumberofFaces + "\n"+rggbChannelVector +"\n"+  ColorCorrectionTransform
                                     ); // this action have to be in UI thread
                                 }
                             }
@@ -980,7 +990,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if (mTimeInterval.getVisibility() == View.VISIBLE) {
                                     mTimeInterval.setVisibility(View.INVISIBLE);
                                 }
-                                mCloseALLbutton.setVisibility(View.INVISIBLE);
+
 
 
                             }
@@ -1210,8 +1220,47 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 }else{
                                     CustomeWhiteBalanceBoolean=true;
                                     //implement seek bar here
-                                    Toast.makeText(getApplicationContext(), "Color Correction Manual", Toast.LENGTH_SHORT).show();
-                                    startPreview();
+
+                                    LayoutInflater WhiteBalanceInflater1= LayoutInflater.from(Camera2VideoImageActivity.this);
+                                    View WhiteBalance1 = WhiteBalanceInflater1.inflate(R.layout.whitebalance1_info_alertdialog, null);
+                                    AlertDialog.Builder WhiteBalanceThing = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                    WhiteBalanceThing.setTitle("Colour inputs");
+                                    WhiteBalanceThing.setView(WhiteBalance1);
+                                    WhiteBalanceThing.setCancelable(true);
+                                    mWhitebalance1=(EditText) WhiteBalance1.findViewById(R.id.WhiteBalanceInputEditText1);
+                                    mWhitebalance2=(EditText) WhiteBalance1.findViewById(R.id.WhiteBalanceInputEditText2);
+                                    mWhitebalance3=(EditText) WhiteBalance1.findViewById(R.id.WhiteBalanceInputEditText3);
+                                    mWhitebalance4=(EditText) WhiteBalance1.findViewById(R.id.WhiteBalanceInputEditText4);
+                                    WhiteBalanceThing.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                    WhiteBalanceThing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            double mWhitebalance1temp=Double.parseDouble(mWhitebalance1.getText().toString());
+                                            double mWhitebalance2temp=Double.parseDouble(mWhitebalance2.getText().toString());
+                                            double mWhitebalance3temp=Double.parseDouble(mWhitebalance3.getText().toString());
+                                            double mWhitebalance4temp=Double.parseDouble(mWhitebalance4.getText().toString());
+                                             RggbChannelBlue=mWhitebalance4temp;
+                                             RggbChannelG_even=mWhitebalance2temp;
+                                             RggbChannelG_odd=mWhitebalance3temp;
+                                             RggbChsnnelR=mWhitebalance1temp;
+                                            startPreview();
+
+
+
+
+                                        }
+                                    });
+
+                                    WhiteBalanceThing.show();
+                                    //Toast.makeText(getApplicationContext(), "Color Correction Manual", Toast.LENGTH_SHORT).show();
+
 
                                 }
 
@@ -1920,7 +1969,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                     mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
                     mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
-                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS,new RggbChannelVector(2,1,1,2));
+                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS,new RggbChannelVector((float)RggbChsnnelR,(float) RggbChannelG_even, (float)RggbChannelG_odd,(float)RggbChannelBlue ));
                 }
                 if(!CustomeWhiteBalanceBoolean){
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
@@ -1970,6 +2019,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
                     Face [] faces = result.get(CaptureResult.STATISTICS_FACES);
                     rggbChannelVector=result.get(CaptureResult.COLOR_CORRECTION_GAINS);
+                    ColorCorrectionTransform=result.get(CaptureResult.COLOR_CORRECTION_TRANSFORM);
                     mNumberofFaces=faces.length;
 
                 }
