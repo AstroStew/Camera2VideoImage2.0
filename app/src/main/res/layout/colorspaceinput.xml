@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/WhiteBalanceInputTitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Red"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"/>
+
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText1"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:ems="10"
+        android:hint="1_1"
+        android:inputType="none" />
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText3"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:ems="10"
+        android:hint="1_2"
+        android:inputType="none" />
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText2"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_column="0"
+        android:layout_marginLeft="20dp"
+        android:layout_row="3"
+        android:ems="10"
+        android:hint="1_3"
+        android:inputType="none" />
+
+
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText4"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_column="1"
+        android:layout_marginLeft="20dp"
+        android:layout_row="1"
+        android:ems="10"
+        android:hint="2_1"
+        android:inputType="none" />
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText6"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_column="1"
+        android:layout_marginLeft="20dp"
+        android:layout_row="3"
+        android:ems="10"
+        android:hint="2_3"
+        android:inputType="none" />
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText5"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_column="1"
+        android:layout_marginLeft="20dp"
+        android:layout_row="2"
+        android:ems="10"
+        android:hint="2_2"
+        android:inputType="none" />
+
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText9"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_column="2"
+        android:layout_marginLeft="20dp"
+        android:layout_row="3"
+        android:ems="10"
+        android:hint="3_3"
+        android:inputType="none" />
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText8"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_column="2"
+        android:layout_marginLeft="20dp"
+        android:layout_row="2"
+        android:ems="10"
+        android:hint="3_2"
+        android:inputType="none" />
+
+    <EditText
+        android:id="@+id/WhiteBalanceInputEditText7"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_column="2"
+        android:layout_marginLeft="20dp"
+        android:layout_row="1"
+        android:ems="10"
+        android:hint="3_1"
+        android:inputType="none" />
+
+    <TextView
+        android:id="@+id/WhiteBalanceInputTitle3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_row="0"
+        android:text="green" />
+
+    <TextView
+        android:id="@+id/WhiteBalanceInputTitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_row="0"
+        android:text="Blue" />
+
+
+</GridLayout>

@@ -231,12 +231,32 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     EditText  mWhitebalance2;
     EditText  mWhitebalance3;
     EditText  mWhitebalance4;
-
-    int SensorColortransform;
     double RggbChannelBlue;
     double RggbChannelG_even;
     double RggbChannelG_odd;
     double RggbChsnnelR;
+    int ColorSpaceRed1;
+    int ColorSpaceRed2;
+    int ColorSpaceRed3;
+    int ColorSpaceBlue1;
+    int ColorSpaceBlue2;
+    int ColorSpaceBlue3;
+    int ColorSpaceGreen1;
+    int ColorSpaceGreen2;
+    int ColorSpaceGreen3;
+    EditText mColorSpaceText1;
+    EditText mColorSpaceText2;
+    EditText mColorSpaceText3;
+    EditText mColorSpaceText4;
+    EditText mColorSpaceText5;
+    EditText mColorSpaceText6;
+    EditText mColorSpaceText7;
+    EditText mColorSpaceText8;
+    EditText mColorSpaceText9;
+    boolean ColorSpaceInputBoolean=false;
+
+
+
 
 
 
@@ -619,6 +639,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int pposition3=item.getItemId();
                 switch(pposition3){
+
+
+
                     case R.id.CameraMenu:
 
                             mStillImageButton.setVisibility(View.VISIBLE);
@@ -1128,6 +1151,77 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                                 break;
+                            case R.id.ColorSpaceInput:
+
+                                if(ColorSpaceInputBoolean){
+                                    ColorSpaceInputBoolean=false;
+                                    Toast.makeText(getApplicationContext(), "Colour SpaceTurned OFF", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    ColorSpaceInputBoolean=true;
+                                    Toast.makeText(getApplicationContext(), "Colour Space Turned ON", Toast.LENGTH_SHORT).show();
+
+
+                                    final LayoutInflater ColorSpaceinflater = LayoutInflater.from(Camera2VideoImageActivity.this);
+                                    final View ColourSpaceView = ColorSpaceinflater.inflate(R.layout.colorspaceinput, null);
+                                    final AlertDialog.Builder ColourSpaceThing = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                    ColourSpaceThing.setTitle("Colour Space input : ");
+                                    ColourSpaceThing.setView(ColourSpaceView);
+                                    ColourSpaceThing.setCancelable(true);
+                                    //EditTextBoxes
+                                    mColorSpaceText1 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText1);
+                                    mColorSpaceText2 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText2);
+                                    mColorSpaceText3 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText3);
+                                    mColorSpaceText4 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText4);
+                                    mColorSpaceText5 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText5);
+                                    mColorSpaceText6 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText6);
+                                    mColorSpaceText7 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText7);
+                                    mColorSpaceText8 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText8);
+                                    mColorSpaceText9 = (EditText) ColourSpaceView.findViewById(R.id.WhiteBalanceInputEditText9);
+
+                                    ColourSpaceThing.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                            ColorSpaceInputBoolean=false;
+                                            Toast.makeText(getApplicationContext(), "Colour SpaceTurned OFF", Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    });
+
+                                    ColourSpaceThing.setPositiveButton("confirm", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            int TempWhiteBalanceInputEditText1 = Integer.parseInt(mColorSpaceText1.getText().toString());
+                                            int TempWhiteBalanceInputEditText2 = Integer.parseInt(mColorSpaceText2.getText().toString());
+                                            int TempWhiteBalanceInputEditText3 = Integer.parseInt(mColorSpaceText3.getText().toString());
+                                            int TempWhiteBalanceInputEditText4 = Integer.parseInt(mColorSpaceText4.getText().toString());
+                                            int TempWhiteBalanceInputEditText5 = Integer.parseInt(mColorSpaceText5.getText().toString());
+                                            int TempWhiteBalanceInputEditText6 = Integer.parseInt(mColorSpaceText6.getText().toString());
+                                            int TempWhiteBalanceInputEditText7 = Integer.parseInt(mColorSpaceText7.getText().toString());
+                                            int TempWhiteBalanceInputEditText8 = Integer.parseInt(mColorSpaceText8.getText().toString());
+                                            int TempWhiteBalanceInputEditText9 = Integer.parseInt(mColorSpaceText9.getText().toString());
+                                            ColorSpaceRed1 = TempWhiteBalanceInputEditText1;
+                                            ColorSpaceRed2 = TempWhiteBalanceInputEditText2;
+                                            ColorSpaceRed3 = TempWhiteBalanceInputEditText3;
+                                            ColorSpaceGreen1 = TempWhiteBalanceInputEditText4;
+                                            ColorSpaceGreen2 = TempWhiteBalanceInputEditText5;
+                                            ColorSpaceGreen3 = TempWhiteBalanceInputEditText6;
+                                            ColorSpaceBlue1 = TempWhiteBalanceInputEditText7;
+                                            ColorSpaceBlue2 = TempWhiteBalanceInputEditText8;
+                                            ColorSpaceBlue3 = TempWhiteBalanceInputEditText9;
+                                            startPreview();
+
+
+                                        }
+                                    });
+                                    ColourSpaceThing.show();
+                                }
+
+                                break;
+
                             case R.id.PhotoBurstInput:
 
                                 final LayoutInflater inflate4 = LayoutInflater.from(Camera2VideoImageActivity.this);
@@ -1268,6 +1362,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                                 break;
+
+
 
                             case R.id.WhiteBalanceCloudyDaylight:
                                 mWBMode = CONTROL_AWB_MODE_CLOUDY_DAYLIGHT;
@@ -1970,6 +2066,24 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
                     mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
                     mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS,new RggbChannelVector((float)RggbChsnnelR,(float) RggbChannelG_even, (float)RggbChannelG_odd,(float)RggbChannelBlue ));
+
+
+                }
+                if(ColorSpaceInputBoolean && !CustomeWhiteBalanceBoolean ){
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue); mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_TRANSFORM, new ColorSpaceTransform(new int[]{
+                            ColorSpaceRed1,256, ColorSpaceRed2,256, ColorSpaceRed3,256,
+                            ColorSpaceGreen1,256, ColorSpaceGreen2,256, ColorSpaceGreen3,256,
+                            ColorSpaceBlue1,256, ColorSpaceBlue2,256, ColorSpaceBlue3,256
+
+                    }));
+
+
+
+                }else if(ColorSpaceInputBoolean && CustomeWhiteBalanceBoolean){
+                    Toast.makeText(getApplicationContext(), "Can only have one filter", Toast.LENGTH_SHORT).show();
                 }
                 if(!CustomeWhiteBalanceBoolean){
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
