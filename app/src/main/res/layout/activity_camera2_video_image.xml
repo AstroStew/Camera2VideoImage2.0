@@ -28,7 +28,7 @@
         android:layout_toStartOf="@+id/chronometer"
         android:text="TextView"
         android:visibility="invisible"
-        android:layout_alignBottom="@+id/CloseALLbutton" />
+        android:layout_above="@+id/ISOseekbar" />
 
     <View
         android:id="@+id/view"

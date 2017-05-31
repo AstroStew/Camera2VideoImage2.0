@@ -21,7 +21,9 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.DngCreator;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.ColorSpaceTransform;
 import android.hardware.camera2.params.Face;
+import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
 import android.media.FaceDetector;
@@ -50,6 +52,7 @@ import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.PopupMenu;
+import android.telecom.VideoProfile;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
@@ -220,6 +223,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private boolean afstateBoolean=false;
     private CheckBox  mRawCheckBox;
     private boolean UnlockFocusSpecialBooleanCaptureon=true;
+    private boolean AutoWhiteBalancelockBoolean=false;
+    private boolean CustomeWhiteBalanceBoolean=false;
+     RggbChannelVector rggbChannelVector;
     //MenuItem mPictureMenu;
     //MenuItem mVideoMenu;
 
@@ -386,9 +392,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                 {
+                    /*
                     mCurrentFocusDistance = result.get(CaptureResult.LENS_FOCUS_DISTANCE);
                     mCurrentISOValue = result.get(CaptureResult.SENSOR_SENSITIVITY);
                     mCurrentSSvalue = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
+                    */
 
                     //Trying to implement facial recognition
 
@@ -651,12 +659,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 }
                                 if (1 / mCurrentFocusDistance < 1 / mMaxFocusDistance - 0.1) {
                                     mInfoTextView.setText("ISO: " + mCurrentISOValue + "\n" + "Shutter Speed:" + convertSS + "\n" + "Focus Distance: " + String.format("%.2f", 100 / mCurrentFocusDistance) + "cm"  + "\n"+ "Faces Detected:" +
-                                    mNumberofFaces
+                                    mNumberofFaces + "\n" +rggbChannelVector
 
                                     );
                                 } else {
                                     mInfoTextView.setText("ISO: " + mCurrentISOValue + "\n" + "Shutter Speed: " + convertSS + "\n" + "Focus Distance: " + "INFINITE"
-                                     + "\n"+"Faces Detected:" + mNumberofFaces
+                                     + "\n"+"Faces Detected:" + mNumberofFaces + "\n" +rggbChannelVector
                                     ); // this action have to be in UI thread
                                 }
                             }
@@ -819,6 +827,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 rawEnabledMenuItem.setChecked(mRawImageCaptureon);
                 final MenuItem OpticalStabalizationItem= popupMenu.getMenu().findItem(R.id.OpticalStabilizationInput);
                 OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
+                final MenuItem AutoWhiteBalanceItem=popupMenu.getMenu().findItem(R.id.LockWhiteBalance);
+                AutoWhiteBalanceItem.setChecked(AutoWhiteBalancelockBoolean);
 
                 StreamConfigurationMap scmap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
@@ -1179,12 +1189,32 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 break;
 
                             case R.id.LockWhiteBalance:
-
-
+                                if(AutoWhiteBalancelockBoolean){
+                                    AutoWhiteBalancelockBoolean=false;
+                                    item.setChecked(false);
+                                    AutoWhiteBalanceUnlock();
+                                }else{
+                                    AutoWhiteBalanceLock();
+                                    item.setChecked(true);
+                                    AutoWhiteBalancelockBoolean=true;
+                                }
                                 //lock if unlocked
                                 //unlock if lock
                                 break;
                             case R.id.CustomWhiteBalance:
+                                if(CustomeWhiteBalanceBoolean){
+                                    CustomeWhiteBalanceBoolean=false;
+                                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CameraMetadata.CONTROL_AWB_MODE_AUTO);
+                                    Toast.makeText(getApplicationContext(), "Color Correction Auto", Toast.LENGTH_SHORT).show();
+                                    startPreview();
+                                }else{
+                                    CustomeWhiteBalanceBoolean=true;
+                                    //implement seek bar here
+                                    Toast.makeText(getApplicationContext(), "Color Correction Manual", Toast.LENGTH_SHORT).show();
+                                    startPreview();
+
+                                }
+
                                 //Slider Activation
 
 
@@ -1767,7 +1797,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             public boolean onLongClick(View v) {
                 mIsTimelapse = true;
                 mTimeInterval.setVisibility(View.VISIBLE);
-                mTimeInterval.setText("Pictures per Second" + VideoTimelapsSecondStep);
+                mTimeInterval.setText("Pictures per Second: " + VideoTimelapsSecondStep);
                 try {
                     checkWriteStoragePermission();
                 } catch (IOException e) {
@@ -1825,6 +1855,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
         for (int i =0; i < mCameraCharacteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES).length; i++){
 
 
@@ -1878,15 +1909,30 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 //AutoSettings
 
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+
                 //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
             }
             if (AutoNumber == 1) {
                 //manual settings
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                if(CustomeWhiteBalanceBoolean){
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS,new RggbChannelVector(2,1,1,2));
+                }
+                if(!CustomeWhiteBalanceBoolean){
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, mWBMode);
+                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+                }
 
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
-                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, mWBMode);
+
+
+
 
 
             }
@@ -1923,6 +1969,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                     Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
                     Face [] faces = result.get(CaptureResult.STATISTICS_FACES);
+                    rggbChannelVector=result.get(CaptureResult.COLOR_CORRECTION_GAINS);
                     mNumberofFaces=faces.length;
 
                 }
@@ -2222,6 +2269,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     }
     private void AutoExposureLock(){
+        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
 
         Toast.makeText(getApplicationContext(), "AE locked", Toast.LENGTH_SHORT).show();
 
@@ -2229,6 +2277,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     }
     private void AutoExposureUnlock(){
+        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
         Toast.makeText(getApplicationContext(), "AE Unlcoked", Toast.LENGTH_SHORT).show();
         ///needs work
 
@@ -2663,6 +2712,59 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         //txform.postRotate(10);          // just for fun
         txform.postTranslate(xoff, yoff);
         mTextureView.setTransform(txform);
+    }
+    public static RggbChannelVector colorTemperature(int whiteBalance) {
+        float temperature = whiteBalance / 100;
+        float red;
+        float green;
+        float blue;
+
+        //Calculate red
+        if (temperature <= 66)
+            red = 255;
+        else {
+            red = temperature - 60;
+            red = (float) (329.698727446 * (Math.pow((double) red, -0.1332047592)));
+            if (red < 0)
+                red = 0;
+            if (red > 255)
+                red = 255;
+        }
+
+
+        //Calculate green
+        if (temperature <= 66) {
+            green = temperature;
+            green = (float) (99.4708025861 * Math.log(green) - 161.1195681661);
+            if (green < 0)
+                green = 0;
+            if (green > 255)
+                green = 255;
+        } else {
+            green = temperature - 60;
+            green = (float) (288.1221695283 * (Math.pow((double) green, -0.0755148492)));
+            if (green < 0)
+                green = 0;
+            if (green > 255)
+                green = 255;
+        }
+
+        //calculate blue
+        if (temperature >= 66)
+            blue = 255;
+        else if (temperature <= 19)
+            blue = 0;
+        else {
+            blue = temperature - 10;
+            blue = (float) (138.5177312231 * Math.log(blue) - 305.0447927307);
+            if (blue < 0)
+                blue = 0;
+            if (blue > 255)
+                blue = 255;
+        }
+
+        Log.v(TAG, "red=" + red + ", green=" + green + ", blue=" + blue);
+        return new RggbChannelVector((red / 255) * 2, (green / 255), (green / 255), (blue / 255) * 2);
     }
 
 
