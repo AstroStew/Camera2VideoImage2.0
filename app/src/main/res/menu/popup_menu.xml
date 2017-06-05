@@ -5,90 +5,17 @@
     android:id="@+id/getCameraInfo"
     android:title="Camera Info">
 
-</item>
+
+
 
 <item
     android:id="@+id/BasicManualMode"
-    android:title="Basic Manual">
+    android:title="Manual">
     <menu>
 
 
 
-        <item
-            android:id="@+id/ChangeWhiteBalance"
-            android:title="White Balance">
-            <menu>
-                <item
-                    android:id="@+id/LockWhiteBalance"
-                    android:title="Lock White Balance"
-                    android:icon="@drawable/ic_lock_black_24dp"
-                    android:checkable="true"
-                    />
-                <item
-                    android:id="@+id/ChooseWhiteBalance"
-                    android:title="Choose White Balance"
-                    android:icon="@drawable/ic_list_black_24dp"
-                    >
-                    <menu>
-                        <item
-                            android:id="@+id/WhiteBalanceCloudyDaylight"
-                            android:title="Cloud Daylight"
-                            android:icon="@drawable/ic_cloud_queue_black_24dp"
-                            android:checkable="true"
-                            />
-                        <item
-                            android:id="@+id/WhiteBalanceDaylight"
-                            android:title="Daylight"
-                            android:icon="@drawable/ic_wb_sunny_black_24dp"
-                            android:checkable="true"
-                            />
-                        <item
-                            android:id="@+id/WhiteBalanceFluorescent"
-                            android:title="Fluorescent"
-                            android:icon="@drawable/ic_highlight_black_24dp"
-                            android:checkable="true"
 
-                            />
-                        <item
-                            android:id="@+id/WhiteBalanceShade"
-                            android:title="Shade"
-                            android:icon="@drawable/ic_brightness_medium_black_24dp"
-                            android:checkable="true"
-
-
-                            />
-                        <item
-                            android:id="@+id/WhiteBalanceTwilight"
-                            android:title="Twilight"
-                            android:icon="@drawable/twilight"
-                            android:checkable="true"
-
-                            />
-                        <item
-                            android:id="@+id/WhiteBalanceWarmFluorescent"
-                            android:title="Warm Fluorescent"
-                            android:icon="@drawable/ic_highlight_black_24dp"
-                            android:checkable="true"
-
-                            />
-                        <item
-                            android:id="@+id/WhiteBalanceIncandenscent"
-                            android:title="Incandenscent"
-                            android:icon="@drawable/ic_wb_incandescent_black_24dp"
-                            android:checkable="true"
-                            />
-                        <item
-                            android:id="@+id/WhiteBalanceAuto"
-                            android:title="Auto"
-                            android:icon="@drawable/ic_wb_auto_black_24dp"
-                            android:checkable="true"
-                            />
-                    </menu>
-
-                </item>
-
-            </menu>
-        </item>
         <item
             android:id="@+id/ChangeISO"
             android:title="Change ISO">
@@ -184,7 +111,7 @@
 
 <item
     android:id="@+id/AdvancedManualMode"
-    android:title="Advanced Manual">
+    android:title="Advanced">
     <menu>
         <item
             android:id="@+id/ColorSpaceInput"
@@ -282,6 +209,82 @@
 
 
 
+    </item>
+</item>
+    <item
+        android:id="@+id/ChangeWhiteBalance"
+        android:title="White Balance">
+        <menu>
+            <item
+                android:id="@+id/LockWhiteBalance"
+                android:title="Lock White Balance"
+                android:icon="@drawable/ic_lock_black_24dp"
+                android:checkable="true"
+                />
+            <item
+                android:id="@+id/ChooseWhiteBalance"
+                android:title="Choose White Balance"
+                android:icon="@drawable/ic_list_black_24dp"
+                >
+                <menu>
+                    <item
+                        android:id="@+id/WhiteBalanceCloudyDaylight"
+                        android:title="Cloud Daylight"
+                        android:icon="@drawable/ic_cloud_queue_black_24dp"
+                        android:checkable="true"
+                        />
+                    <item
+                        android:id="@+id/WhiteBalanceDaylight"
+                        android:title="Daylight"
+                        android:icon="@drawable/ic_wb_sunny_black_24dp"
+                        android:checkable="true"
+                        />
+                    <item
+                        android:id="@+id/WhiteBalanceFluorescent"
+                        android:title="Fluorescent"
+                        android:icon="@drawable/ic_highlight_black_24dp"
+                        android:checkable="true"
+
+                        />
+                    <item
+                        android:id="@+id/WhiteBalanceShade"
+                        android:title="Shade"
+                        android:icon="@drawable/ic_brightness_medium_black_24dp"
+                        android:checkable="true"
+
+
+                        />
+                    <item
+                        android:id="@+id/WhiteBalanceTwilight"
+                        android:title="Twilight"
+                        android:icon="@drawable/twilight"
+                        android:checkable="true"
+
+                        />
+                    <item
+                        android:id="@+id/WhiteBalanceWarmFluorescent"
+                        android:title="Warm Fluorescent"
+                        android:icon="@drawable/ic_highlight_black_24dp"
+                        android:checkable="true"
+
+                        />
+                    <item
+                        android:id="@+id/WhiteBalanceIncandenscent"
+                        android:title="Incandenscent"
+                        android:icon="@drawable/ic_wb_incandescent_black_24dp"
+                        android:checkable="true"
+                        />
+                    <item
+                        android:id="@+id/WhiteBalanceAuto"
+                        android:title="Auto"
+                        android:icon="@drawable/ic_wb_auto_black_24dp"
+                        android:checkable="true"
+                        />
+                </menu>
+
+            </item>
+
+        </menu>
     </item>
 
 </menu>
