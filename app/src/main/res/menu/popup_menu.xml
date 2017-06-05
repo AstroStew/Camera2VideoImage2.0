@@ -211,7 +211,7 @@
 
     <item
         android:id="@+id/AperaturePriority"
-        android:title="Aperature Priroty">
+        android:title="Aperature Priority">
 
     </item>
 

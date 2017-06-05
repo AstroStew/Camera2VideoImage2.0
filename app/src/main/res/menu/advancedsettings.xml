@@ -9,15 +9,12 @@
         android:id="@+id/OpticalStabilizationInput"
         android:title="Optical Stabilization"
         android:checkable="true"
-
         />
 
 
     <item
         android:id="@+id/PhotoBurstInput"
         android:title="Photo Burst Input"
-
-
         />
 
     <item

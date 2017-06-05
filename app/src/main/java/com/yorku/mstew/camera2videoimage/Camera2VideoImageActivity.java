@@ -148,7 +148,7 @@ import static java.lang.StrictMath.toIntExact;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
-    private Button mManualbutton;
+    private Button mModebutton;
     private int ISOvalue = 0;
     private int progressValue;
     private EditText mTextSeekBar;
@@ -682,6 +682,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
                         mSettingsButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -691,11 +692,32 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 rawEnabledMenuItem.setChecked(mRawImageCaptureon);
                                 final MenuItem OpticalStabalizationItem= AdvanncedsettingsPopup.getMenu().findItem(R.id.OpticalStabilizationInput);
                                 OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
+                                SubMenu sM = AdvanncedsettingsPopup.getMenu().addSubMenu(0, 100, 0, "Change Resolution:");
+                                StreamConfigurationMap scmap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
+                                final Size previewSizes[] = scmap.getOutputSizes(ImageFormat.JPEG);
+
+                                for (int i = 0; i < previewSizes.length; i++) {
+                                    sM.add(0, i + 200, 0, "" + previewSizes[i]);
+                                }
+
+
 
                                 AdvanncedsettingsPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                     @Override
                                     public boolean onMenuItemClick(MenuItem item) {
                                         int position4=item.getItemId();
+                                        for (int i = 0; i < previewSizes.length; i++) {
+                                            if (position4 == 200 + i) {
+                                                Toast.makeText(getApplicationContext(), "" + previewSizes[i], Toast.LENGTH_SHORT).show();
+                                                adjustAspectRatio(previewSizes[i].getHeight(), previewSizes[i].getWidth());
+                                                setupCamera(previewSizes[i].getHeight(), previewSizes[i].getWidth());
+                                                startPreview();
+
+                                            }
+                                        }
+
+
                                         switch(position4){
                                             case R.id.PhotoBurstInput:
 
@@ -797,20 +819,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                                     Toast.makeText(getApplicationContext(), "Optical Stabilization Enabled", Toast.LENGTH_SHORT).show();
 
                                                 }
-
-
                                                 startPreview();
-
-
                                                 break;
-
-
-
-
-
-
-
-
 
                                         }
 
@@ -826,31 +836,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             }
                         });
-
-
-
-                        //LayoutInflater inflater3=LayoutInflater.from(Camera2VideoImageActivity.this);
-                        /*MenuItem item3= (MenuItem) mCom.findViewById(R.id.AdvancedSettingsMenu);
-
-
-                        PopupMenu popupmenu= new PopupMenu(Camera2VideoImageActivity.this, MenuItemCompat.getActionView(item3));
-                        popupmenu.inflate(R.menu.advancedsettings);*/
-
-
-                        /*
-                        AlertDialog.Builder AdvancedSettingsBuider = new AlertDialog.Builder(Camera2VideoImageActivity.this);
-                        View AdvancedSettingsView= inflater3.inflate(R.layout.advancedsettings, null);
-
-
-
-                        AdvancedSettingsBuider.setView(AdvancedSettingsView);
-                        AdvancedSettingsBuider.setTitle("Advanced Settings");
-                        AdvancedSettingsBuider.show();
-
-
-                        //create options menu
-                        */
-
 
                         break;
                     case R.id.PageMenu:
@@ -1002,7 +987,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }
             }
         });
-        mManualbutton = (Button) findViewById(R.id.button);
+        mModebutton = (Button) findViewById(R.id.button);
         mAutobutton = (Button) findViewById(R.id.Auto);
         mAutobutton.setText("AUTO ON");
         mAutobutton.setOnClickListener(new View.OnClickListener() {
@@ -1042,28 +1027,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 return true;
             }
         });
-        mManualbutton.setOnClickListener(new View.OnClickListener() {
+        mModebutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 menuonline = true;
 
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
-                PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mManualbutton);
+                PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mModebutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-                SubMenu sM = popupMenu.getMenu().addSubMenu(0, 100, 0, "Change Resolution:");
+
                 SubMenu submenu2 = popupMenu.getMenu().addSubMenu(0,100, 0, "Available Effects");
 
                 final MenuItem AutoWhiteBalanceItem=popupMenu.getMenu().findItem(R.id.LockWhiteBalance);
                 AutoWhiteBalanceItem.setChecked(AutoWhiteBalancelockBoolean);
 
-                StreamConfigurationMap scmap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
-                final Size previewSizes[] = scmap.getOutputSizes(ImageFormat.JPEG);
-
-                for (int i = 0; i < previewSizes.length; i++) {
-                    sM.add(0, i + 200, 0, "" + previewSizes[i]);
-                }
 
 
 
@@ -1117,15 +1096,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         //add settings
                         int position = item.getItemId();
-                        for (int i = 0; i < previewSizes.length; i++) {
-                            if (position == 200 + i) {
-                                Toast.makeText(getApplicationContext(), "" + previewSizes[i], Toast.LENGTH_SHORT).show();
-                                adjustAspectRatio(previewSizes[i].getHeight(), previewSizes[i].getWidth());
-                                setupCamera(previewSizes[i].getHeight(), previewSizes[i].getWidth());
-                                startPreview();
 
-                            }
-                        }
                         for (int i=0; i<AvailableEffectsArray2.length; i++){
                             if(position== 100+i) {
                                 mCameraEffect = AvailableEffectsArray1[i];
@@ -1804,6 +1775,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         + "\n" + "Supported Available Burst Capabilities:" + contains(mCameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES), CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BURST_CAPTURE)
 
                                 );
+                                StreamConfigurationMap scmap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                                final Size previewSizes[] = scmap.getOutputSizes(ImageFormat.JPEG);
+
                                 for (int i = 0; i < previewSizes.length; i++) {
                                     String oldTextView = mCameraInfoTextView.getText().toString();
                                     String newText = oldTextView + " , " + previewSizes[i] + ""; // can manipulate using substring also
