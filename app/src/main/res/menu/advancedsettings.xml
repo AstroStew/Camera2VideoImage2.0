@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+
+
+    <item
+        android:id="@+id/OpticalStabilizationInput"
+        android:title="Optical Stabilization"
+        android:checkable="true"
+        android:icon="@drawable/custom_input_iso"
+        />
+
+
+    <item
+        android:id="@+id/PhotoBurstInput"
+        android:title="Photo Burst Input"
+
+        android:icon="@color/colorPrimary"
+        />
+
+    <item
+        android:id="@+id/VideoTimeLapseInput"
+        android:title="Video Time Lapse Input"/>
+    <item
+        android:id="@+id/RawInput"
+        android:title="Capture Raw(DNG)"
+        android:checkable="true"
+        />
+    <item
+        android:id="@+id/ShowRealTimeInfo"
+        android:title="Show Real Time Information"
+
+        />
+
+</menu>

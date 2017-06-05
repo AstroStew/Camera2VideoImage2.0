@@ -136,14 +136,16 @@ import static android.hardware.camera2.CameraMetadata.FLASH_MODE_OFF;
 import static android.hardware.camera2.CameraMetadata.FLASH_MODE_SINGLE;
 import static android.hardware.camera2.CameraMetadata.FLASH_MODE_TORCH;
 import static android.hardware.camera2.CameraMetadata.FLASH_STATE_UNAVAILABLE;
+import static com.yorku.mstew.camera2videoimage.R.menu.advancedsettings;
 import static com.yorku.mstew.camera2videoimage.R.menu.bottom_menu;
+import static com.yorku.mstew.camera2videoimage.R.menu.popup_menu;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.toIntExact;
 
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2VideoImageActivity extends AppCompatActivity {
-    private Button mSettingsbutton;
+    private Button mManualbutton;
     private int ISOvalue = 0;
     private int progressValue;
     private EditText mTextSeekBar;
@@ -612,8 +614,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
         }
     }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -633,7 +638,12 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mFlashButtonOnOff = (ImageButton) findViewById(R.id.FlashButton);
         mRecordImageButton = (ImageButton) findViewById(R.id.VideoButton);
 
+
+
+
         final BottomNavigationView mCom= (BottomNavigationView) findViewById(R.id.NavBot);
+        final MenuItem AdvancedSettingsJ = mCom.getMenu().findItem(R.id.AdvancedSettingsMenu);
+        final View AdvancedSettingK= AdvancedSettingsJ.getActionView();
         mCom.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -656,6 +666,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                         break;
                     case R.id.AdvancedSettingsMenu:
+                        
                         break;
                     case R.id.PageMenu:
                         break;
@@ -806,7 +817,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }
             }
         });
-        mSettingsbutton = (Button) findViewById(R.id.button);
+        mManualbutton = (Button) findViewById(R.id.button);
         mAutobutton = (Button) findViewById(R.id.Auto);
         mAutobutton.setText("AUTO ON");
         mAutobutton.setOnClickListener(new View.OnClickListener() {
@@ -846,20 +857,25 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 return true;
             }
         });
-        mSettingsbutton.setOnClickListener(new View.OnClickListener() {
+        mManualbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 menuonline = true;
+                if (AutoNumber == 0) {
+                    AutoNumber = 1;
+                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
+                    mAutobutton.setText("AUTO OFF");
+                }
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
-                PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mSettingsbutton);
+                PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mManualbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 SubMenu sM = popupMenu.getMenu().addSubMenu(0, 100, 0, "Change Resolution:");
                 SubMenu submenu2 = popupMenu.getMenu().addSubMenu(0,100, 0, "Available Effects");
-                final MenuItem rawEnabledMenuItem = popupMenu.getMenu().findItem(R.id.RawInput);
-                rawEnabledMenuItem.setChecked(mRawImageCaptureon);
-                final MenuItem OpticalStabalizationItem= popupMenu.getMenu().findItem(R.id.OpticalStabilizationInput);
-                OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
+                //final MenuItem rawEnabledMenuItem = popupMenu.getMenu().findItem(R.id.RawInput);
+                //rawEnabledMenuItem.setChecked(mRawImageCaptureon);
+                //final MenuItem OpticalStabalizationItem= popupMenu.getMenu().findItem(R.id.OpticalStabilizationInput);
+                //OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
                 final MenuItem AutoWhiteBalanceItem=popupMenu.getMenu().findItem(R.id.LockWhiteBalance);
                 AutoWhiteBalanceItem.setChecked(AutoWhiteBalancelockBoolean);
 
@@ -870,6 +886,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 for (int i = 0; i < previewSizes.length; i++) {
                     sM.add(0, i + 200, 0, "" + previewSizes[i]);
                 }
+
 
 
                 final int[] SupportedSceneModes = new int[mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_SCENE_MODES).length];
@@ -1223,7 +1240,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 }
 
                                 break;
-
+                            /*
                             case R.id.PhotoBurstInput:
 
                                 final LayoutInflater inflate4 = LayoutInflater.from(Camera2VideoImageActivity.this);
@@ -1262,6 +1279,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 PhotoBurstInputthing.show();
 
 
+
                                 break;
                             case R.id.VideoTimeLapseInput:
                                 LayoutInflater inflate3 = LayoutInflater.from(Camera2VideoImageActivity.this);
@@ -1292,7 +1310,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 VideoLapseInputthing.show();
 
 
-                                break;
+                                break; */
 
                             case R.id.LockWhiteBalance:
                                 if(AutoWhiteBalancelockBoolean){
