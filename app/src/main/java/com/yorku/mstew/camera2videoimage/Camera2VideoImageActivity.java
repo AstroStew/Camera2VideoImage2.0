@@ -1156,9 +1156,10 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if(ColorSpaceInputBoolean){
                                     ColorSpaceInputBoolean=false;
                                     Toast.makeText(getApplicationContext(), "Colour SpaceTurned OFF", Toast.LENGTH_SHORT).show();
+                                    startPreview();
                                 }
                                 else {
-                                    ColorSpaceInputBoolean=true;
+                                    //ColorSpaceInputBoolean=true;
                                     Toast.makeText(getApplicationContext(), "Colour Space Turned ON", Toast.LENGTH_SHORT).show();
 
 
@@ -1194,6 +1195,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                     ColourSpaceThing.setPositiveButton("confirm", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
+                                            ColorSpaceInputBoolean=true;
                                             int TempWhiteBalanceInputEditText1 = Integer.parseInt(mColorSpaceText1.getText().toString());
                                             int TempWhiteBalanceInputEditText2 = Integer.parseInt(mColorSpaceText2.getText().toString());
                                             int TempWhiteBalanceInputEditText3 = Integer.parseInt(mColorSpaceText3.getText().toString());
@@ -1628,7 +1630,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                         String tempShutterSpeedString[] = new String[2];
                                         String tt;
                                         tt = mShutterSpeedEditText2.getText().toString();
-
                                         //make regex if statement here to satify numbers numbers greater than 1
                                         tempShutterSpeedString = tt.split("/");
                                         double tempShutterSpeed1 = Double.parseDouble(tempShutterSpeedString[0]);
@@ -2069,11 +2070,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
                 }
-                if(ColorSpaceInputBoolean && !CustomeWhiteBalanceBoolean ){
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                if(ColorSpaceInputBoolean){
+
+
+                    //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                    //mCaptureRequestBuilder,set(CaptureRequest.CONTROL_MODE,CaptureRequest.COLOR_CORRECTION_MODE)
+
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF);
+                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
+
                     mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue); mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_TRANSFORM, new ColorSpaceTransform(new int[]{
+                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_TRANSFORM, new ColorSpaceTransform(new int[]{
                             ColorSpaceRed1,256, ColorSpaceRed2,256, ColorSpaceRed3,256,
                             ColorSpaceGreen1,256, ColorSpaceGreen2,256, ColorSpaceGreen3,256,
                             ColorSpaceBlue1,256, ColorSpaceBlue2,256, ColorSpaceBlue3,256
@@ -2085,12 +2094,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 }else if(ColorSpaceInputBoolean && CustomeWhiteBalanceBoolean){
                     Toast.makeText(getApplicationContext(), "Can only have one filter", Toast.LENGTH_SHORT).show();
                 }
-                if(!CustomeWhiteBalanceBoolean){
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, mWBMode);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+                if(!CustomeWhiteBalanceBoolean) {
+
+                    if (!ColorSpaceInputBoolean) {
+                        //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+                        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                        mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, mWBMode);
+                        mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                        mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+                    }
                 }
 
 
