@@ -110,6 +110,24 @@
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/CameraButton"
         android:layout_alignStart="@+id/CameraButton" />
+    <ImageButton
+        android:text="Video_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/settingss"
+        android:id="@+id/SettingImageButton"
+        android:contentDescription="Video_Button"
+        android:visibility="invisible"
+
+
+        android:layout_marginBottom="80dp"
+        android:onClick="videoclick"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/CameraButton"
+        android:layout_alignStart="@+id/CameraButton"
+        android:layout_alignRight="@+id/CameraButton"
+        android:layout_alignEnd="@+id/CameraButton"
+        android:layout_below="@+id/chronometer" />
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -130,7 +148,7 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Manual Mode"
+        android:text="Mode"
 
         android:layout_alignBottom="@+id/CameraButton"
         android:layout_alignParentRight="true"

@@ -9,7 +9,7 @@
         android:id="@+id/OpticalStabilizationInput"
         android:title="Optical Stabilization"
         android:checkable="true"
-        android:icon="@drawable/custom_input_iso"
+
         />
 
 
@@ -17,7 +17,7 @@
         android:id="@+id/PhotoBurstInput"
         android:title="Photo Burst Input"
 
-        android:icon="@color/colorPrimary"
+
         />
 
     <item

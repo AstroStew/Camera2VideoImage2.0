@@ -14,6 +14,7 @@
         android:title="Advanced Settings"
         android:id="@+id/AdvancedSettingsMenu"
         android:icon="@drawable/ic_settings_black_24dp"
+
         />
     <item
         android:title="Page"

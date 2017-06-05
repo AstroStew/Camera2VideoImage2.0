@@ -45,6 +45,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -61,6 +62,7 @@ import android.util.Log;
 import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -100,6 +102,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.zip.Inflater;
 
 import static android.hardware.camera2.CameraMetadata.CONTROL_AE_MODE_ON_ALWAYS_FLASH;
 import static android.hardware.camera2.CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH;
@@ -616,6 +619,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     }
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -637,13 +642,15 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         mFlipCamera = (ImageButton) findViewById(R.id.FlipButton);
         mFlashButtonOnOff = (ImageButton) findViewById(R.id.FlashButton);
         mRecordImageButton = (ImageButton) findViewById(R.id.VideoButton);
+        mSettingsButton=(ImageButton) findViewById(R.id.SettingImageButton);
 
 
 
 
         final BottomNavigationView mCom= (BottomNavigationView) findViewById(R.id.NavBot);
-        final MenuItem AdvancedSettingsJ = mCom.getMenu().findItem(R.id.AdvancedSettingsMenu);
-        final View AdvancedSettingK= AdvancedSettingsJ.getActionView();
+        //final
+
+
         mCom.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -656,17 +663,195 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                             mStillImageButton.setVisibility(View.VISIBLE);
                             mRecordImageButton.setVisibility(View.INVISIBLE);
+                            mSettingsButton.setVisibility(View.INVISIBLE);
 
 
                         break;
                     case R.id.VideoMenu:
                         mRecordImageButton.setVisibility(View.VISIBLE);
                         mStillImageButton.setVisibility(View.INVISIBLE);
+                        mSettingsButton.setVisibility(View.INVISIBLE);
 
 
                         break;
                     case R.id.AdvancedSettingsMenu:
-                        
+                        mStillImageButton.setVisibility(View.INVISIBLE);
+                        mRecordImageButton.setVisibility(View.INVISIBLE);
+                        mSettingsButton.setVisibility(View.VISIBLE);
+
+
+
+
+                        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PopupMenu AdvanncedsettingsPopup= new PopupMenu(Camera2VideoImageActivity.this, mSettingsButton);
+                                AdvanncedsettingsPopup.inflate(R.menu.advancedsettings);
+                                final MenuItem rawEnabledMenuItem = AdvanncedsettingsPopup.getMenu().findItem(R.id.RawInput);
+                                rawEnabledMenuItem.setChecked(mRawImageCaptureon);
+                                final MenuItem OpticalStabalizationItem= AdvanncedsettingsPopup.getMenu().findItem(R.id.OpticalStabilizationInput);
+                                OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
+
+                                AdvanncedsettingsPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                    @Override
+                                    public boolean onMenuItemClick(MenuItem item) {
+                                        int position4=item.getItemId();
+                                        switch(position4){
+                                            case R.id.PhotoBurstInput:
+
+                                                final LayoutInflater inflate4 = LayoutInflater.from(Camera2VideoImageActivity.this);
+                                                final View ThePhotoBurstView = inflate4.inflate(R.layout.photo_burst_input, null);
+                                                final AlertDialog.Builder PhotoBurstInputthing = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                                PhotoBurstInputthing.setTitle("Photo Burst Input:");
+                                                PhotoBurstInputthing.setView(ThePhotoBurstView);
+                                                PhotoBurstInputthing.setCancelable(true);
+                                                mPhotoBurstText = (EditText) ThePhotoBurstView.findViewById(R.id.PhotoBurstEditText);
+
+                                                mPhotoBurstLimitText = (EditText) ThePhotoBurstView.findViewById(R.id.PhotoBurstTimeLimitInputEditText);
+                                                PhotoBurstInputthing.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                                PhotoBurstInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        int TempSecondInterval = Integer.parseInt(mPhotoBurstText.getText().toString());
+                                                        SecondStep = TempSecondInterval;
+                                                        if (mPhotoBurstLimitText.getText().toString().isEmpty()) {
+                                                            mPhotoTimeLimitNumber = 1;
+
+                                                        } else {
+                                                            mPhotoTimeLimitNumber = 0;
+                                                            int TempTimeLimit = Integer.parseInt(mPhotoBurstLimitText.getText().toString());
+                                                            PhotoBurstTimeStop = TempTimeLimit;
+                                                        }
+                                                    }
+                                                });
+
+                                                PhotoBurstInputthing.show();
+                                                break;
+                                            case R.id.VideoTimeLapseInput:
+                                                LayoutInflater inflate3 = LayoutInflater.from(Camera2VideoImageActivity.this);
+                                                View TheVideoTimelapseview = inflate3.inflate(R.layout.video_timelapse_input, null);
+                                                AlertDialog.Builder VideoLapseInputthing = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                                                VideoLapseInputthing.setTitle("Video timelapse Input:");
+                                                VideoLapseInputthing.setView(TheVideoTimelapseview);
+                                                VideoLapseInputthing.setCancelable(true);
+                                                mVideoTimelapse = (EditText) TheVideoTimelapseview.findViewById(R.id.VideoTimeLapseEditText);
+                                                VideoLapseInputthing.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                                VideoLapseInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        int TempSecondInterval = Integer.parseInt(mVideoTimelapse.getText().toString());
+                                                        VideoTimelapsSecondStep = TempSecondInterval;
+
+
+                                                    }
+                                                });
+
+                                                VideoLapseInputthing.show();
+
+
+                                                break;
+                                            case R.id.RawInput:
+                                                if(!mRawImageCaptureon){
+
+                                                    mRawImageCaptureon=true;
+                                                    Toast.makeText(getApplicationContext(), "Raw Capture Turned on", Toast.LENGTH_SHORT).show();
+
+
+                                                    //mRawCheckBox.setChecked(true);
+                                                }else{
+                                                    mRawImageCaptureon=false;
+                                                    Toast.makeText(getApplicationContext(), "Raw Capture Turned Off", Toast.LENGTH_SHORT).show();
+                                                }
+
+                                                break;
+                                            case R.id.ShowRealTimeInfo:
+                                                if(mInfoTextView.getVisibility()==View.INVISIBLE){
+                                                    mInfoTextView.setVisibility(View.VISIBLE);
+                                                }else{
+                                                    mInfoTextView.setVisibility(View.INVISIBLE);
+                                                }
+                                                break;
+                                            case R.id.OpticalStabilizationInput:
+                                                if (BooleanOpticalStabilizationOn) {
+                                                    item.setChecked(false);
+                                                    BooleanOpticalStabilizationOn = false;
+
+                                                    Toast.makeText(getApplicationContext(), "Optical Stabilization Disabled", Toast.LENGTH_SHORT).show();
+                                                } else if (!BooleanOpticalStabilizationOn) {
+                                                    item.setChecked(true);
+                                                    BooleanOpticalStabilizationOn = true;
+                                                    Toast.makeText(getApplicationContext(), "Optical Stabilization Enabled", Toast.LENGTH_SHORT).show();
+
+                                                }
+
+
+                                                startPreview();
+
+
+                                                break;
+
+
+
+
+
+
+
+
+
+                                        }
+
+
+
+
+                                        return false;
+                                    }
+                                });
+
+
+                                AdvanncedsettingsPopup.show();
+
+                            }
+                        });
+
+
+
+                        //LayoutInflater inflater3=LayoutInflater.from(Camera2VideoImageActivity.this);
+                        /*MenuItem item3= (MenuItem) mCom.findViewById(R.id.AdvancedSettingsMenu);
+
+
+                        PopupMenu popupmenu= new PopupMenu(Camera2VideoImageActivity.this, MenuItemCompat.getActionView(item3));
+                        popupmenu.inflate(R.menu.advancedsettings);*/
+
+
+                        /*
+                        AlertDialog.Builder AdvancedSettingsBuider = new AlertDialog.Builder(Camera2VideoImageActivity.this);
+                        View AdvancedSettingsView= inflater3.inflate(R.layout.advancedsettings, null);
+
+
+
+                        AdvancedSettingsBuider.setView(AdvancedSettingsView);
+                        AdvancedSettingsBuider.setTitle("Advanced Settings");
+                        AdvancedSettingsBuider.show();
+
+
+                        //create options menu
+                        */
+
+
                         break;
                     case R.id.PageMenu:
                         break;
@@ -862,20 +1047,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 menuonline = true;
-                if (AutoNumber == 0) {
-                    AutoNumber = 1;
-                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
-                    mAutobutton.setText("AUTO OFF");
-                }
+
                 //Toast.makeText(Camera2VideoImageActivity.this, "clicked", Toast.LENGTH_SHORT).show();
                 PopupMenu popupMenu = new PopupMenu(Camera2VideoImageActivity.this, mManualbutton);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 SubMenu sM = popupMenu.getMenu().addSubMenu(0, 100, 0, "Change Resolution:");
                 SubMenu submenu2 = popupMenu.getMenu().addSubMenu(0,100, 0, "Available Effects");
-                //final MenuItem rawEnabledMenuItem = popupMenu.getMenu().findItem(R.id.RawInput);
-                //rawEnabledMenuItem.setChecked(mRawImageCaptureon);
-                //final MenuItem OpticalStabalizationItem= popupMenu.getMenu().findItem(R.id.OpticalStabilizationInput);
-                //OpticalStabalizationItem.setChecked(BooleanOpticalStabilizationOn);
+
                 final MenuItem AutoWhiteBalanceItem=popupMenu.getMenu().findItem(R.id.LockWhiteBalance);
                 AutoWhiteBalanceItem.setChecked(AutoWhiteBalancelockBoolean);
 
@@ -1062,24 +1240,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 }
                                 break;
-                            case R.id.OpticalStabilizationInput:
-                                if (BooleanOpticalStabilizationOn) {
-                                    item.setChecked(false);
-                                    BooleanOpticalStabilizationOn = false;
 
-                                    Toast.makeText(getApplicationContext(), "Optical Stabilization Disabled", Toast.LENGTH_SHORT).show();
-                                } else if (!BooleanOpticalStabilizationOn) {
-                                    item.setChecked(true);
-                                    BooleanOpticalStabilizationOn = true;
-                                    Toast.makeText(getApplicationContext(), "Optical Stabilization Enabled", Toast.LENGTH_SHORT).show();
-
-                                }
-
-
-                                startPreview();
-
-
-                                break;
 
                             case R.id.manualFocus:
                                 if (!mUnlockFocus) {
@@ -1241,76 +1402,22 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                                 break;
                             /*
-                            case R.id.PhotoBurstInput:
 
-                                final LayoutInflater inflate4 = LayoutInflater.from(Camera2VideoImageActivity.this);
-                                final View ThePhotoBurstView = inflate4.inflate(R.layout.photo_burst_input, null);
-                                final AlertDialog.Builder PhotoBurstInputthing = new AlertDialog.Builder(Camera2VideoImageActivity.this);
-                                PhotoBurstInputthing.setTitle("Photo Burst Input:");
-                                PhotoBurstInputthing.setView(ThePhotoBurstView);
-                                PhotoBurstInputthing.setCancelable(true);
-                                mPhotoBurstText = (EditText) ThePhotoBurstView.findViewById(R.id.PhotoBurstEditText);
-
-                                mPhotoBurstLimitText = (EditText) ThePhotoBurstView.findViewById(R.id.PhotoBurstTimeLimitInputEditText);
-                                PhotoBurstInputthing.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-
-
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                                PhotoBurstInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        int TempSecondInterval = Integer.parseInt(mPhotoBurstText.getText().toString());
-                                        SecondStep = TempSecondInterval;
-                                        if (mPhotoBurstLimitText.getText().toString().isEmpty()) {
-                                            mPhotoTimeLimitNumber = 1;
-
-                                        } else {
-                                            mPhotoTimeLimitNumber = 0;
-                                            int TempTimeLimit = Integer.parseInt(mPhotoBurstLimitText.getText().toString());
-                                            PhotoBurstTimeStop = TempTimeLimit;
-                                        }
-                                    }
-                                });
-
-                                PhotoBurstInputthing.show();
-
-
-
+                             */
+                            case R.id.BasicManualMode:
+                                if (AutoNumber == 0) {
+                                    AutoNumber = 1;
+                                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
+                                    mAutobutton.setText("AUTO OFF");
+                                }
                                 break;
-                            case R.id.VideoTimeLapseInput:
-                                LayoutInflater inflate3 = LayoutInflater.from(Camera2VideoImageActivity.this);
-                                View TheVideoTimelapseview = inflate3.inflate(R.layout.video_timelapse_input, null);
-                                AlertDialog.Builder VideoLapseInputthing = new AlertDialog.Builder(Camera2VideoImageActivity.this);
-                                VideoLapseInputthing.setTitle("Video timelapse Input:");
-                                VideoLapseInputthing.setView(TheVideoTimelapseview);
-                                VideoLapseInputthing.setCancelable(true);
-                                mVideoTimelapse = (EditText) TheVideoTimelapseview.findViewById(R.id.VideoTimeLapseEditText);
-                                VideoLapseInputthing.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-
-
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                                VideoLapseInputthing.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        int TempSecondInterval = Integer.parseInt(mVideoTimelapse.getText().toString());
-                                        VideoTimelapsSecondStep = TempSecondInterval;
-
-
-                                    }
-                                });
-
-                                VideoLapseInputthing.show();
-
-
-                                break; */
+                            case R.id.AdvancedManualMode:
+                                if (AutoNumber == 0) {
+                                    AutoNumber = 1;
+                                    Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
+                                    mAutobutton.setText("AUTO OFF");
+                                }
+                                break;
 
                             case R.id.LockWhiteBalance:
                                 if(AutoWhiteBalancelockBoolean){
@@ -1810,27 +1917,8 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
-                            case R.id.ShowRealTimeInfo:
-                                 if(mInfoTextView.getVisibility()==View.INVISIBLE){
-                                     mInfoTextView.setVisibility(View.VISIBLE);
-                                 }else{
-                                     mInfoTextView.setVisibility(View.INVISIBLE);
-                                 }
-                                break;
-                            case R.id.RawInput:
-                                if(!mRawImageCaptureon){
 
-                                    mRawImageCaptureon=true;
-                                    Toast.makeText(getApplicationContext(), "Raw Capture Turned on", Toast.LENGTH_SHORT).show();
-
-
-                                    //mRawCheckBox.setChecked(true);
-                                }else{
-                                    mRawImageCaptureon=false;
-                                    Toast.makeText(getApplicationContext(), "Raw Capture Turned Off", Toast.LENGTH_SHORT).show();
-                                }
-
-                                break;
+                           /* */
 
 
 
@@ -2218,6 +2306,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
     //Here we are going to create a video busy button
     private ImageButton mRecordImageButton;
+    private ImageButton mSettingsButton;
     private boolean mIsRecording = false;
     //Setting up storage
     private File mVideoFolder;
@@ -2958,10 +3047,5 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         Log.v(TAG, "red=" + red + ", green=" + green + ", blue=" + blue);
         return new RggbChannelVector((red / 255) * 2, (green / 255), (green / 255), (blue / 255) * 2);
     }
-
-
-
-
-
 
 }
