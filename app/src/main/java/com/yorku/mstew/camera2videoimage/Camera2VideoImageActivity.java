@@ -2091,8 +2091,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
-                }else if(ColorSpaceInputBoolean && CustomeWhiteBalanceBoolean){
-                    Toast.makeText(getApplicationContext(), "Can only have one filter", Toast.LENGTH_SHORT).show();
                 }
                 if(!CustomeWhiteBalanceBoolean) {
 
