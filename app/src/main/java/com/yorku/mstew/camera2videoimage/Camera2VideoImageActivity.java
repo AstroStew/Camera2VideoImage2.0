@@ -997,12 +997,13 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     AutoNumber = 1;
                     Toast.makeText(getApplicationContext(), "AUTO OFF", Toast.LENGTH_SHORT).show();
                     mAutobutton.setText("AUTO OFF");
+                    startPreview();
 
                 } else if (AutoNumber == 1) {
                     AutoNumber = 0;
                     Toast.makeText(getApplicationContext(), "AUTO ON", Toast.LENGTH_SHORT).show();
                     mAutobutton.setText("AUTO ON");
-                    ColorSpaceInputBoolean=false;
+                   ColorSpaceInputBoolean=false;
                     startPreview();
 
 
@@ -1398,9 +1399,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 if(AutoWhiteBalancelockBoolean){
                                     AutoWhiteBalancelockBoolean=false;
                                     item.setChecked(false);
-                                    AutoWhiteBalanceUnlock();
+                                    //wip
+                                    //AutoWhiteBalanceUnlock();
                                 }else{
-                                    AutoWhiteBalanceLock();
+                                    //wip
+                                    //AutoWhiteBalanceLock();
                                     item.setChecked(true);
                                     AutoWhiteBalancelockBoolean=true;
                                 }
@@ -2087,6 +2090,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
 
 
+
         for (int i =0; i < mCameraCharacteristics.get(CameraCharacteristics.STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES).length; i++){
 
 
@@ -2119,6 +2123,19 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             if(isSupports_face_detection_mode_full){
                 mCaptureRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, CaptureRequest.STATISTICS_FACE_DETECT_MODE_FULL);
             }
+            if (AutoNumber == 0) {
+                //AutoSettings
+                Toast.makeText(getApplicationContext(), "O", Toast.LENGTH_SHORT).show();
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, 1);
+
+                // mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+
+
+
+
+                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+            }
 
 
 
@@ -2132,8 +2149,9 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float) ((float) 1 / (float )mFocusDistance));
                 //Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
-            } else if (!mUnlockFocus) {
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+                }
+                if (!mUnlockFocus) {
+                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                 //Toast.makeText(getApplicationContext(), "CONTROL AF AUTO", Toast.LENGTH_SHORT).show();
                 }
             if(!AutoWhiteBalancelockBoolean) {
@@ -2142,14 +2160,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             if(AutoWhiteBalancelockBoolean){
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
             }
-            if (AutoNumber == 0) {
-                //AutoSettings
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
-                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
 
-                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
-            }
 
             if (AutoNumber == 1) {
 
@@ -2160,7 +2171,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
                     mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
                     mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS,new RggbChannelVector((float)RggbChsnnelR,(float) RggbChannelG_even, (float)RggbChannelG_odd,(float)RggbChannelBlue ));
-                } else if(!CustomeWhiteBalanceBoolean) {
+                }  if(!CustomeWhiteBalanceBoolean) {
 
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE,mWBMode);
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
@@ -2176,10 +2187,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
 
                 if(ColorSpaceInputBoolean){
                     mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+                    //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                    //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
                     //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE,CONTROL_AF_MODE_AUTO);
                     //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,CaptureRequest.CONTROL_AE_MODE_ON);
+
                     mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
                     mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_TRANSFORM, new ColorSpaceTransform(new int[]{
                             ColorSpaceRed1,256, ColorSpaceRed2,256, ColorSpaceRed3,256,
