@@ -176,6 +176,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
     private SeekBar mISOseekbar;
     private int ISOprogressValue;
     private int ISOseekProgress;
+    private boolean ISOinputboolean=false;
     private int mWBMode = CONTROL_AWB_MODE_AUTO;
     private int mSceneMode = CONTROL_SCENE_MODE_FACE_PRIORITY;
     private int mAFMode = CONTROL_AF_MODE_AUTO;
@@ -1366,11 +1367,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                             ColorSpaceBlue1 = TempWhiteBalanceInputEditText7;
                                             ColorSpaceBlue2 = TempWhiteBalanceInputEditText8;
                                             ColorSpaceBlue3 = TempWhiteBalanceInputEditText9;
-                                            if(AutoNumber==0){
-                                                AutoNumber=1;
-                                                mAutobutton.setText("AUTO OFF");
-
-                                            }
+                                            
                                             startPreview();
 
 
@@ -1508,6 +1505,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 startPreview();
                                 break;
                             case R.id.ChangeISO:
+                                if(!ISOinputboolean){
+                                ISOinputboolean=true;}
+                                else{
+                                    ISOinputboolean=false;
+                                }
 
 
                                 mISOtext.setVisibility(View.VISIBLE);
@@ -1578,6 +1580,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 startPreview();
                                 break;
                             case R.id.custominputISO:
+
 
 
                                 LayoutInflater inflater = LayoutInflater.from(Camera2VideoImageActivity.this);
@@ -1896,14 +1899,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                                 mSceneMode = CONTROL_SCENE_MODE_THEATRE;
                                 startPreview();
                                 break;
-
-
-
-
-                           /* */
-
-
-
                             default:
                                 return false;
                         }
@@ -2125,34 +2120,32 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
             }
             if (AutoNumber == 0) {
                 //AutoSettings
-                Toast.makeText(getApplicationContext(), "O", Toast.LENGTH_SHORT).show();
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, 1);
-
-                // mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
-
-
-
-
-                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
             }
-
-
-
+            if (AutoNumber == 1) {
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
+            }
+            if(CustomeWhiteBalanceBoolean){
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS,new RggbChannelVector((float)RggbChsnnelR,(float) RggbChannelG_even, (float)RggbChannelG_odd,(float)RggbChannelBlue ));
+            }  if(!CustomeWhiteBalanceBoolean) {
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE,mWBMode);
+            }
             if (BooleanOpticalStabilizationOn) {
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);
             } else if (!BooleanOpticalStabilizationOn) {
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_OFF);
             }
             if (mUnlockFocus) {
-                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_);
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE, (float) ((float) 1 / (float )mFocusDistance));
                 //Toast.makeText(getApplicationContext(), "CONTROL AF OFF", Toast.LENGTH_SHORT).show();
                 }
-                if (!mUnlockFocus) {
-                //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-                //Toast.makeText(getApplicationContext(), "CONTROL AF AUTO", Toast.LENGTH_SHORT).show();
+            if (!mUnlockFocus) {
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                 }
             if(!AutoWhiteBalancelockBoolean) {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, mWBMode);
@@ -2161,48 +2154,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
             }
 
-
-            if (AutoNumber == 1) {
-
-                //manual settings
-                if(CustomeWhiteBalanceBoolean){
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
-                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS,new RggbChannelVector((float)RggbChsnnelR,(float) RggbChannelG_even, (float)RggbChannelG_odd,(float)RggbChannelBlue ));
-                }  if(!CustomeWhiteBalanceBoolean) {
-
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE,mWBMode);
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
-                    mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
-
-
-                    if (!ColorSpaceInputBoolean) {
-                        Toast.makeText(this, "toasty", Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-
-                if(ColorSpaceInputBoolean){
-                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF);
-                    //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
-                    //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
-                    //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE,CONTROL_AF_MODE_AUTO);
-                    //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,CaptureRequest.CONTROL_AE_MODE_ON);
-
-                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
-                    mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_TRANSFORM, new ColorSpaceTransform(new int[]{
-                            ColorSpaceRed1,256, ColorSpaceRed2,256, ColorSpaceRed3,256,
-                            ColorSpaceGreen1,256, ColorSpaceGreen2,256, ColorSpaceGreen3,256,
-                            ColorSpaceBlue1,256, ColorSpaceBlue2,256, ColorSpaceBlue3,256
-
-                    }));
-                }
-
-
-            }
             if (AutoNumber == 2) {
 
                 //mCaptureRequestBuilder.set(CaptureRequest.CONTROL_MODE,CaptureRequest.CONTROL_MODE_OFF);
@@ -2210,7 +2161,7 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_SCENE_MODE, mSceneMode);
                 Toast.makeText(getApplicationContext(), "mSceneModeNumber:" + mSceneMode, Toast.LENGTH_SHORT).show();
 
-            } else if (AutoNumber == 3) {
+            } /*else if (AutoNumber == 3) {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
                 mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, ISOvalue);
@@ -2218,14 +2169,32 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                 mCaptureRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE,mCameraEffect);
 
                 //mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, CaptureRequest )
-            }
-
+            }*/
             if (mFlashMode == 0) {
                 mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, FLASH_MODE_OFF);
             }
             if (mFlashMode == 3) {
                 mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, FLASH_MODE_TORCH);
             }
+            if(ColorSpaceInputBoolean){
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CameraMetadata.CONTROL_AWB_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_TRANSFORM_MATRIX);
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_TRANSFORM, new ColorSpaceTransform(new int[]{
+                        ColorSpaceRed1,256, ColorSpaceRed2,256, ColorSpaceRed3,256,
+                        ColorSpaceGreen1,256, ColorSpaceGreen2,256, ColorSpaceGreen3,256,
+                        ColorSpaceBlue1,256, ColorSpaceBlue2,256, ColorSpaceBlue3,256
+                }));
+            }
+            else if(!ColorSpaceInputBoolean){
+                mCaptureRequestBuilder.set(CaptureRequest.COLOR_CORRECTION_MODE, CaptureRequest.COLOR_CORRECTION_MODE_FAST);
+            }
+            if(ISOinputboolean){
+                mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_OFF);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, ShutterSpeedValue);
+                mCaptureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY,ISOvalue);
+
+            }
+
             final CameraCaptureSession.CaptureCallback PreCaptureCall = new CameraCaptureSession.CaptureCallback() {
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
@@ -2234,13 +2203,11 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
                     mCurrentISOValue=result.get(CaptureResult.SENSOR_SENSITIVITY);
                     mCurrentSSvalue=result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
 
-
                     Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
                     Face [] faces = result.get(CaptureResult.STATISTICS_FACES);
                     rggbChannelVector=result.get(CaptureResult.COLOR_CORRECTION_GAINS);
                     ColorCorrectionTransform=result.get(CaptureResult.COLOR_CORRECTION_TRANSFORM);
                     mNumberofFaces=faces.length;
-
                 }
             };
 
@@ -2983,58 +2950,6 @@ public class Camera2VideoImageActivity extends AppCompatActivity {
         txform.postTranslate(xoff, yoff);
         mTextureView.setTransform(txform);
     }
-    public static RggbChannelVector colorTemperature(int whiteBalance) {
-        float temperature = whiteBalance / 100;
-        float red;
-        float green;
-        float blue;
 
-        //Calculate red
-        if (temperature <= 66)
-            red = 255;
-        else {
-            red = temperature - 60;
-            red = (float) (329.698727446 * (Math.pow((double) red, -0.1332047592)));
-            if (red < 0)
-                red = 0;
-            if (red > 255)
-                red = 255;
-        }
-
-
-        //Calculate green
-        if (temperature <= 66) {
-            green = temperature;
-            green = (float) (99.4708025861 * Math.log(green) - 161.1195681661);
-            if (green < 0)
-                green = 0;
-            if (green > 255)
-                green = 255;
-        } else {
-            green = temperature - 60;
-            green = (float) (288.1221695283 * (Math.pow((double) green, -0.0755148492)));
-            if (green < 0)
-                green = 0;
-            if (green > 255)
-                green = 255;
-        }
-
-        //calculate blue
-        if (temperature >= 66)
-            blue = 255;
-        else if (temperature <= 19)
-            blue = 0;
-        else {
-            blue = temperature - 10;
-            blue = (float) (138.5177312231 * Math.log(blue) - 305.0447927307);
-            if (blue < 0)
-                blue = 0;
-            if (blue > 255)
-                blue = 255;
-        }
-
-        Log.v(TAG, "red=" + red + ", green=" + green + ", blue=" + blue);
-        return new RggbChannelVector((red / 255) * 2, (green / 255), (green / 255), (blue / 255) * 2);
-    }
 
 }
