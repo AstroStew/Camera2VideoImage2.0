@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/FlashOff"
+        android:title="Flash OFF"
+        android:icon="@drawable/ic_flash_off_black_24dp"/>
+
+
+    <item
+        android:id="@+id/FlashAuto"
+        android:title="Flash Auto"/>
+
+    <item
+        android:id="@+id/FlashOn"
+        android:title="Flash On"/>
+    <item
+        android:id="@+id/TorchOn"
+        android:title="Torch On"/>
+
+
+
+</menu>

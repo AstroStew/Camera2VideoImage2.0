@@ -1,0 +1,259 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_camera2_video_image"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="com.yorku.mstew.camera2videoimage20.MainActivity">
+
+    <TextureView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textureView"
+        android:layout_alignParentBottom="true" />
+
+
+
+    <ImageButton
+        android:text="Camera_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/VideoButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="39dp"
+        android:layout_marginStart="39dp"
+        android:id="@+id/CameraButton"
+
+        android:onClick="cameraclick" />
+
+    <ImageButton
+        android:text="Video_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/vidpiconline"
+        android:id="@+id/VideoButton"
+        android:contentDescription="Video_Button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="27dp"
+        android:onClick="videoclick" />
+
+    <Chronometer
+        android:id="@+id/chronometer"
+        android:visibility="invisible"
+        android:textColor="#ff0000"
+        android:textSize="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/VideoButton"
+        android:layout_marginBottom="31dp"
+        android:layout_alignLeft="@+id/VideoButton"
+        android:layout_alignStart="@+id/VideoButton" />
+
+
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:progress="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/chronometer"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:theme="@style/Base.TextAppearance.AppCompat.Inverse"
+        android:visibility="invisible"
+        tools:layout_width="wrap_content" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#999999"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="none"
+        android:text="Shutter speed:"
+        android:textColor="#000000"
+        android:visibility="invisible"
+        android:layout_above="@+id/seekBar"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/MinimumShutterSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editText"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#ffffff"
+        android:ems="10"
+        android:enabled="false"
+        android:inputType="none"
+        android:text="placeholder"
+        android:textColor="#000000"
+        android:visibility="invisible"
+
+        android:layout_toLeftOf="@+id/editText"
+        android:layout_toStartOf="@+id/editText" />
+
+    <EditText
+        android:id="@+id/MaximumShutterSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="none"
+        android:text="placeholder"
+        android:textColor="#000000"
+        android:background="#ffffff"
+        android:enabled="false"
+        android:visibility="invisible"
+        android:layout_alignTop="@+id/editText"
+        android:layout_toEndOf="@+id/editText"
+        android:layout_toRightOf="@+id/editText" />
+
+    <Button
+        android:id="@+id/Auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Auto"
+        android:layout_alignBottom="@+id/VideoButton"
+        android:layout_toLeftOf="@+id/TimeIntervalDisplay"
+        android:layout_toStartOf="@+id/TimeIntervalDisplay" />
+
+    <ImageButton
+        android:id="@+id/CloseALLbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        android:visibility="invisible"
+        android:src="@mipmap/exitpic"
+
+        android:layout_alignTop="@+id/button"
+        android:layout_toLeftOf="@+id/editText"
+        android:layout_toStartOf="@+id/editText" />
+
+    <EditText
+        android:id="@+id/ISOtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="none"
+        android:text="ISO:"
+        android:background="#99999999"
+        android:textColor="#ffffff"
+        android:visibility="invisible"
+        android:enabled="false"
+        android:layout_below="@+id/CloseALLbutton"
+        android:layout_alignLeft="@+id/Auto"
+        android:layout_alignStart="@+id/Auto"
+        android:layout_alignRight="@+id/button"
+        android:layout_alignEnd="@+id/button" />
+
+    <SeekBar
+        android:id="@+id/seekBar2"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="23dp"
+        android:layout_above="@+id/editText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageButton
+        android:id="@+id/FlipButton"
+        android:src="@drawable/flipfront"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        android:layout_alignTop="@+id/button"
+        android:layout_toRightOf="@+id/button"
+        android:layout_toEndOf="@+id/button" />
+
+    <SeekBar
+        android:id="@+id/ISOseekbar"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ISOtext" />
+
+    <SeekBar
+        android:id="@+id/FocusChangeSeekBar"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="251dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageButton
+        android:id="@+id/FlashButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_flash_off_black_24dp"
+        android:layout_alignTop="@+id/FlipButton"
+        android:layout_toRightOf="@+id/FlipButton"
+        android:layout_toEndOf="@+id/FlipButton" />
+
+    <TextView
+        android:id="@+id/TimeIntervalDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:textColor="#ff0000"
+        android:background="#0000ff"
+        android:textSize="20dp"
+        android:text="TextView"
+        android:layout_below="@+id/button"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/button"
+        android:layout_toEndOf="@+id/button" />
+
+    <TextView
+        android:id="@+id/infoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ISOseekbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:visibility="invisible"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/infotextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/infoTextView"
+        android:layout_alignStart="@+id/infoTextView"
+        android:layout_below="@+id/infoTextView"
+        android:layout_marginTop="11dp"
+        android:visibility="invisible"
+        android:text="TextView" />
+
+
+</RelativeLayout>

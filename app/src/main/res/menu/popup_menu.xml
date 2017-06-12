@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item
+    android:id="@+id/getCameraInfo"
+    android:title="Camera Info">
+
+</item>
+    <item
+        android:id="@+id/ChangeWhiteBalance"
+        android:title="White Balance">
+        <menu>
+            <item
+                android:id="@+id/WhiteBalanceCloudyDaylight"
+                android:title="Cloud Daylight"
+                android:icon="@drawable/ic_cloud_queue_black_24dp"
+                />
+            <item
+                android:id="@+id/WhiteBalanceDaylight"
+                android:title="Daylight"
+                android:icon="@drawable/ic_wb_sunny_black_24dp"
+                />
+            <item
+                android:id="@+id/WhiteBalanceFluorescent"
+                android:title="Fluorescent"
+                android:icon="@drawable/ic_highlight_black_24dp"
+
+                />
+            <item
+                android:id="@+id/WhiteBalanceShade"
+                android:title="Shade"
+                android:icon="@drawable/ic_brightness_medium_black_24dp"
+
+
+                />
+            <item
+                android:id="@+id/WhiteBalanceTwilight"
+                android:title="Twilight"
+                android:icon="@drawable/twilight"
+
+                />
+            <item
+                android:id="@+id/WhiteBalanceWarmFluorescent"
+                android:title="Warm Fluorescent"
+                android:icon="@drawable/ic_highlight_black_24dp"
+
+                />
+            <item
+                android:id="@+id/WhiteBalanceIncandenscent"
+                android:title="Incandenscent"
+                android:icon="@drawable/ic_wb_incandescent_black_24dp"
+                />
+            <item
+                android:id="@+id/WhiteBalanceAuto"
+                android:title="Auto"
+                android:icon="@drawable/ic_wb_auto_black_24dp"
+                />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/ChangeISO"
+        android:title="Change ISO">
+        <menu>
+            <item
+                android:id="@+id/ISO100"
+                android:title="ISO100"
+                android:icon="@mipmap/isopic100"/>
+            <item
+                android:id="@+id/ISO200"
+                android:title="ISO200"
+                android:icon="@mipmap/isopic200"/>
+            <item
+                android:id="@+id/ISO400"
+                android:title="ISO400"
+                android:icon="@mipmap/isopic400"/>
+            <item
+                android:id="@+id/ISO800"
+                android:title="ISO800"
+                android:icon="@mipmap/isopic800"/>
+            <item
+                android:id="@+id/ISO1600"
+                android:title="ISO1600"
+                android:icon="@mipmap/isopic1600"/>
+            <item
+                android:id="@+id/customISO"
+                android:title="custom ISO"
+                android:icon="@drawable/customiso"/>
+            <item
+                android:id="@+id/custominputISO"
+                android:title="Input ISO"
+                android:icon="@drawable/custom_input_iso"
+                />
+        </menu>
+    </item>
+
+
+        <item
+            android:id="@+id/ChangeShutterSpeed"
+            android:title="ChangeShutterSpeed"
+                >
+                <menu>
+                    <item
+                        android:id="@+id/ChangeShutterSpeedSeek"
+                        android:title="Custom Shutter Speed"
+                        android:icon="@drawable/customiso"
+                        />
+                    <item
+                        android:id="@+id/ChangeShutterSpeedInput"
+                        android:title="Input Shutter Speed(ns)"
+                        android:icon="@drawable/custom_input_iso"
+                        />
+                    <item
+                        android:id="@+id/ChangeShutterSpeedInput2"
+                        android:title="Input Shutter Speed(s)"
+                        android:icon="@drawable/custom_input_iso"
+                        />
+                </menu>
+        </item>
+        <item
+            android:id="@+id/ChangeIFocus"
+            android:title="Change Focus">
+            <menu>
+                <item
+                    android:id="@+id/manualFocus"
+                    android:title="Manual Seek Focus"
+                    android:icon="@drawable/customiso"
+                    />
+
+                <item
+                    android:id="@+id/manualinputFocus"
+                    android:title= "Manual Input Focus"
+                    android:icon="@drawable/custom_input_iso"/>
+
+
+
+                <item
+                    android:id="@+id/LockAutoFocus"
+                    android:title="Lock Auto Focus"
+                    android:icon="@drawable/ic_lock_black_24dp"
+
+                    />
+
+
+
+
+            </menu>
+
+
+
+
+        </item>
+        <item
+            android:id="@+id/OpticalStabilizationInput"
+            android:title="Optical Stabilization"
+            >
+
+        </item>
+        <item
+            android:id="@+id/PhotoBurstInput"
+            android:title="Photo Burst Input">
+
+            </item>
+        <item
+            android:id="@+id/VideoTimeLapseInput"
+            android:title="Video Time Lapse Input">
+
+        </item>
+        <item
+            android:id="@+id/RawInput"
+            android:title="Capture Raw(DNG)"
+            >
+
+        </item>
+        <item
+            android:id="@+id/ShowRealTimeInfo"
+            android:title="Show Real Time Information"></item>
+
+
+        <item
+            android:id="@+id/ChangeScene"
+            android:title="Change Scene"
+            >
+            <menu>
+                <item
+                    android:id="@+id/ChangeSceneDisabled"
+                    android:title="Disable (0)"
+                    />
+                <item
+                    android:id="@+id/ChangeSceneFacePriority"
+                    android:title="Face Priority (1)" />
+                <item
+                    android:id="@+id/ChangeSceneAction"
+                    android:title="Action Scene (2)" />
+
+                <item
+                     android:id="@+id/ChangeSceneBarcode"
+                     android:title="Barcode Scene (16)" />
+                <item
+                    android:id="@+id/ChangeSceneBeach"
+                    android:title="Beach Scene (8)"/>
+                <item
+                    android:id="@+id/ChangeSceneCandlelight"
+                    android:title="Candlelight Scene (15)"/>
+                <item
+                    android:id="@+id/ChangeSceneFireworks"
+                    android:title="Fireworks Scene (12)"/>
+                <item
+                    android:id="@+id/ChangeSceneHDR"
+                    android:title="HDR Scene (18)"/>
+                <item
+                    android:id="@+id/ChangeSceneLandscape"
+                    android:title="Landscape Scene (4)"/>
+                <item
+                    android:id="@+id/ChangeSceneNight"
+                    android:title="Night Scene (5)"/>
+                <item
+                    android:id="@+id/ChangeSceneNightPortrait"
+                    android:title="Night Potrait Scene (6)"/>
+                <item
+                    android:id="@+id/ChangeSceneParty"
+                    android:title="Party Scene (14)"/>
+                <item
+                    android:id="@+id/ChangeScenePortrait"
+                    android:title="Portrait Scene (3)"/>
+                <item
+                    android:id="@+id/ChangeSceneSnow"
+                    android:title="Snow Scene (9)"/>
+                <item
+                    android:id="@+id/ChangeSceneSports"
+                    android:title="Sports Scene (13)"/>
+                <item
+                    android:id="@+id/ChangeSceneSteadyphoto"
+                    android:title="Steadyphoto Scene (11)"/>
+                <item
+                    android:id="@+id/ChangeSceneSunset"
+                    android:title="Sunset Scene (10)"/>
+                <item
+                    android:id="@+id/ChangeSceneTheatre"
+                    android:title="Theatre Scene (7)"/>
+
+
+
+
+
+
+
+            </menu>
+
+
+
+        </item>
+
+
+
+</menu>

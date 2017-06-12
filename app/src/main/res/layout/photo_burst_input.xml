@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/PhotoBurstEditTextTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Second Interval:"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"/>
+
+        <EditText
+            android:id="@+id/PhotoBurstEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:hint="Second Interval"
+            android:layout_marginLeft="20dp" />
+        <TextView
+
+
+            android:id="@+id/PhotoBurstTimeLimitInputTitle"
+            android:text="Time Limit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/PhotoBurstTimeLimitInputEditText"
+            android:hint="Leave blank for no time limit"
+            android:ems="10"
+            android:inputType="number"
+            android:layout_marginLeft="20dp"
+
+            />
+
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

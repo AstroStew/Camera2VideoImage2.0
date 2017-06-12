@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Camera2VideoImage2.0</string>
+    <string name="app_name">Camera2 Video Image</string>
+    <string name="Video_Button">Video Button</string>
+    <string name="Camera_Button">Camera Button</string>
+
+
+
+
 </resources>
