@@ -5,10 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Camera;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -61,6 +67,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
@@ -220,6 +228,15 @@ public class MainActivity extends AppCompatActivity {
     private boolean afstateBoolean=false;
     CheckBox  mRawCheckBox;
     boolean UnlockFocusSpecialBooleanCaptureon=true;
+    ImageButton MovementButtonn;
+    boolean MovementButtonnBooleaan=true;
+
+    Bitmap WhiteBalanceBallInspector;
+    SurfaceHolder holder;
+    float BallInspectorx, BallInspectory;
+
+
+
 
 
     //firstly we want to make the window sticky. We acheive this by making system flags
@@ -623,6 +640,56 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera2_video_image);
 
 
+        BallInspectorx=BallInspectory=600;
+        WhiteBalanceBallInspector= BitmapFactory.decodeResource(getResources(),R.mipmap.isopic100);
+        SurfaceView surfaceview=(SurfaceView)findViewById(R.id.surfaceView);
+        surfaceview.setZOrderOnTop(true);
+        final SurfaceHolder holder=surfaceview.getHolder();
+        holder.setFormat(PixelFormat.TRANSLUCENT);
+        final Surface surface=holder.getSurface();
+        surfaceview.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        BallInspectorx=event.getX();
+                        BallInspectory=event.getY();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        BallInspectorx=event.getX();
+                        BallInspectory=event.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        BallInspectorx=event.getX();
+                        BallInspectory=event.getY();
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+
+
+        MovementButtonn=(ImageButton)findViewById(R.id.MovementButton);
+        MovementButtonn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(MovementButtonnBooleaan){
+                    MovementButtonnBooleaan=false;
+                    MovementButtonn.setImageResource(R.drawable.customiso);
+                    Toast.makeText(getApplicationContext(), "Movement Thing Turn on", Toast.LENGTH_SHORT).show();
+                }else{
+                   MovementButtonnBooleaan=true;
+                    MovementButtonn.setImageResource(R.drawable.flipback);
+                    Toast.makeText(getApplicationContext(), "Movement Button Turned Off", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+
 
 
 
@@ -644,6 +711,17 @@ public class MainActivity extends AppCompatActivity {
                             @Override
 
                             public void run() {
+
+                                if(surface.isValid()){
+                                    Canvas canvas1=holder.lockCanvas();
+                                    canvas1.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                                    if(!MovementButtonnBooleaan){
+                                        canvas1.drawBitmap(WhiteBalanceBallInspector,BallInspectorx,BallInspectory,null);
+                                    }
+                                    holder.unlockCanvasAndPost(canvas1);
+
+                                }
+
                                 String convertSS;
 
 

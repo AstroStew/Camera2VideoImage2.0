@@ -15,6 +15,16 @@
         android:layout_alignParentBottom="true" />
 
 
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
     <ImageButton
         android:text="Camera_Button"
@@ -254,6 +264,16 @@
         android:layout_marginTop="11dp"
         android:visibility="invisible"
         android:text="TextView" />
+
+    <ImageButton
+        android:id="@+id/MovementButton"
+        android:src="@drawable/ic_videocam_black_24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/infoTextView"
+        android:layout_toEndOf="@+id/FlipButton"
+        android:layout_toRightOf="@+id/FlipButton"
+        android:text="Button" />
 
 
 </RelativeLayout>
